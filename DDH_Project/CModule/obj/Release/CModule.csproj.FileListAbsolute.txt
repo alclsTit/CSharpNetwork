@@ -1,0 +1,10 @@
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\bin\Release\CModule.exe.config
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\bin\Release\CModule.exe
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\bin\Release\CModule.pdb
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\bin\Release\log4net.dll
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\bin\Release\log4net.xml
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\obj\Release\CModule.csprojAssemblyReference.cache
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\obj\Release\CModule.csproj.CoreCompileInputs.cache
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\obj\Release\CModule.csproj.CopyComplete
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\obj\Release\CModule.exe
+D:\visual studio 2019\C#\Server\DDH_Project\CModule\obj\Release\CModule.pdb

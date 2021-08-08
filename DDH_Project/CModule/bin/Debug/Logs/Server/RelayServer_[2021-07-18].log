@@ -1,0 +1,5 @@
+2021-07-18 19:46:11 [4] [INFO] - [FLOW] 1.Acceptor.Start - Accept Start 
+2021-07-18 19:47:30 [3] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-18 19:47:30 [3] [ERROR] - Error in CAcceptor.OnAcceptHandler!!! - ConnectionReset 
+2021-07-18 19:48:21 [3] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-18 19:48:21 [3] [ERROR] - Error in CAcceptor.OnAcceptHandler!!! - ConnectionReset 

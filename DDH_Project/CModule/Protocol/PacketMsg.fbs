@@ -1,0 +1,18 @@
+// Example IDL file for our EchoTest schema.
+// 패킷 규칙 struct의 경우 s를 struct 네이밍 앞에 붙인다.
+
+namespace  PacketProtocol;
+
+struct sPacketInfo
+{
+	packetNumber:int;
+	packetSize:short;
+	protocolType:short;
+}
+
+table PacketMsg {
+  packetInfo:sPacketInfo;
+  msg:string;
+}
+
+root_type PacketMsg;

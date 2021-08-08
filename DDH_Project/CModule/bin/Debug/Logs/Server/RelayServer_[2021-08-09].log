@@ -1,0 +1,31 @@
+2021-08-09 00:15:21 [4] [INFO] - [FLOW] 1.Acceptor.Start - Accept Start 
+2021-08-09 00:15:22 [3] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-08-09 00:15:22 [3] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-08-09 00:15:26 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArray - 'CModule, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' 어셈블리의 'CModule.Protocol.msg_test+hanlder_notify_test_packet_game2user' 형식이 serializable로 표시되어 있지 않습니다.,   위치: System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   위치: System.Runtime.Serialization.FormatterServices.<>c__DisplayClass9_0.<GetSerializableMembers>b__0(MemberHolder _)
+   위치: System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   위치: System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   위치: CModule.Network.CPacket.SerializeClassToByteArray[T](T& data) 파일 D:\visual studio 2019\C#\Server\DDH_Project\CModule\Network\CPacket.cs:줄 210 
+2021-08-09 00:16:08 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArray - 'CModule, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' 어셈블리의 'CModule.Protocol.msg_test+hanlder_notify_test_packet_game2user' 형식이 serializable로 표시되어 있지 않습니다.,   위치: System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   위치: System.Runtime.Serialization.FormatterServices.<>c__DisplayClass9_0.<GetSerializableMembers>b__0(MemberHolder _)
+   위치: System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   위치: System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   위치: CModule.Network.CPacket.SerializeClassToByteArray[T](T& data) 파일 D:\visual studio 2019\C#\Server\DDH_Project\CModule\Network\CPacket.cs:줄 210 
+2021-08-09 00:17:29 [4] [INFO] - [FLOW] 1.Acceptor.Start - Accept Start 
+2021-08-09 00:17:31 [3] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-08-09 00:17:31 [3] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-08-09 00:18:25 [5] [ERROR] - Exception in CTcpSocket.OnSendHandler - Packet send queue pop error!!! 
+2021-08-09 00:34:13 [4] [INFO] - [FLOW] 1.Acceptor.Start - Accept Start 
+2021-08-09 00:34:27 [4] [INFO] - [FLOW] 1.Acceptor.Start - Accept Start 

@@ -1,0 +1,37 @@
+2021-07-15 00:07:43 [11] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-15 00:07:43 [11] [ERROR] - Exception in CAcceptor.OnAcceptHandler!!! - ConnectionReset 
+2021-07-15 00:23:30 [12] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-07-15 00:23:30 [12] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-07-15 00:23:30 [13] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 64, 2048 
+2021-07-15 00:23:34 [13] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-07-15 00:23:34 [13] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-15 00:23:37 [13] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-07-15 00:23:37 [13] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-07-15 00:23:37 [12] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 64, 4096 
+2021-07-15 00:24:16 [12] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-07-15 00:24:16 [12] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-15 00:24:30 [12] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-07-15 00:24:30 [12] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-07-15 00:24:30 [14] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 64, 6144 
+2021-07-15 00:24:30 [14] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-07-15 00:24:30 [14] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-15 00:24:33 [14] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-07-15 00:24:33 [14] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-07-15 00:24:33 [15] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 64, 8192 
+2021-07-15 00:24:43 [15] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-07-15 00:24:43 [15] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-15 00:24:53 [15] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-07-15 00:24:53 [15] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-07-15 00:24:53 [15] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 64, 10240 
+2021-07-15 00:24:54 [18] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-07-15 00:24:54 [18] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-15 00:24:58 [18] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-07-15 00:24:58 [18] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-07-15 00:24:58 [15] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 64, 12288 
+2021-07-15 00:25:02 [15] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-07-15 00:25:02 [15] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-15 00:25:28 [15] [INFO] - [FLOW] 2.CAcceptor.OnAcceptHandler - Call OnAccpetHandler(Accpet is success) 
+2021-07-15 00:25:28 [15] [INFO] - [FLOW] 3.CAcceptor.OnAcceptHandler - Receive Start 
+2021-07-15 00:25:28 [16] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 64, 14336 
+2021-07-15 00:25:53 [17] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-07-15 00:25:53 [17] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 

@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{74A17446-6A50-4BE0-A00F-0E73E2E2D42B}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>CModule</RootNamespace>
+    <AssemblyName>CModule</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Network\CBufferManager.cs" />
+    <Compile Include="Network\CAcceptor.cs" />
+    <Compile Include="CMemoryPool.cs" />
+    <Compile Include="Log\CFileIOSystemManager.cs" />
+    <Compile Include="Log\CFileIOSystemModule.cs" />
+    <Compile Include="Network\CAcceptSession.cs" />
+    <Compile Include="Network\CHostFinder.cs" />
+    <Compile Include="Network\CListener.cs" />
+    <Compile Include="Log\CLogs.cs" />
+    <Compile Include="ConstDefine.cs" />
+    <Compile Include="Network\CMessageReceiver.cs" />
+    <Compile Include="Network\CPacket.cs" />
+    <Compile Include="Network\CSession.cs" />
+    <Compile Include="Network\CSocketAsyncEventManager.cs" />
+    <Compile Include="Network\CTcpSocket.cs" />
+    <Compile Include="Network\CSocketAsyncEventArgsPool.cs" />
+    <Compile Include="Network\CSocketBase.cs" />
+    <Compile Include="Network\ModifyInfo.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Protocol\FlatBuffers\ByteBuffer.cs" />
+    <Compile Include="Protocol\FlatBuffers\ByteBufferUtil.cs" />
+    <Compile Include="Protocol\FlatBuffers\FlatBufferBuilder.cs" />
+    <Compile Include="Protocol\FlatBuffers\FlatBufferConstants.cs" />
+    <Compile Include="Protocol\FlatBuffers\IFlatbufferObject.cs" />
+    <Compile Include="Protocol\FlatBuffers\Offset.cs" />
+    <Compile Include="Protocol\FlatBuffers\Struct.cs" />
+    <Compile Include="Protocol\FlatBuffers\Table.cs" />
+    <Compile Include="Protocol\msg_test.cs" />
+    <Compile Include="Protocol\PacketId.cs" />
+    <Compile Include="Protocol\PacketMsg\PacketMsg.cs" />
+    <Compile Include="Protocol\PacketMsg\sPacketInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <Content Include="log4net.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <None Include="packages.config" />
+    <None Include="Protocol\FlatBuffers\FlatBuffers.csproj" />
+    <None Include="Protocol\FlatBuffers\FlatBuffers.net35.csproj" />
+    <None Include="Protocol\PacketMsg.fbs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>
