@@ -1,0 +1,9 @@
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Release\ProjectWaterMelon.exe
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Release\ProjectWaterMelon.pdb
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Release\log4net.dll
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Release\log4net.xml
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Release\ProjectWaterMelon.csprojAssemblyReference.cache
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Release\ProjectWaterMelon.csproj.CoreCompileInputs.cache
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Release\ProjectWaterMelon.csproj.CopyComplete
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Release\ProjectWaterMelon.exe
+D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Release\ProjectWaterMelon.pdb
