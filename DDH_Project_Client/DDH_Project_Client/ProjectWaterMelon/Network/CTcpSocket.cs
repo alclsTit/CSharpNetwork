@@ -87,23 +87,28 @@ namespace ProjectWaterMelon.Network
         {
             if (mRawSocket == null)
             {
-                CLog4Net.LogError($"Exception in CTcpSocket.AsyncSend - Socket NULL Error!!!");
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket NULL Error");
                 return;
             }
 
-            if (IsAbleToSend() == false)
+            if (!IsAbleToSend())
             {
-                CLog4Net.LogError($"Exception in CTcpSocket.AsyncSend - Socket state isn't to send packet!!!");
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket state isn't to send packet");
+                return;
+            }
+
+            if (!packet.CheckValidate())
+            {
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Packet CheckValidate Error");
                 return;
             }
 
             mSendPacketQ.Enqueue(packet);
-            StartSend();
+            StartSend(out packet);
         }
 
-        public void StartSend()
+        public void StartSend(out CPacket packet)
         {
-            CPacket packet = new CPacket();
             if (TryPeekPacketForSendQ(out packet))
             {
                 if (mAlreadySendBytes == 0)
@@ -111,7 +116,7 @@ namespace ProjectWaterMelon.Network
                     // 해당 패킷을 처음 보내는 경우
                     mHaveToSendBytes = packet.m_size;
                     // 송신 버퍼 세팅
-                    mSendArgs.SetBuffer(new byte[MAX_BUFFER_SIZE], mAlreadySendBytes, mHaveToSendBytes);
+                    mSendArgs.SetBuffer(new byte[packet.m_size], mAlreadySendBytes, mHaveToSendBytes);
                     // 패킷 버퍼에 담긴 내용을 비동기 소켓 전달 객체인 SocketAsyncEventArgs 버퍼(송신버퍼)에 담는다
                     Array.Copy(packet.m_buffer, mAlreadySendBytes, mSendArgs.Buffer, mSendArgs.Offset, packet.m_size);
                 }
@@ -132,75 +137,59 @@ namespace ProjectWaterMelon.Network
                 }
             }
         }
+        public void OnBadSendHandler(in SocketAsyncEventArgs e)
+        {
+            var lUserToken = e.UserToken as CSession;
+            var lSessionID = 0L;
+            if (lUserToken != null)
+            {
+                lSessionID = lUserToken.mSessionID;
+                lUserToken.mTcpSocket?.Disconnect();
+
+                // TODO: lUserToken 객체 초기화
+            }
+
+            CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send Error(SessionID = {lSessionID}, BytesTransferred = {e.BytesTransferred}, SocketError = {e.SocketError}, SendQueueSize = {mSendPacketQ.Count}");
+        }
 
         // Send Handler after operating async send
         public void OnSendHandler(object sender, SocketAsyncEventArgs e)
         {
-            if (e.BytesTransferred > 0 && e.SocketError == SocketError.Success)
+            if (e.SocketError == SocketError.Success)
             {
-                CSession lUserToken = e.UserToken as CSession;
-                if (lUserToken != null)
+                if (e.BytesTransferred > 0)
                 {
-                    if (e.BytesTransferred == lUserToken.mTcpSocket.mHaveToSendBytes)
+                    CSession lUserToken = e.UserToken as CSession;
+                    if (lUserToken != null)
                     {
                         CPacket packet = new CPacket();
-                        if (!TryPopPacketForSendQ(out packet))
-                            CLog4Net.LogError($"Exception in CTcpSocket.OnSendHandler - Packet send queue pop error!!!");        
-                    }
-                    else
-                    {
-                        // 패킷을 정상적으로 모두 보내지 못했을 때
-                        lUserToken.mTcpSocket.mAlreadySendBytes = e.BytesTransferred;
-                        StartSend();
+                        if (e.BytesTransferred == lUserToken.mTcpSocket.mHaveToSendBytes)
+                        {
+                            if (!TryPopPacketForSendQ(out packet))
+                                CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send queue Pop Error");
+                        }
+                        else
+                        {
+                            // 패킷을 정상적으로 모두 보내지 못했을 때
+                            lUserToken.mTcpSocket.mAlreadySendBytes = e.BytesTransferred;
+                            if (TryPeekPacketForSendQ(out packet))
+                            {
+                                StartSend(out packet);
+                            }
+                            else
+                            {
+                                CLog4Net.LogError("$Error in CTcpSocket.OnSendHandler - Packet Send queue Peek Error");
+                            }
+                        }
                     }
                 }
             }
             else
             {
-                //패킷 메시지 정상 전송 실패, 후처리 작업 진행 
-                CLog4Net.LogError($"Exception in CTcpSocket.OnSendHandler - Packet send error!!!(BytesTransferred = {e.BytesTransferred}, SocketError = {e.SocketError}, SendQueueSize = {mSendPacketQ.Count}");             
-                StartSend();
+                // 패킷 메시지 정상 전송 실패, 후처리 작업 진행 
+                OnBadSendHandler(e);
             }
         }
-
-
-        /*
-        public void AsyncSend()
-        {
-            var lSentMsgCount = 0;
-
-            if (mSocket == null)
-            {
-                CLog4Net.LogError($"Exception in CTcpSocket.AsyncSend - Socket NULL Error!!!");
-                return;
-            }
-
-            if (IsAbleToSend() == false)
-            {
-                CLog4Net.LogError($"Exception in CTcpSocket.AsyncSend - Socket state isn't to send packet!!!");
-                return;
-            }
-
-            while (lSentMsgCount < mSendPacketQ.Count)
-            {
-                CPacket packet = new CPacket();
-                if (!TryPeekPacketForSendQ(ref packet))
-                    break;
-
-                mSendArgs.SetBuffer(mSendArgs.Offset, packet.m_size);
-
-                Array.Copy(packet.m_buffer, 0, mSendArgs.Buffer, mSendArgs.Offset, packet.m_size);
-
-                mSentPacketQ.Enqueue(packet);
-                bool lPending = mSocket.SendAsync(mSendArgs);
-                if (!lPending)
-                {
-                    OnSendHandler(this, mSendArgs);
-                }
-                ++lSentMsgCount;
-            }         
-        }
-        */
 
         public void AsyncRecv()
         {
@@ -246,3 +235,43 @@ namespace ProjectWaterMelon.Network
         }
     }
 }
+
+
+
+/*
+public void AsyncSend()
+{
+    var lSentMsgCount = 0;
+
+    if (mSocket == null)
+    {
+        CLog4Net.LogError($"Exception in CTcpSocket.AsyncSend - Socket NULL Error!!!");
+        return;
+    }
+
+    if (IsAbleToSend() == false)
+    {
+        CLog4Net.LogError($"Exception in CTcpSocket.AsyncSend - Socket state isn't to send packet!!!");
+        return;
+    }
+
+    while (lSentMsgCount < mSendPacketQ.Count)
+    {
+        CPacket packet = new CPacket();
+        if (!TryPeekPacketForSendQ(ref packet))
+            break;
+
+        mSendArgs.SetBuffer(mSendArgs.Offset, packet.m_size);
+
+        Array.Copy(packet.m_buffer, 0, mSendArgs.Buffer, mSendArgs.Offset, packet.m_size);
+
+        mSentPacketQ.Enqueue(packet);
+        bool lPending = mSocket.SendAsync(mSendArgs);
+        if (!lPending)
+        {
+            OnSendHandler(this, mSendArgs);
+        }
+        ++lSentMsgCount;
+    }         
+}
+*/

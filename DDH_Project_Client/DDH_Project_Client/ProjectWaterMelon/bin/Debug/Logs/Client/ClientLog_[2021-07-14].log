@@ -1,0 +1,70 @@
+2021-07-14 21:59:29 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 22:00:37 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 22:00:37 [4] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-07-14 22:10:40 [5] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-14 22:11:01 [5] [INFO] - [FLOW] 1.CConnector.Start - Call OnConnectHandler(No Async Call) 
+2021-07-14 22:11:58 [5] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-14 22:11:58 [5] [INFO] - [FLOW] 1.CConnector.Start - Call OnConnectHandler(No Async Call) 
+2021-07-14 22:12:27 [5] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-14 22:30:17 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 22:31:24 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 22:31:56 [4] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-07-14 22:33:30 [5] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-14 22:33:35 [5] [INFO] - [FLOW] 1.CConnector.Start - Call OnConnectHandler(No Async Call) 
+2021-07-14 22:57:28 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 22:57:55 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 22:58:20 [4] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-07-14 22:59:41 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 22:59:43 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 22:59:43 [4] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-07-14 23:26:11 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:26:11 [5] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 49 
+2021-07-14 23:26:22 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:26:22 [5] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 49 
+2021-07-14 23:26:26 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:26:26 [5] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 49 
+2021-07-14 23:26:49 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:26:49 [5] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 49 
+2021-07-14 23:27:08 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:29:00 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:29:16 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:31:24 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:31:28 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:32:30 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:32:34 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:33:25 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:33:27 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:33:57 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:33:59 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:34:53 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:35:14 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:36:09 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:36:21 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:39:04 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:39:07 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:46:56 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:47:23 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:48:05 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:48:10 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:52:38 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:52:41 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:52:43 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:52:45 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:53:03 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:53:05 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:53:07 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:53:16 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:53:33 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:53:38 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:55:22 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:55:55 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-07-14 23:56:11 [4] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-07-14 23:57:46 [5] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 

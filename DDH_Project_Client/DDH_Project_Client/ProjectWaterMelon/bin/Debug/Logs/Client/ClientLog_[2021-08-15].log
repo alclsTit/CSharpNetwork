@@ -1,0 +1,108 @@
+2021-08-15 00:13:22 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 00:13:28 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 00:13:50 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 00:13:57 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArray - 'ProjectWaterMelon, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' 어셈블리의 'ProjectWaterMelon.Network.CPacket' 형식이 serializable로 표시되어 있지 않습니다.,   위치: System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   위치: System.Runtime.Serialization.FormatterServices.<>c__DisplayClass9_0.<GetSerializableMembers>b__0(MemberHolder _)
+   위치: System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   위치: System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   위치: ProjectWaterMelon.Network.CPacket.SerializeClassToByteArray[T](T& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 175 
+2021-08-15 00:15:17 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArray - 'ProjectWaterMelon, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' 어셈블리의 'ProjectWaterMelon.Network.CPacket' 형식이 serializable로 표시되어 있지 않습니다.,   위치: System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   위치: System.Runtime.Serialization.FormatterServices.<>c__DisplayClass9_0.<GetSerializableMembers>b__0(MemberHolder _)
+   위치: System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   위치: System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   위치: ProjectWaterMelon.Network.CPacket.SerializeClassToByteArray[T](T& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 175 
+2021-08-15 00:16:51 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 00:16:54 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 00:16:54 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 00:18:31 [7] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 604, 0 
+2021-08-15 00:29:55 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 00:29:56 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 00:29:56 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 00:31:31 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 00:31:32 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 00:31:32 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 00:31:41 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 604, 0 
+2021-08-15 00:31:49 [5] [ERROR] - Exception in CPacket.DeSerializeByteArrayToClass - '201326592' 개체의 맵이 없습니다.,   위치: System.Runtime.Serialization.Formatters.Binary.__BinaryParser.ReadObject()
+   위치: System.Runtime.Serialization.Formatters.Binary.__BinaryParser.Run()
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectReader.Deserialize(HeaderHandler handler, __BinaryParser serParser, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream, HeaderHandler handler, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream)
+   위치: ProjectWaterMelon.Network.CPacket.DeSerializeByteArrayToClass[T](Byte[]& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 202 
+2021-08-15 00:31:59 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 00:32:01 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 00:32:01 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 00:32:05 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 604, 0 
+2021-08-15 00:33:00 [5] [ERROR] - Exception in CPacket.DeSerializeByteArrayToClass - '201326592' 개체의 맵이 없습니다.,   위치: System.Runtime.Serialization.Formatters.Binary.__BinaryParser.ReadObject()
+   위치: System.Runtime.Serialization.Formatters.Binary.__BinaryParser.Run()
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectReader.Deserialize(HeaderHandler handler, __BinaryParser serParser, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream, HeaderHandler handler, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream)
+   위치: ProjectWaterMelon.Network.CPacket.DeSerializeByteArrayToClass[T](Byte[]& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 202 
+2021-08-15 00:33:33 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 00:33:35 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 00:33:35 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 00:33:41 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 604, 0 
+2021-08-15 00:35:34 [5] [ERROR] - Exception in CPacket.DeSerializeByteArrayToClass - '201326592' 개체의 맵이 없습니다.,   위치: System.Runtime.Serialization.Formatters.Binary.__BinaryParser.ReadObject()
+   위치: System.Runtime.Serialization.Formatters.Binary.__BinaryParser.Run()
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectReader.Deserialize(HeaderHandler handler, __BinaryParser serParser, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream, HeaderHandler handler, Boolean fCheck, Boolean isCrossAppDomain, IMethodCallMessage methodCallMessage)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Deserialize(Stream serializationStream)
+   위치: ProjectWaterMelon.Network.CPacket.DeSerializeByteArrayToClass[T](Byte[]& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 202 
+2021-08-15 13:07:34 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 13:07:45 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 13:07:45 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 13:07:48 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArrayProtoBuf(T) - Type is not expected, and no contract can be inferred: ProjectWaterMelon.Protocol.msg_test+handler_req_network_sessionid_user2game,   위치: ProtoBuf.Internal.ThrowHelper.ThrowInvalidOperationException(String message, Exception innerException) 파일 /_/src/protobuf-net.Core/Internal/ThrowHelper.cs:줄 55
+   위치: ProtoBuf.Meta.TypeModel.ThrowUnexpectedType(Type type, TypeModel model) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 1653
+   위치: ProtoBuf.Meta.TypeModel.SerializeRootFallback(State& state, Object value) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 288
+   위치: ProtoBuf.Meta.TypeModel.SerializeImpl[T](State& state, T value) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 350
+   위치: ProtoBuf.Serializer.Serialize[T](Stream destination, T instance, Object userState) 파일 /_/src/protobuf-net/Serializer.Serialize.cs:줄 33
+   위치: ProtoBuf.Serializer.Serialize[T](Stream destination, T instance) 파일 /_/src/protobuf-net/Serializer.Serialize.cs:줄 20
+   위치: ProjectWaterMelon.Network.CPacket.SerializeClassToByteArrayProtoBuf[T](T& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 242 
+2021-08-15 13:09:44 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 13:09:47 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 13:09:47 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 13:09:52 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArrayProtoBuf(T) - Type is not expected, and no contract can be inferred: ProjectWaterMelon.Protocol.msg_test+handler_req_network_sessionid_user2game,   위치: ProtoBuf.Internal.ThrowHelper.ThrowInvalidOperationException(String message, Exception innerException) 파일 /_/src/protobuf-net.Core/Internal/ThrowHelper.cs:줄 55
+   위치: ProtoBuf.Meta.TypeModel.ThrowUnexpectedType(Type type, TypeModel model) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 1653
+   위치: ProtoBuf.Meta.TypeModel.SerializeRootFallback(State& state, Object value) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 288
+   위치: ProtoBuf.Meta.TypeModel.SerializeImpl[T](State& state, T value) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 350
+   위치: ProtoBuf.Serializer.Serialize[T](Stream destination, T instance, Object userState) 파일 /_/src/protobuf-net/Serializer.Serialize.cs:줄 33
+   위치: ProtoBuf.Serializer.Serialize[T](Stream destination, T instance) 파일 /_/src/protobuf-net/Serializer.Serialize.cs:줄 20
+   위치: ProjectWaterMelon.Network.CPacket.SerializeClassToByteArrayProtoBuf[T](T& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 240 
+2021-08-15 13:10:41 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 13:10:42 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 13:10:42 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 13:10:58 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArrayProtoBuf(T) - Type is not expected, and no contract can be inferred: ProjectWaterMelon.Protocol.msg_test+handler_req_network_sessionid_user2game,   위치: ProtoBuf.Internal.ThrowHelper.ThrowInvalidOperationException(String message, Exception innerException) 파일 /_/src/protobuf-net.Core/Internal/ThrowHelper.cs:줄 55
+   위치: ProtoBuf.Meta.TypeModel.ThrowUnexpectedType(Type type, TypeModel model) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 1653
+   위치: ProtoBuf.Meta.TypeModel.SerializeRootFallback(State& state, Object value) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 288
+   위치: ProtoBuf.Meta.TypeModel.SerializeImpl[T](State& state, T value) 파일 /_/src/protobuf-net.Core/Meta/TypeModel.cs:줄 350
+   위치: ProtoBuf.Serializer.Serialize[T](Stream destination, T instance, Object userState) 파일 /_/src/protobuf-net/Serializer.Serialize.cs:줄 33
+   위치: ProtoBuf.Serializer.Serialize[T](Stream destination, T instance) 파일 /_/src/protobuf-net/Serializer.Serialize.cs:줄 20
+   위치: ProjectWaterMelon.Network.CPacket.SerializeClassToByteArrayProtoBuf[T](T& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 240 
+2021-08-15 15:15:28 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 15:15:35 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 15:15:35 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 15:17:29 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 15:17:30 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 15:17:30 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 15:54:17 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 15:54:17 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 15:54:17 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 15:56:10 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 15:56:11 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 15:56:11 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 15:59:40 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-15 15:59:40 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-15 15:59:40 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-15 16:00:10 [3] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 31, 0 

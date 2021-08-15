@@ -1,0 +1,40 @@
+2021-08-03 00:13:33 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:13:34 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:13:34 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:13:47 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-03 00:15:06 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:15:06 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:15:06 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:15:10 [3] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-03 00:15:37 [3] [ERROR] - Exception in CPacket.SerializeStructToByteArray - 'ProjectWaterMelon.Network.CPacket' 형식은 관리되지 않는 구조체로 마샬링할 수 없으므로 의미 있는 크기 또는 오프셋을 계산할 수 없습니다.,   위치: System.Runtime.InteropServices.Marshal.SizeOfHelper(Type t, Boolean throwIfNotMarshalable)
+   위치: System.Runtime.InteropServices.Marshal.SizeOf(Object structure)
+   위치: System.Runtime.InteropServices.Marshal.SizeOf[T](T structure)
+   위치: ProjectWaterMelon.Network.CPacket.SerializeStructToByteArray[T](T data) 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 108 
+2021-08-03 00:22:58 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:22:59 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:22:59 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:23:04 [3] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-03 00:27:05 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:27:05 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:27:05 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:27:09 [3] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-03 00:28:04 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:28:04 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:28:04 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:28:07 [3] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-03 00:32:08 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:32:09 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:32:09 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:32:14 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-03 00:32:57 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:32:57 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:32:57 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:33:00 [3] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-03 00:33:32 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:33:33 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:33:33 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:33:35 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-03 00:37:19 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-03 00:37:20 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-03 00:37:20 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-03 00:37:27 [3] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 

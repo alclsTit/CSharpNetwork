@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using ConstModule;
+
 /*
  * 패킷은 워커 스레드에서 처리한다
  * 패킷은 자주 사용되는 객체, 재활용을 해야된다
@@ -16,6 +17,7 @@ namespace ProjectWaterMelon.Network
     // 패킷 = [헤더][데이터]
     // [헤더] = 패킷 사이즈, 패킷 타입 [데이터] = 패킷 본문 
     // 패킷 암호화도 필요
+    [Serializable]
     public class CPacket
     {
         private readonly int MAX_PACKET_HEADER_SIZE = 4;
@@ -32,8 +34,6 @@ namespace ProjectWaterMelon.Network
         public int mBodySize { get; private set; }
         public int m_position { get; private set; }
 
-        public CPacket() { }
-
         public CPacket(int packet_size = ConstDefine.MAX_BUFFER_SIZE)
         {
             m_buffer = new byte[packet_size];
@@ -49,12 +49,9 @@ namespace ProjectWaterMelon.Network
         }
 
         // check packet validate
-        private bool CheckValidate()
+        public bool CheckValidate()
         {
             if (m_size > MAX_PACKET_ALLOC_SIZE)
-                return false;
-
-            if (m_size != m_buffer.Length + MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE)
                 return false;
 
             if (m_size < m_buffer.Length)
@@ -104,7 +101,7 @@ namespace ProjectWaterMelon.Network
 
         // Convert m_type of struct To byte array (Marshaling)
         // 1.Set structure data -> 2. Serialize -> 3. buildPacket
-        public static byte[] SerializeStructToByteArray<T>(T data) where T : struct
+        public byte[] SerializeStructToByteArray<T>(T data) where T : struct
         {
             try
             {
@@ -164,7 +161,7 @@ namespace ProjectWaterMelon.Network
             }
         }
 
-        public static byte[] SerializeClassToByteArray<T>(ref T data) where T : class
+        public byte[] SerializeClassToByteArray<T>(ref T data) where T : class
         {
             byte[] result = null;
             try
@@ -187,7 +184,7 @@ namespace ProjectWaterMelon.Network
             return result;
         }
 
-        public static T DeSerializeByteArrayToClass<T>(in byte[] data) where T : class
+        public T DeSerializeByteArrayToClass<T>(in byte[] data) where T : class
         {
             T result = null;
             try
@@ -207,6 +204,75 @@ namespace ProjectWaterMelon.Network
             }
             return result;
         }
+
+        public void BuildPacketClassProtoBuf<T>(ref T data, int packetType) where T : class
+        {
+            var lByteArray = SerializeClassToByteArrayProtoBuf(data);
+            if (lByteArray != null)
+            {
+                var lHeaderSize = MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE;
+                var lBodySize = lByteArray.Length;
+                var lPacketSize = lHeaderSize + lBodySize;
+
+                this.m_buffer = new byte[lPacketSize];
+                Buffer.BlockCopy(BitConverter.GetBytes(lPacketSize), 0, m_buffer, 0, MAX_PACKET_HEADER_SIZE);
+                Buffer.BlockCopy(BitConverter.GetBytes(packetType), 0, m_buffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
+                Buffer.BlockCopy(lByteArray, 0, m_buffer, lHeaderSize, lBodySize);
+
+                m_size = lPacketSize;
+                m_type = packetType;
+                mBodySize = lBodySize;
+            }
+        }
+
+        private byte[] SerializeClassToByteArrayProtoBuf<T>(in T data) where T : class
+        {
+            byte[] result = null;
+            if (data != null)
+            {
+                try
+                {
+                    using (var lMemoryStream = new MemoryStream())
+                    {
+                        ProtoBuf.Serializer.Serialize<T>(lMemoryStream, data);
+                        result = lMemoryStream.ToArray();
+
+                        //IntelCPU => 리틀엔디안, 네트워크 패킷 통신 => 빅엔디안 
+                        if (BitConverter.IsLittleEndian)
+                            Array.Reverse(result);
+
+                        return result;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    CLog4Net.LogError($"Exception in CPacket.SerializeClassToByteArrayProtoBuf({nameof(T)}) - {ex.Message},{ex.StackTrace}");
+                }
+            }
+            return result;
+        }
+
+        public T DeSerializeByteArrayToClassProtoBuf<T>(in byte[] data) where T : class
+        {
+            T result = null;
+            if (data != null)
+            {
+                try
+                {
+                    using (var lMemoryStream = new MemoryStream())
+                    {
+                        result = ProtoBuf.Serializer.Deserialize<T>(lMemoryStream);
+                        return result;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    CLog4Net.LogError($"Exception in CPacket.DeSerializeByteArrayToClassProtoBuf({nameof(T)}) - {ex.Message},{ex.StackTrace}");
+                }
+            }
+            return result;
+        }
+
 
         // 사용한 패킷 반환
         public void Destroy()

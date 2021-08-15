@@ -1,0 +1,17 @@
+2021-06-19 00:56:34 [3] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-19 00:56:34 [3] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 79 
+2021-06-19 04:07:09 [3] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-19 21:07:16 [4] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-19 21:07:16 [4] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 118 
+2021-06-19 21:07:24 [4] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-19 21:07:24 [4] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 118 
+2021-06-19 21:08:50 [4] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-19 21:08:50 [4] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 118 

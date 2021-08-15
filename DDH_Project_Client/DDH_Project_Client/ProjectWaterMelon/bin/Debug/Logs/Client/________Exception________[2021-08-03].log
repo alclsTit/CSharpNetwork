@@ -1,0 +1,4 @@
+2021-08-03 00:15:37 [3] [ERROR] - Exception in CPacket.SerializeStructToByteArray - 'ProjectWaterMelon.Network.CPacket' 형식은 관리되지 않는 구조체로 마샬링할 수 없으므로 의미 있는 크기 또는 오프셋을 계산할 수 없습니다.,   위치: System.Runtime.InteropServices.Marshal.SizeOfHelper(Type t, Boolean throwIfNotMarshalable)
+   위치: System.Runtime.InteropServices.Marshal.SizeOf(Object structure)
+   위치: System.Runtime.InteropServices.Marshal.SizeOf[T](T structure)
+   위치: ProjectWaterMelon.Network.CPacket.SerializeStructToByteArray[T](T data) 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 108 

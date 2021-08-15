@@ -1,0 +1,9 @@
+2021-08-15 00:18:11 [5] [ERROR] - Exception in CTcpSocket.OnSendHandler - Packet send queue pop error!!! 
+2021-08-15 00:31:37 [5] [ERROR] - Exception in CTcpSocket.OnSendHandler - Packet send queue pop error!!! 
+2021-08-15 00:31:58 [3] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-08-15 00:31:58 [3] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-08-15 00:32:04 [6] [ERROR] - Exception in CTcpSocket.OnSendHandler - Packet send queue pop error!!! 
+2021-08-15 00:33:40 [5] [ERROR] - Exception in CTcpSocket.OnSendHandler - Packet send queue pop error!!! 
+2021-08-15 13:10:39 [3] [ERROR] - Error in CAcceptor.OnAcceptHandler!!! - ConnectionReset 
+2021-08-15 15:17:28 [3] [ERROR] - Error in CAcceptor.OnAcceptHandler!!! - ConnectionReset 
+2021-08-15 16:00:07 [5] [ERROR] - Error in CTcpSocket.OnSendHandler - Packet Send queue Pop Error 

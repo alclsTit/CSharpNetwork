@@ -29,7 +29,7 @@ namespace ProjectWaterMelon.Network
             {
                 mSessionId = Interlocked.Increment(ref mSessionId);
                 lock(mSessionLock){
-                    user_session.SetSessionId(mSessionId);
+                    user_session.SetSessionID(mSessionId);
                 }
                 mSessionList.TryAdd(mSessionId, user_session);
             }

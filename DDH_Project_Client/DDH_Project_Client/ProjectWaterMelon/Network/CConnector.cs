@@ -62,14 +62,15 @@ namespace ProjectWaterMelon.Network
             }
         }
 
-        public void OnBadConnectHandler(ref SocketAsyncEventArgs args)
+        /*
+        * 정의: connect 실패 시 해당 소켓과 연결된 대상 종료 및 리소스 초기화 진행      
+        * connect - accept에 성공한 대상의 경우에만 session 생성
+        * client는 connect 풀링을 하지 않기 때문에 accept와는 다르게 사용한 SocketAsyncEventArgs 객체풀에 push 하지 않는다
+        */
+        public void OnBadConnectHandler(in SocketAsyncEventArgs e)
         {
-            var lUserToken = args.UserToken as CSession;
-            lUserToken?.mTcpSocket.Disconnect();
-            args.AcceptSocket = null;
-
-            if (!mSessionManager.Remove(lUserToken.mSessionId))
-                CLog4Net.LogError($"Error in CConnector.OnBadConnectHandler!!! - SessionManager didn't remove session properly");
+            // connect 단계에서 SocketError 발생 대상들은 소켓만 Close 한다
+            e.AcceptSocket.Close();     
         }
 
         private void OnConnectHandler(object send, SocketAsyncEventArgs e)
@@ -94,20 +95,21 @@ namespace ProjectWaterMelon.Network
 
                     // SEND TEST PACKET
                     var req_msg = new Protocol.msg_test.handler_req_network_sessionid_user2game();
-                    req_msg.session_id = lUserToken.mSessionId;
+                    req_msg.session_id = lUserToken.mSessionID;
                     req_msg.cur_datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    req_msg.BuildPacketClass(ref req_msg,(int)Protocol.PacketId.req_network_sessionid);
+                    req_msg.BuildPacketClassProtoBuf(ref req_msg,(int)Protocol.PacketId.req_network_sessionid);
                     lUserToken.mTcpSocket.AsyncSend(req_msg);
                 }
                 else
                 {
-                    OnBadConnectHandler(ref e);
+                    OnBadConnectHandler(e);
+                    CLog4Net.LogError($"Error in CConnector.OnConnectHandler - SEND/RECV SocketAsyncEventArgs Set Error");
                 }
             }
             else
             {
-                OnBadConnectHandler(ref e);
-                CLog4Net.LogError($"Error in CConnector.OnConnectHandler!!! - {e.SocketError}");
+                OnBadConnectHandler(e);
+                CLog4Net.LogError($"Error in CConnector.OnConnectHandler - {e.SocketError}");
             }
         }
 

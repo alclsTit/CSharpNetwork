@@ -21,9 +21,12 @@ namespace CModule.Network
         private ConcurrentBag<int> mFreeIndexPool_ThreadSafe;
         private Stack<int> mFreeIndexPool_NoThreadSafe;
 
-        // 이론은 간단 
-        // 특정 객체를 매번 할당, 해제하는것으로 인해 생기는 메모리 파편화를 막고자
-        // 미리 큰 메모리 공간을 할당해놓고 재사용 
+        /* 이론은 간단 
+        *  특정 객체를 매번 할당, 해제하는것으로 인해 생기는 메모리 파편화를 막고자
+        *  미리 큰 메모리 공간을 할당해놓고 재사용 
+        *  mNumBytes = 1000(동접 수) * 1024(버퍼크기) * 2
+        *  => ([1024][1024][1024]....[1024])
+        */ 
         internal CBufferManager(int BufferCount, int BufferSize, bool ConCurrentFlag = true, bool AutoIncrease = true)
         {
             // 전송용, 수신용 버퍼 2개 
@@ -39,21 +42,21 @@ namespace CModule.Network
                 mFreeIndexPool_NoThreadSafe = new Stack<int>();         
         }
 
-        internal bool SetBuffer(SocketAsyncEventArgs args)
+        internal bool SetBuffer(SocketAsyncEventArgs e)
         {
             if (mConcurrentFlag)
             {
                 if (mFreeIndexPool_ThreadSafe.Count > 0)
                 {
                     if (mFreeIndexPool_ThreadSafe.TryTake(out var index))
-                        args.SetBuffer(mTotalBuffer, index, mTackBufferSize);
+                        e.SetBuffer(mTotalBuffer, index, mTackBufferSize);
                 }
                 else
                 {
                     if (mNumBytes < mCurrentIndexPos + mTackBufferSize)
                         return false;
 
-                    args.SetBuffer(mTotalBuffer, mCurrentIndexPos, mTackBufferSize);
+                    e.SetBuffer(mTotalBuffer, mCurrentIndexPos, mTackBufferSize);
                     mCurrentIndexPos += mTackBufferSize;
                 }
 
@@ -63,14 +66,14 @@ namespace CModule.Network
             {
                 if (mFreeIndexPool_NoThreadSafe.Count > 0)
                 {
-                    args.SetBuffer(mTotalBuffer, mFreeIndexPool_NoThreadSafe.Pop(), mTackBufferSize);
+                    e.SetBuffer(mTotalBuffer, mFreeIndexPool_NoThreadSafe.Pop(), mTackBufferSize);
                 }
                 else
                 {
                     if (mNumBytes < mCurrentIndexPos + mTackBufferSize)
                         return false;
 
-                    args.SetBuffer(mTotalBuffer, mCurrentIndexPos, mTackBufferSize);
+                    e.SetBuffer(mTotalBuffer, mCurrentIndexPos, mTackBufferSize);
                     mCurrentIndexPos += mTackBufferSize;
                 }
 
@@ -79,15 +82,15 @@ namespace CModule.Network
         }
 
         // 사용한 버퍼는 메모리 풀에 반환
-        internal void FreeBuffer(SocketAsyncEventArgs args)
+        internal void FreeBuffer(SocketAsyncEventArgs e)
         {
             if (mConcurrentFlag)
-                mFreeIndexPool_ThreadSafe.Add(args.Offset);
+                mFreeIndexPool_ThreadSafe.Add(e.Offset);
             else
-                mFreeIndexPool_NoThreadSafe.Push(args.Offset);
+                mFreeIndexPool_NoThreadSafe.Push(e.Offset);
 
-            args.SetBuffer(null, 0, 0);
-            args.Dispose();
+            e.SetBuffer(null, 0, 0);
+            e.Dispose();
         }
     }
 }

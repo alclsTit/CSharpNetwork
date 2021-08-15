@@ -112,6 +112,8 @@ namespace ProjectWaterMelon.Network
                     case (int)Protocol.PacketId.ack_test_packet:
                         break;
                     case (int)Protocol.PacketId.notify_test_packet:
+                        var data = packet.DeSerializeByteArrayToClassProtoBuf<Protocol.msg_test.hanlder_notify_test_packet_game2user>(packet.m_buffer);
+                        Console.WriteLine($"RecvData = {data.cur_datetime}");
                         break;
                     default:
                         CLog4Net.LogError($"Error in CMessageResolver.ProcessPacket - Packet Type Error({packet.m_type})");

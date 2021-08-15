@@ -1,0 +1,4 @@
+2021-08-04 19:54:18 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-04 19:54:18 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-04 19:54:18 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-04 19:54:30 [3] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 

@@ -1,0 +1,30 @@
+2021-08-14 19:24:30 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-14 19:24:31 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-14 19:24:31 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-14 19:24:31 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArray - 'ProjectWaterMelon, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' 어셈블리의 'ProjectWaterMelon.Network.CPacket' 형식이 serializable로 표시되어 있지 않습니다.,   위치: System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   위치: System.Runtime.Serialization.FormatterServices.<>c__DisplayClass9_0.<GetSerializableMembers>b__0(MemberHolder _)
+   위치: System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   위치: System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   위치: ProjectWaterMelon.Network.CPacket.SerializeClassToByteArray[T](T& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 175 
+2021-08-14 19:25:08 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-14 19:26:27 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-14 20:29:45 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-14 20:30:24 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-14 20:30:35 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-14 20:30:38 [3] [ERROR] - Exception in CPacket.SerializeClassToByteArray - 'ProjectWaterMelon, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null' 어셈블리의 'ProjectWaterMelon.Network.CPacket' 형식이 serializable로 표시되어 있지 않습니다.,   위치: System.Runtime.Serialization.FormatterServices.InternalGetSerializableMembers(RuntimeType type)
+   위치: System.Runtime.Serialization.FormatterServices.<>c__DisplayClass9_0.<GetSerializableMembers>b__0(MemberHolder _)
+   위치: System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)
+   위치: System.Runtime.Serialization.FormatterServices.GetSerializableMembers(Type type, StreamingContext context)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitMemberInfo()
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.InitSerialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.WriteObjectInfo.Serialize(Object obj, ISurrogateSelector surrogateSelector, StreamingContext context, SerObjectInfoInit serObjectInfoInit, IFormatterConverter converter, ObjectWriter objectWriter, SerializationBinder binder)
+   위치: System.Runtime.Serialization.Formatters.Binary.ObjectWriter.Serialize(Object graph, Header[] inHeaders, __BinaryWriter serWriter, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph, Header[] headers, Boolean fCheck)
+   위치: System.Runtime.Serialization.Formatters.Binary.BinaryFormatter.Serialize(Stream serializationStream, Object graph)
+   위치: ProjectWaterMelon.Network.CPacket.SerializeClassToByteArray[T](T& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 175 

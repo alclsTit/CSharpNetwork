@@ -11,8 +11,9 @@ namespace ProjectWaterMelon.Network
     // 실제 유저 객체 
     class CSession
     {
+        // 세션 아이디
+        public long mSessionID { get; private set; }
         // 연결된 소켓
-        public long mSessionId { get; private set; }
         public CTcpSocket mTcpSocket { get; set; }
 
         public CSession()
@@ -20,9 +21,9 @@ namespace ProjectWaterMelon.Network
             mTcpSocket = new CTcpSocket();
         }
 
-        public void SetSessionId(long id)
+        public void SetSessionID(long id)
         {
-            mSessionId = id;
+            mSessionID = id;
         }
     }
 }

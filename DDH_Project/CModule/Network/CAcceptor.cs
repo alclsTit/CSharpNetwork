@@ -14,16 +14,18 @@ namespace CModule.Network
 {
     class CAcceptor
     {
-        private Socket mListenSocket;
+        private Socket mListenSocket;                           // 변동 가능성 존재
         private AutoResetEvent mFlowControlEvt;
         private SocketAsyncEventArgs mAcceptArgs;
         private CSocketAsyncEventArgsPool mAcceptAsyncPool;
-        private System.Net.IPEndPoint mIPEndPoint;
+        private System.Net.IPEndPoint mIPEndPoint;              // 변동 가능성 존재
+
+        private CBufferManager mBufferMng = new CBufferManager(MAX_CONNECTION, MAX_BUFFER_SIZE);
+        private CSessionManager mSessionManager = new CSessionManager();
 
         public delegate void OnSocketAsyncEventArgsInput(object sender, SocketAsyncEventArgs args);
         public delegate void OnNewClientHandler(Socket Socket, object UserToken);
   
-        private CBufferManager mBufferMng = new CBufferManager(MAX_CONNECTION, MAX_BUFFER_SIZE);
 
         public CAcceptor(in Socket Socket, in System.Net.IPEndPoint IPEndPoint, eSockEvtType type = eSockEvtType.CONCURRENT)
         {
@@ -50,30 +52,25 @@ namespace CModule.Network
                 SocketAsyncEventArgs lAcceptArgs = new SocketAsyncEventArgs();
                 if (mBufferMng.SetBuffer(lAcceptArgs))
                 {
-                    CSession lUserToken = new CSession();
-                    lUserToken.mTcpSocket.SetSocket(mListenSocket);
-                    lUserToken.mTcpSocket.SetRemoteIPEndPoint(mIPEndPoint);
-
                     lAcceptArgs.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptHandler);
-                    lAcceptArgs.RemoteEndPoint = mIPEndPoint;
+                    
+                    CSession lUserToken = new CSession();
                     lAcceptArgs.UserToken = lUserToken;
+
                     mAcceptAsyncPool.Push(lAcceptArgs);
                 }
             }
         }
 
+        // Accept SocketAsyncEventArgs 세팅 시 고정적인 것만 먼저 생성해둔채로 풀링한다. 변동적인건 추후 세팅
         private SocketAsyncEventArgs GetAndSetSocketAsyncEventArgs(OnSocketAsyncEventArgsInput handler)
         {
             SocketAsyncEventArgs lAccpetArgs = new SocketAsyncEventArgs();
             if (mBufferMng.SetBuffer(lAccpetArgs))
             {
                 lAccpetArgs.Completed += new EventHandler<SocketAsyncEventArgs>(handler);
-                lAccpetArgs.RemoteEndPoint = mIPEndPoint;
 
                 CSession lUserToken = new CSession();
-                lUserToken.mTcpSocket.SetSocket(mListenSocket);
-                lUserToken.mTcpSocket.SetRemoteIPEndPoint(mIPEndPoint);
-
                 lAccpetArgs.UserToken = lUserToken;
 
                 return lAccpetArgs;
@@ -98,7 +95,15 @@ namespace CModule.Network
                     mAcceptArgs = mAcceptAsyncPool.Count > 0 ? mAcceptAsyncPool.Pop() : GetAndSetSocketAsyncEventArgs(OnAcceptHandler);
                     if (mAcceptArgs != null)
                     {
+                        //1. 풀링하거나 생성한 Accept SocketAsyncEventArgs 객체 세팅
+                        mAcceptArgs.RemoteEndPoint = mIPEndPoint;
+
+                        //2. Accept SocketAsyncEventArgs 객체속성인 UserToken 세팅
                         var lUserToken = mAcceptArgs.UserToken as CSession;
+                        lUserToken.mTcpSocket.SetSocket(mListenSocket);
+                        lUserToken.mTcpSocket.SetRemoteIPEndPoint(mIPEndPoint);
+                        mAcceptArgs.UserToken = lUserToken;
+
                         var lPending = lUserToken.mTcpSocket.mRawSocket.AcceptAsync(mAcceptArgs);
                         if (!lPending)
                         {
@@ -106,8 +111,7 @@ namespace CModule.Network
                             OnAcceptHandler(this, mAcceptArgs);
                             CLog4Net.LogDebugSysLog($"1.Acceptor.Start", $"Call OnAcceptHandler(No Async Call)");
                         }
-                    }
-               
+                    }  
                     // AcceptAsync를 통해 비동기로 클라접속을 받은 뒤 처리될 때까지 start 함수호출 스레드 대기상태로 변경
                     mFlowControlEvt.WaitOne();
                 }
@@ -122,13 +126,21 @@ namespace CModule.Network
         /*
          * 정의: accept 실패 시 해당 소켓과 연결된 대상 종료 및 리소스 초기화 진행
          * accept 에 사용된 SocketAsyncEventArgs 객체는 다른 곳에서 쓸 수 있도록 반환한다
+         * accept - connect에 성공한 대상의 경우에만 session 생성
+         * accpet는 connect와 다르게 사용한 SocketAsyncEventArgs 객체풀에 push  
          */
-        private void onBadAcceptHandler(ref SocketAsyncEventArgs args)
+        private void onBadAcceptHandler(ref SocketAsyncEventArgs e)
         {
-            var lUserToken = args.UserToken as CSession;
-            lUserToken?.mTcpSocket.Disconnect();
-            args.AcceptSocket = null;
-            mAcceptAsyncPool.Push(args);
+            // 1.accept 단계에서 SocketError 발생 대상들은 소켓만 Close 한다
+            e.AcceptSocket.Close();
+           
+            // 2.대상 속성 초기화
+            e.AcceptSocket = null;
+            e.UserToken = null;
+            e.RemoteEndPoint = null;
+
+            // 3.풀링 객체에 반납 
+            mAcceptAsyncPool.Push(e);
         }
 
         private void ResetAndSetCSession(in Socket socket, ref SocketAsyncEventArgs recvArgs, ref SocketAsyncEventArgs sendArgs)
@@ -166,10 +178,12 @@ namespace CModule.Network
                 // 반면, GetRecvSendSocketAsyncEventArgs 을 통해 받아온 UserToken의 socket은 accpet Socket으로 되어있다
                 if (recvArgs != null && sendArgs != null)
                 {
-                    ResetAndSetCSession(e.AcceptSocket, ref recvArgs, ref sendArgs);           
+                    ResetAndSetCSession(e.AcceptSocket, ref recvArgs, ref sendArgs);
                     CLog4Net.LogDebugSysLog($"3.CAcceptor.OnAcceptHandler", $"Receive Start");
 
                     var lUserToken = recvArgs.UserToken as CSession;
+                    mSessionManager.Add(ref lUserToken);
+
                     bool lPending = lUserToken.mTcpSocket.mRawSocket.ReceiveAsync(recvArgs);
                     if (!lPending)
                     {
@@ -180,7 +194,7 @@ namespace CModule.Network
                     // SEND TEST PACKET 
                     var notify_msg = new Protocol.msg_test.hanlder_notify_test_packet_game2user();
                     notify_msg.cur_datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    notify_msg.BuildPacketClass(ref notify_msg, (int)Protocol.PacketId.notify_test_packet);
+                    notify_msg.BuildPacketClassProtoBuf(ref notify_msg, (int)Protocol.PacketId.notify_test_packet);
                     lUserToken.mTcpSocket.AsyncSend(notify_msg);
                 }
                 else

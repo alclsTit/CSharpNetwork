@@ -1,0 +1,16 @@
+2021-07-14 22:10:40 [5] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-14 22:11:58 [5] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-14 22:12:27 [5] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-14 22:33:30 [5] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-14 23:26:11 [5] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 49 
+2021-07-14 23:26:22 [5] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 49 
+2021-07-14 23:26:26 [5] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 49 
+2021-07-14 23:26:49 [5] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 49 

@@ -1,0 +1,23 @@
+2021-06-29 00:34:05 [6] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-29 00:37:33 [3] [ERROR] - Error in CMemoryPool.ConcurrentPop!!! - Not Enough Memory Pool Space 
+2021-06-29 00:37:47 [4] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-29 00:37:47 [4] [ERROR] - Error in CMemoryPool.ConcurrentPop!!! - Not Enough Memory Pool Space 
+2021-06-29 00:37:47 [4] [ERROR] - Exception in CConnector.Start!!! - 개체 참조가 개체의 인스턴스로 설정되지 않았습니다.,   위치: ProjectWaterMelon.CMemoryPool`1.ConcurrentPop() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\CMemoryPool.cs:줄 147
+   위치: ProjectWaterMelon.CSocketAsyncEventArgsPool.Pop() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CSocketAsyncEventArgsPool.cs:줄 52
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 126 
+2021-06-29 00:38:55 [6] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-29 00:38:55 [6] [ERROR] - Error in CMemoryPool.ConcurrentPop!!! - Not Enough Memory Pool Space 
+2021-06-29 00:38:55 [6] [ERROR] - Exception in CConnector.Start!!! - 개체 참조가 개체의 인스턴스로 설정되지 않았습니다.,   위치: ProjectWaterMelon.CMemoryPool`1.ConcurrentPop() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\CMemoryPool.cs:줄 147
+   위치: ProjectWaterMelon.CSocketAsyncEventArgsPool.Pop() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CSocketAsyncEventArgsPool.cs:줄 52
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 126 
+2021-06-29 00:44:51 [6] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-29 00:46:24 [6] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-29 00:46:24 [6] [ERROR] - Error in CMemoryPool.ConcurrentPop!!! - Not Enough Memory Pool Space 
+2021-06-29 00:46:24 [6] [ERROR] - Exception in CConnector.Start!!! - 개체 참조가 개체의 인스턴스로 설정되지 않았습니다.,   위치: ProjectWaterMelon.CMemoryPool`1.ConcurrentPop() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\CMemoryPool.cs:줄 147
+   위치: ProjectWaterMelon.CSocketAsyncEventArgsPool.Pop() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CSocketAsyncEventArgsPool.cs:줄 52
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 126 
+2021-06-29 00:56:09 [3] [INFO] - 1.[FLOW]CConnector.Start - Connect Start 
+2021-06-29 00:56:09 [3] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 130 
+2021-06-29 00:56:09 [4] [ERROR] - Error in CMemoryPool.ConcurrentPop!!! - Not Enough Memory Pool Space 

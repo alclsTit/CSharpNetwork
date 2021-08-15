@@ -1,0 +1,8 @@
+2021-07-28 00:38:34 [6] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-07-28 01:16:32 [4] [ERROR] - Exception in CConnector.Start!!! - 값은 null일 수 없습니다.
+매개 변수 이름: remoteEP,   위치: System.Net.Sockets.Socket.ConnectAsync(SocketAsyncEventArgs e)
+   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 51 
+2021-07-28 01:18:03 [4] [ERROR] - Exception in CConnector.Start!!! - 개체 참조가 개체의 인스턴스로 설정되지 않았습니다.,   위치: ProjectWaterMelon.Network.CConnector.Start() 파일 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CConnector.cs:줄 53 
+2021-07-28 01:19:50 [3] [ERROR] - Exception in CSocketBase.Disconnect!!! - Socket is already destroyed 
+2021-07-28 01:19:52 [3] [ERROR] - Error in CConnector.OnBadConnectHandler!!! - SessionManager didn't remove session properly 
+2021-07-28 01:19:53 [3] [ERROR] - Error in CConnector.OnConnectHandler!!! - ConnectionRefused 

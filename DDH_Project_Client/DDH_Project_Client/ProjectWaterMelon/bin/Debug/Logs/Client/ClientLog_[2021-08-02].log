@@ -1,0 +1,53 @@
+2021-08-02 21:50:40 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 21:50:45 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnAccpetHandler(Connect is success) 
+2021-08-02 21:50:48 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 21:52:07 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 21:52:27 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 21:52:28 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 21:53:30 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 21:53:31 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 21:53:31 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 21:54:09 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 21:54:20 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 21:54:29 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 22:15:04 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 22:15:09 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 22:15:12 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 22:15:29 [3] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
+2021-08-02 22:17:21 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 22:17:23 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 22:17:24 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:10:33 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:10:33 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:10:33 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:12:54 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:12:59 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:13:02 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:19:28 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:19:32 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:19:32 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:19:53 [6] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-02 23:35:45 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:35:50 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:35:51 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:36:04 [6] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-02 23:36:19 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:36:20 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:36:20 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:36:26 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-02 23:37:06 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:37:07 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:37:07 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:37:13 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-02 23:41:22 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:41:23 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:41:23 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:45:56 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:45:56 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:45:56 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:46:22 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-02 23:51:18 [4] [INFO] - [FLOW] 1.CConnector.Start - Connect Start 
+2021-08-02 23:51:18 [3] [INFO] - [FLOW] 2.CConnector.OnConnectHandler - Call OnConnectHandler(Connect is success) 
+2021-08-02 23:51:18 [3] [INFO] - [FLOW] 3.CConnector.OnConnectHandler - Receive Start 
+2021-08-02 23:51:28 [5] [INFO] - [FLOW] 4.CTcpSocket.OnReceiveHandler - OnRecive Call Success - 32, 0 
+2021-08-02 23:52:39 [5] [ERROR] - Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = 0, SocketError = ConnectionReset) 
