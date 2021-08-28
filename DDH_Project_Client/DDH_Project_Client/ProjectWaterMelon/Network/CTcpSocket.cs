@@ -83,30 +83,6 @@ namespace ProjectWaterMelon.Network
             return mSendPacketQ.TryPeek(out packet);
         }
 
-        public void AsyncSend(CPacket packet)
-        {
-            if (mRawSocket == null)
-            {
-                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket NULL Error");
-                return;
-            }
-
-            if (!IsAbleToSend())
-            {
-                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket state isn't to send packet");
-                return;
-            }
-
-            if (!packet.CheckValidate())
-            {
-                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Packet CheckValidate Error");
-                return;
-            }
-
-            mSendPacketQ.Enqueue(packet);
-            StartSend(out packet);
-        }
-
         public void AsyncSend<T>(Protocol.PacketId msgId, T handlerInfo) where T : class
         {
             var type = Convert.ToInt32(msgId);
@@ -227,8 +203,7 @@ namespace ProjectWaterMelon.Network
         public void OnReceiveHandler(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError == SocketError.Success)
-            {
-                CLog4Net.LogDebugSysLog($"4.CTcpSocket.OnReceiveHandler", $"OnRecive Call Success(recv = {e.BytesTransferred}, offset = {e.Offset})");
+            {             
                 if (e.BytesTransferred > 0)
                 {
                     mMessageReceiver.OnReceive(e.Buffer, e.Offset, e.BytesTransferred, (Packet) => { mMessageReceiver.ProcessPacket(Packet); });
@@ -241,8 +216,9 @@ namespace ProjectWaterMelon.Network
                 else
                 {
                     // 서버에서 받은 패킷 데이터가 없는 경우(수신된 패킷 데이터 사이즈 = 0)
-                    CLog4Net.LogError($"Exception in CTcpSocket.OnReceiveHandler - Packet receive bytesTransferred error!!!(BytesTransferred = {e.BytesTransferred})");
-                    return;
+                    // 클라로 부터 패킷 전송이 안된 경우 받은 데이터가 없을 수 있다 
+                    //CLog4Net.LogError($"Exception in CTcpSocket.OnReceiveHandler - Packet receive bytesTransferred error!!!(BytesTransferred = {e.BytesTransferred})");
+                    //return;
                 }
             }
             else

@@ -230,8 +230,7 @@ namespace CModule.Network
         public void OnReceiveHandler(object sender, SocketAsyncEventArgs e)
         {
             if (e.SocketError == SocketError.Success)
-            {
-                CLog4Net.LogDebugSysLog($"4.CTcpSocket.OnReceiveHandler", $"OnRecive Call Success - {e.BytesTransferred}, {e.Offset}");
+            {              
                 if (e.BytesTransferred > 0)
                 {
                     mMessageReceiver.OnReceive(e.Buffer, e.Offset, e.BytesTransferred, (packet) => { mMessageReceiver.ProcessPacket(packet); });

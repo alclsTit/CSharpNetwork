@@ -108,6 +108,8 @@ namespace CModule.Network
 
                 if (mRemainBytes == 0)
                 {
+                    CLog4Net.LogDebugSysLog($"4.CMessageReceiver.OnReceive", $"OnRecive Call Success(total = {mMessageSize}, recv = {ByteTransferred})");
+
                     // 데이터를 모두 받았으면 이를 이용해서 패킷으로 만든다
                     CPacket lPacket = new CPacket(mMessageBuffer, mMessageType);
                     OnMsgCompleted(lPacket);
