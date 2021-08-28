@@ -31,7 +31,7 @@ namespace ProjectWaterMelon.Protocol
         }
 
         [ProtoContract]
-        public class hanlder_notify_test_packet_game2user : CPacket
+        public class hanlder_notify_test_packet_game2user
         {
             [ProtoMember(1)]
             public readonly PacketId msg_id = PacketId.notify_test_packet;

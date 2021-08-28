@@ -105,27 +105,56 @@ namespace CModule.Network
             StartSend(out packet);
         }
 
-        public void StartSend(out CPacket packet)
+        public void AsyncSend<T>(Protocol.PacketId msgId, T handlerInfo) where T : class
+        {
+            var type = Convert.ToInt32(msgId);
+            CPacket packet = new CPacket(CProtobuf.BuildPacket(handlerInfo, type), type);
+
+            if (mRawSocket == null)
+            {
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket NULL Error");
+                return;
+            }
+
+            if (!IsAbleToSend())
+            {
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket state isn't to send packet");
+                return;
+            }
+
+            if (!packet.CheckValidate())
+            {
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Packet CheckValidate Error");
+                return;
+            }
+
+            // thread-safe 
+            mSendPacketQ.Enqueue(packet);
+            StartSend(out packet);
+        }
+
+        
+         public void StartSend(out CPacket packet)
         {
             if (TryPeekPacketForSendQ(out packet))
             {
                 if (mAlreadySendBytes == 0)
                 {
                     // 해당 패킷을 처음 보내는 경우
-                    mHaveToSendBytes = packet.m_size;
+                    mHaveToSendBytes = packet.mSize;
                     // 송신 버퍼 세팅
-                    mSendArgs.SetBuffer(new byte[packet.m_size], mAlreadySendBytes, packet.m_size);
+                    mSendArgs.SetBuffer(new byte[packet.mSize], mAlreadySendBytes, packet.mSize);
                     // 패킷 버퍼에 담긴 내용을 비동기 소켓 전달 객체인 SocketAsyncEventArgs 버퍼(송신버퍼)에 담는다
-                    Array.Copy(packet.m_buffer, mAlreadySendBytes, mSendArgs.Buffer, mSendArgs.Offset, packet.m_size);
+                    Array.Copy(packet.mMsgBuffer, mAlreadySendBytes, mSendArgs.Buffer, mSendArgs.Offset, packet.mSize);
                 }
                 else
                 {
                     // 해당 패킷을 한번에 보내지 못한 경우
-                    mHaveToSendBytes = packet.m_size - mAlreadySendBytes;
+                    mHaveToSendBytes = packet.mSize - mAlreadySendBytes;
                     // 송신 버퍼 세팅
                     mSendArgs.SetBuffer(mAlreadySendBytes, mHaveToSendBytes);
                     // 패킷 버퍼에 담긴 내용을 비동기 소켓 전달 객체인 SocketAsyncEventArgs 버퍼(송신버퍼)에 담는다
-                    Array.Copy(packet.m_buffer, mAlreadySendBytes + 1, mSendArgs.Buffer, mSendArgs.Offset, mHaveToSendBytes);
+                    Array.Copy(packet.mMsgBuffer, mAlreadySendBytes + 1, mSendArgs.Buffer, mSendArgs.Offset, mHaveToSendBytes);
                 }
 
                 bool lPending = mRawSocket.SendAsync(mSendArgs);
@@ -134,7 +163,7 @@ namespace CModule.Network
                     OnSendHandler(this, mSendArgs);
                 }
             }
-        }
+        }    
 
         public void OnBadSendHandler(in SocketAsyncEventArgs e)
         {
@@ -161,17 +190,19 @@ namespace CModule.Network
                     CSession lUserToken = e.UserToken as CSession;
                     if (lUserToken != null)
                     {
+                        CLog4Net.LogDebugSysLog($"5.CTcpSocket.OnSendHandler({lUserToken.mSessionID})", $"Async Send End(Success)(total = {e.BytesTransferred}, sent = {lUserToken.mTcpSocket.mHaveToSendBytes})");
+                        
                         CPacket packet = new CPacket();
                         if (e.BytesTransferred == lUserToken.mTcpSocket.mHaveToSendBytes)
                         {
-                            if (!TryPopPacketForSendQ(out packet))
+                            if (!lUserToken.mTcpSocket.TryPopPacketForSendQ(out packet))
                                 CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send queue Pop Error");
                         }
                         else
                         {
                             // 패킷을 정상적으로 모두 보내지 못했을 때
                             lUserToken.mTcpSocket.mAlreadySendBytes = e.BytesTransferred;
-                            if (TryPeekPacketForSendQ(out packet))
+                            if (lUserToken.mTcpSocket.TryPeekPacketForSendQ(out packet))
                             {
                                 StartSend(out packet);
                             }
@@ -261,9 +292,9 @@ namespace CModule.Network
              if (!TryPeekPacketForSendQ(ref packet))
                  break;
 
-             mSendArgs.SetBuffer(mSendArgs.Offset, packet.m_size);
+             mSendArgs.SetBuffer(mSendArgs.Offset, packet.mSize);
 
-             Array.Copy(packet.m_buffer, 0, mSendArgs.Buffer, mSendArgs.Offset, packet.m_size);
+             Array.Copy(packet.mMsgBuffer, 0, mSendArgs.Buffer, mSendArgs.Offset, packet.mSize);
 
              mSentPacketQ.Enqueue(packet);
              bool lPending = mSocket.SendAsync(mSendArgs);

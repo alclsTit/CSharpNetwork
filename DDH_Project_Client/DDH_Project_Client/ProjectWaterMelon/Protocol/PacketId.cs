@@ -1,15 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ProjectWaterMelon.Protocol
 {
     // 클라 - 서버간 통신용 프로토콜 아이디 
     // ex) req_패킷용도 (req - ack : 클라 - 서버간 양방향 통신프로토콜, notify : 서버 -> 클라 단방향 통신 프로토콜)
 
-    public enum PacketId
+    public enum PacketId : Int32
     {
         //TEST_PACKET
         _TEST_PACKET_BEGIN = 0,

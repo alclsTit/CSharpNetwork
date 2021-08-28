@@ -80,6 +80,7 @@
     <Compile Include="ConstDefine.cs" />
     <Compile Include="Network\CMessageReceiver.cs" />
     <Compile Include="Network\CPacket.cs" />
+    <Compile Include="Network\CProtobuf.cs" />
     <Compile Include="Network\CSession.cs" />
     <Compile Include="Network\CSessionManager.cs" />
     <Compile Include="Network\CSocketAsyncEventManager.cs" />

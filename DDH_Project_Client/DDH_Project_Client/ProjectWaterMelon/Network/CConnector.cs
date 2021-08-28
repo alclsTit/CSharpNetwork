@@ -97,8 +97,9 @@ namespace ProjectWaterMelon.Network
                     var req_msg = new Protocol.msg_test.handler_req_network_sessionid_user2game();
                     req_msg.session_id = lUserToken.mSessionID;
                     req_msg.cur_datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    req_msg.BuildPacketClassProtoBuf(ref req_msg,(int)Protocol.PacketId.req_network_sessionid);
-                    lUserToken.mTcpSocket.AsyncSend(req_msg);
+                    //req_msg.BuildPacketClassProtoBuf(ref req_msg,(int)Protocol.PacketId.req_network_sessionid);
+                    //lUserToken.mTcpSocket.AsyncSend(req_msg);
+                    lUserToken.mTcpSocket.AsyncSend<Protocol.msg_test.handler_req_network_sessionid_user2game>(req_msg.msg_id, req_msg);
                 }
                 else
                 {

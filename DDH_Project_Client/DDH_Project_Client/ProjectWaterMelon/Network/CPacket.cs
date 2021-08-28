@@ -20,58 +20,59 @@ namespace ProjectWaterMelon.Network
     [Serializable]
     public class CPacket
     {
-        private readonly int MAX_PACKET_HEADER_SIZE = 4;
-        private readonly int MAX_PACKET_TYPE_SIZE = 4;
         private readonly uint MAX_PACKET_ALLOC_SIZE = 8 * 1024 * 1024;
 
         // 패킷 데이터(바디)
-        public byte[] m_buffer { get; private set; }
+        public byte[] mMsgBuffer { get; private set; }
         // 패킷 데이터 사이즈(헤더)
-        public int m_size { get; private set; }
+        public int mSize { get; private set; }
         // 패킷 타입(헤더)
-        public int m_type { get; private set; }
-        // 패킷 메시지 바디 사이즈
-        public int mBodySize { get; private set; }
-        public int m_position { get; private set; }
-
+        public int mType { get; private set; }
+   
         public CPacket(int packet_size = ConstDefine.MAX_BUFFER_SIZE)
         {
-            m_buffer = new byte[packet_size];
-            m_size = m_buffer.Length;
-            m_type = 0;
+            mMsgBuffer = new byte[packet_size];
+            mSize = mMsgBuffer.Length;
+            mType = 0;
         }
 
-        public CPacket(byte[] buffer, int size, int type)
+        public CPacket(byte[] buffer, int type)
         {
-            m_buffer = buffer;
-            m_size = size;
-            m_type = type;
+            mMsgBuffer = buffer;
+            mType = type;
+            mSize = mMsgBuffer.Length;
         }
 
         // check packet validate
         public bool CheckValidate()
         {
-            if (m_size > MAX_PACKET_ALLOC_SIZE)
+            if (mSize > MAX_PACKET_ALLOC_SIZE)
                 return false;
 
-            if (m_size < m_buffer.Length)
+            if (mSize < mMsgBuffer.Length)
                 return false;
 
             return true;
         }
-        
 
+        // 사용한 패킷 반환
+        public void Destroy()
+        {
+
+        }
+
+        #region 주석코드[테스트 코드]
         /*
          public byte[] GetData()
         {
             // 패킷 전체 사이즈 
-            var lHeaderSize = m_buffer.Length;
+            var lHeaderSize = mMsgBuffer.Length;
             // 헤더 (1.패킷 사이즈)
             byte[] lPHeaderBytesArray = BitConverter.GetBytes(lHeaderSize);
             // 헤더 (2.패킷 타입)
-            byte[] lPTypeBytesArray = BitConverter.GetBytes(m_type);
+            byte[] lPTypeBytesArray = BitConverter.GetBytes(mType);
             // 패킷 (패킷 사이즈 + 패킷 타입 + 데이터)
-            byte[] lPDataBytesAry = new byte[lPHeaderBytesArray.Length + lPTypeBytesArray.Length + m_buffer.Length];
+            byte[] lPDataBytesAry = new byte[lPHeaderBytesArray.Length + lPTypeBytesArray.Length + mMsgBuffer.Length];
 
             // 헤더(패킷 사이즈) 값 채우기 
             Array.Copy(lPHeaderBytesArray, 0, lPDataBytesAry, 0, lPHeaderBytesArray.Length);
@@ -80,26 +81,26 @@ namespace ProjectWaterMelon.Network
             Array.Copy(lPHeaderBytesArray, 0, lPDataBytesAry, lPHeaderBytesArray.Length, lPTypeBytesArray.Length);
 
             // 바디 값 채우기 
-            Array.Copy(m_buffer, 0, lPDataBytesAry, lPHeaderBytesArray.Length + lPTypeBytesArray.Length, m_buffer.Length);
+            Array.Copy(mMsgBuffer, 0, lPDataBytesAry, lPHeaderBytesArray.Length + lPTypeBytesArray.Length, mMsgBuffer.Length);
 
             return lPDataBytesAry;
         }
 
         public void CopyPacketData(CPacket Packet)
         {
-            Array.Copy(Packet.m_buffer, 0, m_buffer, 0, Packet.m_size);
+            Array.Copy(Packet.mMsgBuffer, 0, mMsgBuffer, 0, Packet.mSize);
         }
 
         public void SetPacketSize()
         {
-            var lHeaderSize = m_buffer.Length;
+            var lHeaderSize = mMsgBuffer.Length;
             var lPHeaderBytesArray = BitConverter.GetBytes(lHeaderSize);
-            Array.Copy(lPHeaderBytesArray, 0, m_buffer, 0, lHeaderSize);
+            Array.Copy(lPHeaderBytesArray, 0, mMsgBuffer, 0, lHeaderSize);
         }
       
-        */
+       
 
-        // Convert m_type of struct To byte array (Marshaling)
+        // Convert mType of struct To byte array (Marshaling)
         // 1.Set structure data -> 2. Serialize -> 3. buildPacket
         public byte[] SerializeStructToByteArray<T>(T data) where T : struct
         {
@@ -120,7 +121,7 @@ namespace ProjectWaterMelon.Network
             }
             catch(Exception ex)
             {
-                CLog4Net.gLog4Net.ErrorFormat($"Exception in CPacket.SerializeStructToByteArray - {ex.Message},{ex.StackTrace}");
+                CLog4Net.LogError($"Exception in CPacket.SerializeStructToByteArray - {ex.Message},{ex.StackTrace}");
                 return null;
             }
         }
@@ -131,14 +132,14 @@ namespace ProjectWaterMelon.Network
             if (msg_byteArray != null)
             {
                 var packet_size = MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE + msg_byteArray.Length;
-            
-                this.m_buffer = new byte[packet_size];
-                Buffer.BlockCopy(BitConverter.GetBytes(packet_size), 0, this.m_buffer, 0, MAX_PACKET_HEADER_SIZE);
-                Buffer.BlockCopy(BitConverter.GetBytes(PacketType), 0, this.m_buffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
-                Buffer.BlockCopy(msg_byteArray, 0, this.m_buffer, MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE, msg_byteArray.Length);
 
-                this.m_size = packet_size;
-                this.m_type = PacketType;
+                this.mMsgBuffer = new byte[packet_size];
+                Buffer.BlockCopy(BitConverter.GetBytes(packet_size), 0, this.mMsgBuffer, 0, MAX_PACKET_HEADER_SIZE);
+                Buffer.BlockCopy(BitConverter.GetBytes(PacketType), 0, this.mMsgBuffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
+                Buffer.BlockCopy(msg_byteArray, 0, this.mMsgBuffer, MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE, msg_byteArray.Length);
+
+                this.mSize = packet_size;
+                this.mType = PacketType;
             }
         }
 
@@ -150,13 +151,13 @@ namespace ProjectWaterMelon.Network
                 var lBodySize = lByteArray.Length;
                 var lPacketSize = MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE + lBodySize;
 
-                this.m_buffer = new byte[lPacketSize];
-                Buffer.BlockCopy(BitConverter.GetBytes(lPacketSize), 0, m_buffer, 0, MAX_PACKET_HEADER_SIZE);
-                Buffer.BlockCopy(BitConverter.GetBytes(packetType), 0, m_buffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
-                Buffer.BlockCopy(lByteArray, 0, m_buffer, MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE, lBodySize);
+                this.mMsgBuffer = new byte[lPacketSize];
+                Buffer.BlockCopy(BitConverter.GetBytes(lPacketSize), 0, mMsgBuffer, 0, MAX_PACKET_HEADER_SIZE);
+                Buffer.BlockCopy(BitConverter.GetBytes(packetType), 0, mMsgBuffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
+                Buffer.BlockCopy(lByteArray, 0, mMsgBuffer, MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE, lBodySize);
 
-                m_size = lPacketSize;
-                m_type = packetType;
+                mSize = lPacketSize;
+                mType = packetType;
                 mBodySize = lBodySize;
             }
         }
@@ -170,14 +171,14 @@ namespace ProjectWaterMelon.Network
                 using (var lMemoryStream = new MemoryStream())
                 {
                     lBinaryFormatter.Serialize(lMemoryStream, data);
-
+      
                     if (BitConverter.IsLittleEndian)
                         Array.Reverse(lMemoryStream.ToArray());
 
                     result = lMemoryStream.ToArray();
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 CLog4Net.gLog4Net.ErrorFormat($"Exception in CPacket.SerializeClassToByteArray - {ex.Message},{ex.StackTrace}");
             }
@@ -189,16 +190,16 @@ namespace ProjectWaterMelon.Network
             T result = null;
             try
             {
-                using (var lMemoryStream = new MemoryStream())
+                using(var lMemoryStream = new MemoryStream())
                 {
                     lMemoryStream.Write(data, 0, data.Length);
                     lMemoryStream.Position = 0;
-
+                    
                     var lBinaryFormatter = new BinaryFormatter();
                     result = lBinaryFormatter.Deserialize(lMemoryStream) as T;
                 }
             }
-            catch (Exception ex)
+            catch(Exception ex)
             {
                 CLog4Net.gLog4Net.ErrorFormat($"Exception in CPacket.DeSerializeByteArrayToClass - {ex.Message},{ex.StackTrace}");
             }
@@ -214,120 +215,66 @@ namespace ProjectWaterMelon.Network
                 var lBodySize = lByteArray.Length;
                 var lPacketSize = lHeaderSize + lBodySize;
 
-                this.m_buffer = new byte[lPacketSize];
-                Buffer.BlockCopy(BitConverter.GetBytes(lPacketSize), 0, m_buffer, 0, MAX_PACKET_HEADER_SIZE);
-                Buffer.BlockCopy(BitConverter.GetBytes(packetType), 0, m_buffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
-                Buffer.BlockCopy(lByteArray, 0, m_buffer, lHeaderSize, lBodySize);
+                this.mMsgBuffer = new byte[lPacketSize];
+                Buffer.BlockCopy(BitConverter.GetBytes(lPacketSize), 0, mMsgBuffer, 0, MAX_PACKET_HEADER_SIZE);
+                Buffer.BlockCopy(BitConverter.GetBytes(packetType), 0, mMsgBuffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
+                Buffer.BlockCopy(lByteArray, 0, mMsgBuffer, lHeaderSize, lBodySize);
 
-                m_size = lPacketSize;
-                m_type = packetType;
+                mSize = lPacketSize;
+                mType = packetType;
                 mBodySize = lBodySize;
             }
         }
 
-        private byte[] SerializeClassToByteArrayProtoBuf<T>(in T data) where T : class
-        {
-            byte[] result = null;
-            if (data != null)
-            {
-                try
-                {
-                    using (var lMemoryStream = new MemoryStream())
-                    {
-                        ProtoBuf.Serializer.Serialize<T>(lMemoryStream, data);
-                        result = lMemoryStream.ToArray();
+       // Convert byte array To mType of struct (Marshaling)
+       public static T DeSerializeByteArrayToStruct<T>(byte[] data) where T : struct
+       {
+           T tmpStruct = new T();
 
-                        //IntelCPU => 리틀엔디안, 네트워크 패킷 통신 => 빅엔디안 
-                        if (BitConverter.IsLittleEndian)
-                            Array.Reverse(result);
+           var packet_size = Marshal.SizeOf(tmpStruct);
+           IntPtr tmpPtr = Marshal.AllocHGlobal(packet_size);
 
-                        return result;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    CLog4Net.LogError($"Exception in CPacket.SerializeClassToByteArrayProtoBuf({nameof(T)}) - {ex.Message},{ex.StackTrace}");
-                }
-            }
-            return result;
-        }
+           Marshal.Copy(data, 0, tmpPtr, packet_size);
 
-        public T DeSerializeByteArrayToClassProtoBuf<T>(in byte[] data) where T : class
-        {
-            T result = null;
-            if (data != null)
-            {
-                try
-                {
-                    using (var lMemoryStream = new MemoryStream())
-                    {
-                        result = ProtoBuf.Serializer.Deserialize<T>(lMemoryStream);
-                        return result;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    CLog4Net.LogError($"Exception in CPacket.DeSerializeByteArrayToClassProtoBuf({nameof(T)}) - {ex.Message},{ex.StackTrace}");
-                }
-            }
-            return result;
-        }
+           tmpStruct = (T)Marshal.PtrToStructure(tmpPtr, tmpStruct.GetType());
+           Marshal.FreeHGlobal(tmpPtr);
 
+           return tmpStruct;
+       }
 
-        // 사용한 패킷 반환
-        public void Destroy()
-        {
+       // Packet(struct) to byteArray
+       public void DeSerializePacket<T>(T data, int mType) where T : struct
+       {
+           var lPBodyByteArray = SerializeStructToByteArray(data);
+           var lPHeaderSize = MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE + lPBodyByteArray.Length;
+           var lPHeaderSizeArray = BitConverter.GetBytes(lPHeaderSize);
+           var lPHeaderTypeArray = BitConverter.GetBytes(mType);
 
-        }
+           this.mMsgBuffer = new byte[lPHeaderSize];
+           Array.Copy(lPHeaderSizeArray, 0, this.mMsgBuffer, 0, MAX_PACKET_HEADER_SIZE);
+           Array.Copy(lPHeaderTypeArray, 0, this.mMsgBuffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
+           Array.Copy(lPBodyByteArray, 0, this.mMsgBuffer, MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE, lPBodyByteArray.Length);
 
-        /*
-        // Convert byte array To m_type of struct (Marshaling)
-        public static T DeSerializeByteArrayToStruct<T>(byte[] data) where T : struct
-        {
-            T tmpStruct = new T();
+           this.mSize = lPHeaderSize;
+           this.mType = mType;
+       }
 
-            var packet_size = Marshal.SizeOf(tmpStruct);
-            IntPtr tmpPtr = Marshal.AllocHGlobal(packet_size);
+       public T DeSerializePacket<T>(byte[] msg) where T : struct
+       {
+           var packet_size = Marshal.SizeOf(typeof(T));
+           byte[] data = new byte[packet_size];
+           Array.Copy(msg, MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE, data, 0, packet_size);
 
-            Marshal.Copy(data, 0, tmpPtr, packet_size);
+           IntPtr tmpPtr = Marshal.AllocHGlobal(packet_size);
+           Marshal.Copy(data, 0, tmpPtr, packet_size);
+           T retValue = Marshal.PtrToStructure(tmpPtr, typeof(T)) as T;
+           Marshal.FreeHGlobal(tmpPtr);
 
-            tmpStruct = (T)Marshal.PtrToStructure(tmpPtr, tmpStruct.GetType());
-            Marshal.FreeHGlobal(tmpPtr);
+           return retValue;
+       }
 
-            return tmpStruct;
-        }
-
-        // Packet(struct) to byteArray
-        public void DeSerializePacket<T>(T data, int m_type) where T : struct 
-        {
-            var lPBodyByteArray = SerializeStructToByteArray(data);
-            var lPHeaderSize = MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE + lPBodyByteArray.Length;
-            var lPHeaderSizeArray = BitConverter.GetBytes(lPHeaderSize);
-            var lPHeaderTypeArray = BitConverter.GetBytes(m_type);
-
-            this.m_buffer = new byte[lPHeaderSize];
-            Array.Copy(lPHeaderSizeArray, 0, this.m_buffer, 0, MAX_PACKET_HEADER_SIZE);
-            Array.Copy(lPHeaderTypeArray, 0, this.m_buffer, MAX_PACKET_HEADER_SIZE, MAX_PACKET_TYPE_SIZE);
-            Array.Copy(lPBodyByteArray, 0, this.m_buffer, MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE, lPBodyByteArray.Length);
-
-            this.m_size = lPHeaderSize;
-            this.m_type = m_type;
-        }
-
-        public T DeSerializePacket<T>(byte[] msg) where T : struct
-        {
-            var packet_size = Marshal.SizeOf(typeof(T));
-            byte[] data = new byte[packet_size];
-            Array.Copy(msg, MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE, data, 0, packet_size);
-
-            IntPtr tmpPtr = Marshal.AllocHGlobal(packet_size);
-            Marshal.Copy(data, 0, tmpPtr, packet_size);
-            T retValue = Marshal.PtrToStructure(tmpPtr, typeof(T)) as T;
-            Marshal.FreeHGlobal(tmpPtr);
-
-            return retValue;
-        }
-        */
+       */
+        #endregion
 
     }
 }

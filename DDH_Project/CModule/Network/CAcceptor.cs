@@ -194,8 +194,7 @@ namespace CModule.Network
                     // SEND TEST PACKET 
                     var notify_msg = new Protocol.msg_test.hanlder_notify_test_packet_game2user();
                     notify_msg.cur_datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                    notify_msg.BuildPacketClassProtoBuf(ref notify_msg, (int)Protocol.PacketId.notify_test_packet);
-                    lUserToken.mTcpSocket.AsyncSend(notify_msg);
+                    lUserToken.mTcpSocket.AsyncSend<Protocol.msg_test.hanlder_notify_test_packet_game2user>(notify_msg.msg_id, notify_msg);            
                 }
                 else
                 {
