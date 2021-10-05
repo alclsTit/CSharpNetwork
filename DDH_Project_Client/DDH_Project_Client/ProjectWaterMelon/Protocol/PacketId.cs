@@ -1,4 +1,6 @@
 ﻿using System;
+// --- custom --- //
+// -------------- //
 
 namespace ProjectWaterMelon.Protocol
 {
@@ -9,11 +11,12 @@ namespace ProjectWaterMelon.Protocol
     {
         //TEST_PACKET
         _TEST_PACKET_BEGIN = 0,
-        req_test_packet = 1,
-        ack_test_packet = 2,
-        notify_test_packet = 3,
-        req_network_sessionid = 4,
-        ack_network_sessionid = 5,
+        notify_nohandled_packet = 1,
+        req_test_packet = 2,
+        ack_test_packet = 3,
+        notify_test_packet = 4,
+        req_network_sessionid = 5,
+        ack_network_sessionid = 6,
         _TEST_PACKET_END = 10
         //
     }

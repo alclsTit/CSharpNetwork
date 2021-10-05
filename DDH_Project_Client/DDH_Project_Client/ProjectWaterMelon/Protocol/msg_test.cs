@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
-using ProjectWaterMelon.Network;
+// --- custom --- //
 using ProtoBuf;
+using ProjectWaterMelon.Network.Packet;
+// -------------- //
 
 namespace ProjectWaterMelon.Protocol
 {
@@ -27,14 +29,14 @@ namespace ProjectWaterMelon.Protocol
          */
 
         [StructLayout(LayoutKind.Sequential)]
-        public class handler_req_test_packet_user2game
+        public class req_test_packet_user2game
         {
             public readonly PacketId msg_id = PacketId.req_test_packet;
             public long session_id;
             public string req_logdate;
         }
 
-        public class handler_ack_test_packet_user2game
+        public class ack_test_packet_user2game
         {
             public readonly PacketId msg_id = PacketId.ack_test_packet;
             public long session_id;
@@ -42,7 +44,7 @@ namespace ProjectWaterMelon.Protocol
         }
 
         [ProtoContract]
-        public class hanlder_notify_test_packet_game2user
+        public class notify_test_packet_game2user
         {
             [ProtoMember(1)]
             public readonly PacketId msg_id = PacketId.notify_test_packet;
@@ -51,7 +53,7 @@ namespace ProjectWaterMelon.Protocol
         }
 
         [ProtoContract]
-        public class handler_req_network_sessionid_user2game : CPacket
+        public class req_network_sessionid_user2game
         {
             [ProtoMember(1)]
             public readonly PacketId msg_id = PacketId.req_network_sessionid;
@@ -61,12 +63,15 @@ namespace ProjectWaterMelon.Protocol
             public string cur_datetime { get; set; }
         }
 
-        [Serializable]
-        public class handler_ack_network_sessionid_user2game : CPacket
+        [ProtoContract]
+        public class ack_network_sessionid_user2game
         {
+            [ProtoMember(1)]
             public readonly PacketId msg_id = PacketId.ack_network_sessionid;
-            public long session_id;
-            public string cur_datetime;
+            [ProtoMember(2)]
+            public long session_id { get; set; }
+            [ProtoMember(3)]
+            public string cur_datetime { get; set; }
         }
     }
 }

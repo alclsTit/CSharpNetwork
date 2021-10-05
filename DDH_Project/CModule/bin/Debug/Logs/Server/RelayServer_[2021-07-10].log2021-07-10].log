@@ -1,6 +1,0 @@
-2021-07-10 06:28:27 [1] [ERROR] - Exception in CListener.Start!!! - 각 소켓 주소(프로토콜/네트워크 주소/포트)는 하나만 사용할 수 있습니다,   위치: System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
-   위치: System.Net.Sockets.Socket.Bind(EndPoint localEP)
-   위치: CModule.Network.CListener.Start(String host, UInt16 port, Int32 backlog) 파일 D:\visual studio 2019\C#\Server\DDH_Project\CModule\Network\CListener.cs:줄 56, host = 127.0.0.1, port = 8800 
-2021-07-10 06:28:44 [1] [ERROR] - Exception in CListener.Start!!! - 각 소켓 주소(프로토콜/네트워크 주소/포트)는 하나만 사용할 수 있습니다,   위치: System.Net.Sockets.Socket.DoBind(EndPoint endPointSnapshot, SocketAddress socketAddress)
-   위치: System.Net.Sockets.Socket.Bind(EndPoint localEP)
-   위치: CModule.Network.CListener.Start(String host, UInt16 port, Int32 backlog) 파일 D:\visual studio 2019\C#\Server\DDH_Project\CModule\Network\CListener.cs:줄 56, host = 127.0.0.1, port = 8800 

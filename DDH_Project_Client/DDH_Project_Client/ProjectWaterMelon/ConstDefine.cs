@@ -22,10 +22,12 @@ namespace ConstModule
     {
         // (2,147,483,647 / 1000 * 2 * 1024) = 1048
         public static readonly int MAX_ACCEPT_OPT = 10;
-        public static readonly int MAX_CONNECTION = 10000;
+        public static readonly int MAX_CONNECTION = 1000;
         public const int MAX_PACKET_HEADER_SIZE = 4;
         public const int MAX_PACKET_TYPE_SIZE = 4;
         public const int MAX_BUFFER_SIZE = 1024;
+        public const int MAX_HEADER_BUFFER_SIZE = 1024;
+        public const uint MAX_SOCKET_RECONNECT_COUNT = 6;
 
         public static readonly string DateFormatYMDHMS = "yyyy-MM-dd hh:mm:ss";
         public static readonly string DateFormatYMD = "yyyy-MM-dd";

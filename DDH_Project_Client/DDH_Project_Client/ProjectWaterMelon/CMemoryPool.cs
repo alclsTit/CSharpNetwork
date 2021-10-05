@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using System.Net.Sockets;
 using System.Security.Permissions;
+// --- custom --- //
+using ProjectWaterMelon.Log;
+// -------------- //
 
 /*
 * 이론은 간단 

@@ -59,3 +59,19 @@
    위치: ProtoBuf.Serializer.Serialize[T](Stream destination, T instance, Object userState) 파일 /_/src/protobuf-net/Serializer.Serialize.cs:줄 33
    위치: ProtoBuf.Serializer.Serialize[T](Stream destination, T instance) 파일 /_/src/protobuf-net/Serializer.Serialize.cs:줄 20
    위치: ProjectWaterMelon.Network.CPacket.SerializeClassToByteArrayProtoBuf[T](T& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 240 
+2021-08-15 18:23:44 [5] [ERROR] - Exception in CPacket.DeSerializeByteArrayToClassProtoBuf(T) - Invalid wire-type (7); this usually means you have over-written a file without truncating or setting the length; see https://stackoverflow.com/q/2152978/23354,   위치: ProtoBuf.ProtoReader.State.ThrowProtoException(String message) 파일 /_/src/protobuf-net.Core/ProtoReader.State.ReadMethods.cs:줄 764
+   위치: ProtoBuf.ProtoReader.State.ThrowWireTypeException() 파일 /_/src/protobuf-net.Core/ProtoReader.State.ReadMethods.cs:줄 758
+   위치: ProtoBuf.ProtoReader.State.SkipField() 파일 /_/src/protobuf-net.Core/ProtoReader.State.ReadMethods.cs:줄 660
+   위치: proto_4(State& , hanlder_notify_test_packet_game2user )
+   위치: ProtoBuf.Internal.Serializers.SimpleCompiledSerializer`1.ProtoBuf.Serializers.ISerializer<T>.Read(State& state, T value) 파일 /_/src/protobuf-net/Internal/Serializers/CompiledSerializer.cs:줄 107
+   위치: ProtoBuf.ProtoReader.State.ReadAsRoot[T](T value, ISerializer`1 serializer) 파일 /_/src/protobuf-net.Core/ProtoReader.State.ReadMethods.cs:줄 1056
+   위치: ProtoBuf.ProtoReader.State.DeserializeRoot[T](T value, ISerializer`1 serializer) 파일 /_/src/protobuf-net.Core/ProtoReader.State.ReadMethods.cs:줄 1036
+   위치: ProtoBuf.ProtoReader.State.DeserializeRootImpl[T](T value) 파일 /_/src/protobuf-net.Core/ProtoReader.State.ReadMethods.cs:줄 1161
+   위치: ProtoBuf.Serializer.Deserialize[T](Stream source) 파일 /_/src/protobuf-net/Serializer.Deserialize.cs:줄 21
+   위치: ProjectWaterMelon.Network.CPacket.DeSerializeByteArrayToClassProtoBuf[T](Byte[]& data) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CPacket.cs:줄 264 
+2021-08-15 18:42:13 [5] [ERROR] - Exception in CMessageResolver.ProcessPacket - 오프셋 및 길이가 배열의 범위를 벗어났거나 카운트가 인덱스부터 소스 컬렉션 끝까지의 요소 수보다 큽니다.,   위치: System.Buffer.BlockCopy(Array src, Int32 srcOffset, Array dst, Int32 dstOffset, Int32 count)
+   위치: ProjectWaterMelon.Network.CMessageResolver.ProcessPacket(CPacket packet) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CMessageReceiver.cs:줄 116 
+2021-08-15 18:42:24 [5] [ERROR] - Exception in CMessageResolver.ProcessPacket - 오프셋 및 길이가 배열의 범위를 벗어났거나 카운트가 인덱스부터 소스 컬렉션 끝까지의 요소 수보다 큽니다.,   위치: System.Buffer.BlockCopy(Array src, Int32 srcOffset, Array dst, Int32 dstOffset, Int32 count)
+   위치: ProjectWaterMelon.Network.CMessageResolver.ProcessPacket(CPacket packet) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CMessageReceiver.cs:줄 116 
+2021-08-15 18:43:39 [5] [ERROR] - Exception in CMessageResolver.ProcessPacket - 오프셋 및 길이가 배열의 범위를 벗어났거나 카운트가 인덱스부터 소스 컬렉션 끝까지의 요소 수보다 큽니다.,   위치: System.Buffer.BlockCopy(Array src, Int32 srcOffset, Array dst, Int32 dstOffset, Int32 count)
+   위치: ProjectWaterMelon.Network.CMessageResolver.ProcessPacket(CPacket packet) 파일 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\Network\CMessageReceiver.cs:줄 116 

@@ -7,14 +7,10 @@ D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWat
 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\ProjectWaterMelon.exe
 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.exe
 D:\visual studio 2019\C#\Server\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.csprojAssemblyReference.cache
+D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.csproj.CoreCompileInputs.cache
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\ProjectWaterMelon.exe
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\ProjectWaterMelon.pdb
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\log4net.dll
-D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\log4net.xml
-D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.csproj.CoreCompileInputs.cache
-D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.csproj.CopyComplete
-D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.exe
-D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.pdb
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\protobuf-net.Core.dll
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\protobuf-net.dll
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\System.Buffers.dll
@@ -22,6 +18,7 @@ D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Cli
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\System.Memory.dll
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\System.Numerics.Vectors.dll
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
+D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\log4net.xml
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\protobuf-net.xml
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\protobuf-net.Core.xml
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\System.Buffers.xml
@@ -29,3 +26,7 @@ D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Cli
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\System.Memory.xml
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\System.Numerics.Vectors.xml
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
+D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.csproj.CopyComplete
+D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.exe
+D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.pdb
+D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.csprojAssemblyReference.cache
