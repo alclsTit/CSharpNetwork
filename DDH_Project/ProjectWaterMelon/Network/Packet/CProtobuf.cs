@@ -89,7 +89,8 @@ namespace ProjectWaterMelon.Network.Packet
             }
         }
 
-        public static T BinaryFtDeserialize(byte[] data) where
-        
+        //public static T BinaryFtDeserialize(byte[] data) where T : class
+        //{
+        //}      
     }
 }

@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using ProjectWaterMelon.Network.Packet;
 using ProjectWaterMelon.Network.CustomSocket;
 using ProjectWaterMelon.Log;
+using ProjectWaterMelon.Network.Session;
 using static ConstModule.ConstDefine;
 // -------------- //
 
@@ -23,42 +24,77 @@ namespace ProjectWaterMelon.Network.MessageWorker
         int mReadMsgPos;                                                                         // 패킷(바디) 데이터 읽은 크기
         int mHeaderReadMsgPos;                                                                   // 패킷(헤더) 데이터 읽은 크기        
         int mRemainBytes;                                                                        // 수신된 패킷에서 읽어야될 나머지 데이터 사이즈 
-        int mMessageSize;                                                                        // 패킷 메시지 사이즈 
-        Protocol.PacketId mMessageType;                                                                       // 패킷 메시지 타입
-
+        int mMessageSize;                                                                        // 패킷 메시지(바디) 사이즈 
+  
+        byte[] mHeaderSizeBuffer;                                                                // 패킷 헤더 사이즈만 담아두는 버퍼
+        byte[] mHeaderBuffer;                                                                    // 패킷 헤더 데이터 보관 버퍼
         byte[] mMessageBuffer;                                                                   // 메시지를 담아둘 수 있는 버퍼(버퍼 매니저의 Chunk)
 
-        CPacketHeader mNullPacketHeader = new CPacketHeader();                                   // CPacketHeader 크기를 구하기위한 아무일도 하지않는 패킷헤더 클래스
-        byte[] mHeaderBuffer;                                                                    // 패킷 헤더 데이터 보관 버퍼
+        public CMessageResolver() { }
 
-        private bool CreatePacketHeader()
+        private void CreatePacketHeader()
         {
-            if (mHeaderBuffer == null)
-                return false;
-
-            var lPacketHeader = CProtobuf.ProtobufDeserialize<CPacketHeader>(mHeaderBuffer);
-            mMessageSize = lPacketHeader.mTotalSize;
-            mMessageType = lPacketHeader.mMessageId;
-
-            return true;
+            var lPacketHeaderInfo = CProtobuf.ProtobufDeserialize<CPacketHeader>(mHeaderBuffer);
+            mMessageSize = lPacketHeaderInfo.mTotalSize - (MAX_PACKET_HEADER_SIZE + lPacketHeaderInfo.mHeaderSize);
+            mMessageBuffer = new byte[mMessageSize];
         }
 
+        // 수신된 패킷 읽을 때 최초 진입, 헤더 사이즈를 얻는다
+        public bool OnReadHeaderSize(in byte[] Buffer, ref int Offset, int BytesTransferred)
+        {
+            if (mRemainBytes < 0)
+                return false;
+
+            if (mHeaderSizeBuffer == null && mHeaderReadMsgPos == 0)
+                mHeaderSizeBuffer = new byte[MAX_PACKET_HEADER_SIZE];
+
+            var lPosToRead = mHeaderReadMsgPos + BytesTransferred;
+            lPosToRead = lPosToRead > MAX_PACKET_HEADER_SIZE ? MAX_PACKET_HEADER_SIZE - mHeaderReadMsgPos : BytesTransferred;
+
+            System.Buffer.BlockCopy(Buffer, mHeaderReadMsgPos, mHeaderSizeBuffer, mHeaderReadMsgPos, lPosToRead);
+
+            if (lPosToRead >= MAX_PACKET_HEADER_SIZE)
+            {
+                mHeaderReadMsgPos += lPosToRead;
+                Offset += lPosToRead;
+                mRemainBytes -= lPosToRead;
+            }
+            else
+            {
+                mHeaderReadMsgPos += BytesTransferred;
+                Offset += BytesTransferred;
+                mRemainBytes -= BytesTransferred;
+            }
+
+            return true;
+
+        }
+
+        // 수신된 패킷 읽을 때 최초로 진입하는 부분
         public bool OnReadUntilHeader(byte[] Buffer, ref int Offset)
         {
             if (mRemainBytes < 0)
                 return false;
 
-            var PosToRead = Marshal.SizeOf(mNullPacketHeader);
-            if (PosToRead > mRemainBytes)
-                mRemainBytes = PosToRead;
+            var lPosToRead = BitConverter.ToInt32(mHeaderSizeBuffer, 0) + MAX_PACKET_HEADER_SIZE - mHeaderReadMsgPos;
+            if (lPosToRead > mRemainBytes)
+                lPosToRead = mRemainBytes;
 
-            mHeaderBuffer = new byte[PosToRead];
+            if (lPosToRead == 0) return true;
 
-            System.Buffer.BlockCopy(Buffer, Offset, mHeaderBuffer, mHeaderReadMsgPos, PosToRead);
+            if (mHeaderBuffer == null)
+            {
+                mHeaderBuffer = new byte[BitConverter.ToInt32(mHeaderSizeBuffer, 0)];
+                System.Buffer.BlockCopy(Buffer, mHeaderReadMsgPos, mHeaderBuffer, 0, lPosToRead);
+            }
+            else
+            {
+                System.Buffer.BlockCopy(Buffer, mHeaderReadMsgPos, mHeaderBuffer, mHeaderReadMsgPos - MAX_PACKET_HEADER_SIZE, lPosToRead);
+            }
 
-            mHeaderReadMsgPos += PosToRead;
-            Offset += PosToRead;
-            mRemainBytes -= PosToRead;
+            mHeaderReadMsgPos += lPosToRead;
+            Offset += lPosToRead;
+            mRemainBytes -= lPosToRead;
 
             return true;
         }
@@ -84,53 +120,46 @@ namespace ProjectWaterMelon.Network.MessageWorker
             return true;
         }
 
-        public void OnReceive(in CTcpSocket TcpSocket, byte[] Buffer, int Offset, int ByteTransferred)
+        public void OnReceive(CSession Session, byte[] Buffer, int Offset, int ByteTransferred)
         {
             try
             {
                 // 클라에서 서버로 수신된 패킷 사이즈 (처리해야할 패킷 메시지 양)
                 // 총 패킷 사이즈 = 100(mMessageSize), 수신된 데이터 크긱 = 80
-                mRemainBytes = ByteTransferred;
+                if (mRemainBytes == 0)
+                    mRemainBytes = ByteTransferred;
+                else
+                    mRemainBytes += ByteTransferred;
 
                 while (mRemainBytes > 0)
                 {
                     var lCompleted = false;
 
                     // 읽은 패킷의 헤더(패킷 사이즈, 패킷 타입 포함)를 읽지 못한경우 이를 읽는다, 헤더를 먼저 읽어 패킷 사이즈 확인
-                    if (mReadMsgPos == 0 && mHeaderReadMsgPos == 0)
+                    if (mRemainBytes < MAX_PACKET_HEADER_SIZE)
                     {
-                        //Offset: 현재 수신버퍼에서 읽은 패킷 읽은 패킷 첫 위치                  
+                        lCompleted = OnReadHeaderSize(Buffer, ref Offset, ByteTransferred);
+                        if (!lCompleted)
+                            return;
+                    }
+                    else
+                    {
+                        if (mHeaderReadMsgPos < MAX_PACKET_HEADER_SIZE)
+                        {
+                            lCompleted = OnReadHeaderSize(Buffer, ref Offset, ByteTransferred);
+                            if (!lCompleted)
+                                return;
+                        }
+
                         lCompleted = OnReadUntilHeader(Buffer, ref Offset);
                         if (!lCompleted)
                             return;
 
-                        //mMessageSize: 헤더에 저장된 전체 패킷 사이즈
-                        /*mMessageSize = GetMessageBodySize();
-                        if (mMessageSize <= 0)
-                            return;
-                        else
-                            mMessageBuffer = new byte[mMessageSize];
-                        */
-
-                        if (CreatePacketHeader())
+                        if (mHeaderReadMsgPos == MAX_PACKET_HEADER_SIZE + mHeaderBuffer.Length)
                         {
-                            //mMessageSize: 헤더에 저장된 전체 패킷 사이즈
-                            mMessageBuffer = new byte[mMessageSize];
+                            CreatePacketHeader();
                         }
                     }
-
-                    // 패킷 타입 읽기
-                    /*if (mHeaderReadMsgPos >= MAX_PACKET_HEADER_SIZE && mHeaderReadMsgPos < MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE)
-                    {
-                        lCompleted = OnReadUntilHeader(Buffer, ref Offset);
-                        if (!lCompleted)
-                            return;
-
-                        mMessageType = GetMessageType();
-                        if (mMessageType <= 0)
-                            return;
-                    }
-                    */
 
                     // 패킷 데이터를 읽는다
                     lCompleted = OnReadUntilBody(Buffer, ref Offset, mMessageSize);
@@ -143,7 +172,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
                     CLog4Net.LogDebugSysLog($"4.CMessageReceiver.OnReceive", $"OnRecive Call Success(total = {mMessageSize}, recv = {ByteTransferred})");
 
                     // 데이터를 모두 받았으면 이를 이용해서 패킷으로 만든다
-                    CPacket packet = new CPacket(TcpSocket, mMessageBuffer, mMessageType);
+                    CPacket packet = new CPacket(Session.mTcpSocket, mHeaderBuffer, mMessageBuffer);
                     CMessageProcessorManager.HandleProcess(packet.GetMessageId(), packet);
                     ClearBuffer();
                 }
@@ -210,12 +239,12 @@ namespace ProjectWaterMelon.Network.MessageWorker
 
         public void ClearBuffer()
         {
+            Array.Clear(mHeaderSizeBuffer, 0, mHeaderSizeBuffer.Length);
             Array.Clear(mMessageBuffer, 0, mMessageBuffer.Length);
             mRemainBytes = 0;
             mReadMsgPos = 0;
             mHeaderReadMsgPos = 0;
             mMessageSize = 0;
-            mMessageType = 0;
         }
     }
 }

@@ -11,6 +11,7 @@ using System.Runtime.InteropServices;
 using ProjectWaterMelon.Network.Packet;
 using ProjectWaterMelon.Network.CustomSocket;
 using ProjectWaterMelon.Log;
+using ProjectWaterMelon.Network.Session;
 using static ConstModule.ConstDefine;
 // -------------- //
 
@@ -24,8 +25,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
         int mHeaderReadMsgPos;                                                                   // 패킷(헤더) 데이터 읽은 크기        
         int mRemainBytes;                                                                        // 수신된 패킷에서 읽어야될 나머지 데이터 사이즈 
         int mMessageSize;                                                                        // 패킷 메시지 사이즈 
-        Protocol.PacketId mMessageType;                                                          // 패킷 메시지 타입
-
+  
         byte[] mHeaderSizeBuffer;                                                                // 패킷 헤더 사이즈만 담아두는 버퍼
         byte[] mHeaderBuffer;                                                                    // 패킷 헤더 데이터 보관 버퍼
         byte[] mMessageBuffer;                                                                   // 메시지를 담아둘 수 있는 버퍼(버퍼 매니저의 Chunk)
@@ -34,9 +34,9 @@ namespace ProjectWaterMelon.Network.MessageWorker
 
         private void CreatePacketHeader()
         {
-            var lPacketHeader = CProtobuf.ProtobufDeserialize<CPacketHeader>(mHeaderBuffer);
-            mMessageSize = lPacketHeader.mTotalSize;
-            mMessageType = lPacketHeader.mMessageId;
+            var lPacketHeaderInfo = CProtobuf.ProtobufDeserialize<CPacketHeader>(mHeaderBuffer);
+            mMessageSize = lPacketHeaderInfo.mTotalSize - (MAX_PACKET_HEADER_SIZE + lPacketHeaderInfo.mHeaderSize);
+            mMessageBuffer = new byte[mMessageSize];
         }
 
         // 수신된 패킷 읽을 때 최초 진입, 헤더 사이즈를 얻는다
@@ -44,6 +44,9 @@ namespace ProjectWaterMelon.Network.MessageWorker
         {
             if (mRemainBytes < 0) 
                 return false;
+
+            if (mHeaderSizeBuffer == null && mHeaderReadMsgPos == 0)
+                mHeaderSizeBuffer = new byte[MAX_PACKET_HEADER_SIZE];
 
             var lPosToRead = mHeaderReadMsgPos + BytesTransferred;
             lPosToRead = lPosToRead > MAX_PACKET_HEADER_SIZE ? MAX_PACKET_HEADER_SIZE - mHeaderReadMsgPos : BytesTransferred;
@@ -76,6 +79,8 @@ namespace ProjectWaterMelon.Network.MessageWorker
             var lPosToRead = BitConverter.ToInt32(mHeaderSizeBuffer, 0) + MAX_PACKET_HEADER_SIZE - mHeaderReadMsgPos;
             if (lPosToRead > mRemainBytes)
                 lPosToRead = mRemainBytes;
+
+            if (lPosToRead == 0) return true; 
 
             if (mHeaderBuffer == null)
             {
@@ -115,7 +120,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
             return true;
         }
 
-        public void OnReceive(in CTcpSocket TcpSocket, byte[] Buffer, int Offset, int ByteTransferred)
+        public void OnReceive(CSession Session, byte[] Buffer, int Offset, int ByteTransferred)
         {
             try
             {
@@ -152,49 +157,10 @@ namespace ProjectWaterMelon.Network.MessageWorker
 
                         if (mHeaderReadMsgPos == MAX_PACKET_HEADER_SIZE + mHeaderBuffer.Length)
                         {
-                            var lPacketInfo = CProtobuf.ProtobufDeserialize<CPacketHeader>(mHeaderBuffer);
-                            mMessageSize = mHeaderBuffer.Length;
-                            mMessageType = lPacketInfo.mMessageId;
-                           
+                            CreatePacketHeader();
 
                         }
                     }
-
-
-                    if (mReadMsgPos == 0 && mHeaderReadMsgPos == 0)
-                    {
-                        //Offset: 현재 수신버퍼에서 읽은 패킷 읽은 패킷 첫 위치                  
-                        //lCompleted = OnReadUntilHeader(Buffer, ref Offset);
-                        //if (!lCompleted)
-                        //    return;
-                            
-                        //mMessageSize: 헤더에 저장된 전체 패킷 사이즈
-                        /*mMessageSize = GetMessageBodySize();
-                        if (mMessageSize <= 0)
-                            return;
-                        else
-                            mMessageBuffer = new byte[mMessageSize];
-                        */
-
-                        //if (CreatePacketHeader())
-                        //{
-                            //mMessageSize: 헤더에 저장된 전체 패킷 사이즈
-                           // mMessageBuffer = new byte[mMessageSize];
-                        //}
-                    }
-
-                    // 패킷 타입 읽기
-                    /*if (mHeaderReadMsgPos >= MAX_PACKET_HEADER_SIZE && mHeaderReadMsgPos < MAX_PACKET_HEADER_SIZE + MAX_PACKET_TYPE_SIZE)
-                    {
-                        lCompleted = OnReadUntilHeader(Buffer, ref Offset);
-                        if (!lCompleted)
-                            return;
-
-                        mMessageType = GetMessageType();
-                        if (mMessageType <= 0)
-                            return;
-                    }
-                    */
 
                     // 패킷 데이터를 읽는다
                     lCompleted = OnReadUntilBody(Buffer, ref Offset, mMessageSize);
@@ -207,7 +173,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
                     CLog4Net.LogDebugSysLog($"4.CMessageReceiver.OnReceive", $"OnRecive Call Success(total = {mMessageSize}, recv = {ByteTransferred})");
 
                     // 데이터를 모두 받았으면 이를 이용해서 패킷으로 만든다
-                    CPacket packet = new CPacket(TcpSocket, mMessageBuffer, mMessageType);
+                    CPacket packet = new CPacket(Session.mTcpSocket, mHeaderBuffer, mMessageBuffer);
                     CMessageProcessorManager.HandleProcess(packet.GetMessageId(), packet);
                     ClearBuffer();
                 }
@@ -274,12 +240,13 @@ namespace ProjectWaterMelon.Network.MessageWorker
 
         public void ClearBuffer()
         {
+            Array.Clear(mHeaderSizeBuffer, 0, mHeaderSizeBuffer.Length);
+            Array.Clear(mHeaderBuffer, 0, mHeaderBuffer.Length);
             Array.Clear(mMessageBuffer, 0, mMessageBuffer.Length);
             mRemainBytes = 0;
             mReadMsgPos = 0;
             mHeaderReadMsgPos = 0;
             mMessageSize = 0;
-            mMessageType = 0;
         }
     }
 }

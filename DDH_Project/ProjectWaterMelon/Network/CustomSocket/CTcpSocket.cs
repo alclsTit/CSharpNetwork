@@ -26,6 +26,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         // 메시지 Send 처리
         private int mAlreadySendBytes;
         private int mHaveToSendBytes;
+        public int mTotalSendBytes { get; private set; }  
 
         public System.Net.IPEndPoint mRemoteEP { get; set;}
 
@@ -117,13 +118,6 @@ namespace ProjectWaterMelon.Network.CustomSocket
             StartSend(packet); 
         }
 
-        public void AsyncSend(Protocol.PacketId messageId, IMessageBase handler)
-        {
-            CPacket packet = new CPacket();
-
-
-        }
-
         public void StartSend(in CPacket packet)
         {
             try
@@ -131,18 +125,20 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 if (mAlreadySendBytes == 0)
                 {
                     // 해당 패킷을 처음 보내는 경우
-                    mHaveToSendBytes = packet.GetTotalBufferSize();
+                    mHaveToSendBytes = packet.GetTotalSize();
+                    mTotalSendBytes = packet.GetTotalSize();
+
                     // 송신 버퍼 세팅
                     mSendArgs.SetBuffer(new byte[mHaveToSendBytes], 0, mHaveToSendBytes);
                     // 패킷 버퍼에 담긴 내용을 비동기 소켓 전달 객체인 SocketAsyncEventArgs 버퍼(송신버퍼)에 담는다
-                    Buffer.BlockCopy(BitConverter.GetBytes(packet.GetHeaderBufferSize()), 0, mSendArgs.Buffer, mSendArgs.Offset, MAX_PACKET_HEADER_SIZE);
-                    Buffer.BlockCopy(packet.mMsgHeaderBuffer, 0, mSendArgs.Buffer, MAX_PACKET_HEADER_SIZE, packet.GetHeaderBufferSize());
-                    Buffer.BlockCopy(packet.mMsgBuffer, 0, mSendArgs.Buffer, MAX_PACKET_HEADER_SIZE + packet.GetHeaderBufferSize(), packet.GetBodyBufferSize());
+                    Buffer.BlockCopy(BitConverter.GetBytes(packet.GetHeaderSize()), 0, mSendArgs.Buffer, mSendArgs.Offset, MAX_PACKET_HEADER_SIZE);
+                    Buffer.BlockCopy(packet.mMsgHeaderBuffer, 0, mSendArgs.Buffer, MAX_PACKET_HEADER_SIZE, packet.GetHeaderSize());
+                    Buffer.BlockCopy(packet.mMsgBuffer, 0, mSendArgs.Buffer, MAX_PACKET_HEADER_SIZE + packet.GetHeaderSize(), packet.GetBodySize());
                 }
                 else
                 {
                     // 해당 패킷을 한번에 보내지 못한 경우
-                    mHaveToSendBytes = packet.GetTotalBufferSize() - mAlreadySendBytes;
+                    mHaveToSendBytes = packet.GetTotalSize() - mAlreadySendBytes;
 
                     // 송신버퍼 세팅
                     mSendArgs.SetBuffer(mAlreadySendBytes, mHaveToSendBytes);
@@ -150,21 +146,21 @@ namespace ProjectWaterMelon.Network.CustomSocket
                     {
                         // 1. 헤더 사이즈를 담은 데이터 조차 보내지 못한 경우, 송신버퍼에 헤더사이즈 + 헤더 + 바디 패킷데이터를 담는다
                         var lLeftOnlyHeaderSize = MAX_PACKET_HEADER_SIZE - mAlreadySendBytes;
-                        Buffer.BlockCopy(BitConverter.GetBytes(packet.GetHeaderBufferSize()), mAlreadySendBytes, mSendArgs.Buffer, mSendArgs.Offset, lLeftOnlyHeaderSize);
-                        Buffer.BlockCopy(packet.mMsgHeaderBuffer, 0, mSendArgs.Buffer, mAlreadySendBytes + lLeftOnlyHeaderSize, packet.GetHeaderBufferSize());
-                        Buffer.BlockCopy(packet.mMsgBuffer, 0, mSendArgs.Buffer, mAlreadySendBytes + lLeftOnlyHeaderSize + packet.GetHeaderBufferSize(), packet.GetBodyBufferSize());
+                        Buffer.BlockCopy(BitConverter.GetBytes(packet.GetHeaderSize()), mAlreadySendBytes, mSendArgs.Buffer, mSendArgs.Offset, lLeftOnlyHeaderSize);
+                        Buffer.BlockCopy(packet.mMsgHeaderBuffer, 0, mSendArgs.Buffer, mAlreadySendBytes + lLeftOnlyHeaderSize, packet.GetHeaderSize());
+                        Buffer.BlockCopy(packet.mMsgBuffer, 0, mSendArgs.Buffer, mAlreadySendBytes + lLeftOnlyHeaderSize + packet.GetHeaderSize(), packet.GetBodySize());
                     }
-                    else if (mAlreadySendBytes >= MAX_PACKET_HEADER_SIZE && mAlreadySendBytes < packet.GetHeaderBufferSize())
+                    else if (mAlreadySendBytes >= MAX_PACKET_HEADER_SIZE && mAlreadySendBytes < packet.GetHeaderSize())
                     {
                         // 2. 헤더 패킷의 데이터를 모두 보내지 못한 경우, 송신버퍼에 남은 헤더 및 바디 패킷데이터를 담는다
-                        var lLeftHeaderClassSendBytes = MAX_PACKET_HEADER_SIZE + packet.GetHeaderBufferSize() - mAlreadySendBytes;
+                        var lLeftHeaderClassSendBytes = MAX_PACKET_HEADER_SIZE + packet.GetHeaderSize() - mAlreadySendBytes;
                         Buffer.BlockCopy(packet.mMsgHeaderBuffer, mAlreadySendBytes - MAX_PACKET_HEADER_SIZE, mSendArgs.Buffer, mSendArgs.Offset, lLeftHeaderClassSendBytes);
-                        Buffer.BlockCopy(packet.mMsgBuffer, 0, mSendArgs.Buffer, MAX_PACKET_HEADER_SIZE + lLeftHeaderClassSendBytes, packet.GetBodyBufferSize());
+                        Buffer.BlockCopy(packet.mMsgBuffer, 0, mSendArgs.Buffer, MAX_PACKET_HEADER_SIZE + lLeftHeaderClassSendBytes, packet.GetBodySize());
                     }
                     else
                     {
                         // 3. 헤더 패킷의 데이터를 모두 보낸 경우, 송신버퍼에 남은 바디 패킷 데이터를 담는다
-                        Buffer.BlockCopy(packet.mMsgBuffer, packet.GetBodyBufferSize() - mHaveToSendBytes, mSendArgs.Buffer, mSendArgs.Offset, mHaveToSendBytes);
+                        Buffer.BlockCopy(packet.mMsgBuffer, packet.GetBodySize() - mHaveToSendBytes, mSendArgs.Buffer, mSendArgs.Offset, mHaveToSendBytes);
                     }
                 }
 
@@ -248,7 +244,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
             {              
                 if (e.BytesTransferred > 0)
                 {
-                    mMessageReceiver.OnReceive(this, e.Buffer, e.Offset, e.BytesTransferred);
+                    mMessageReceiver.OnReceive((CSession)e.UserToken, e.Buffer, e.Offset, e.BytesTransferred);
                     var lPending = mRawSocket.ReceiveAsync(e);
                     if (!lPending)
                     {

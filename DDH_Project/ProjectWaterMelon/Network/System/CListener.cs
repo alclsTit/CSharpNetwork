@@ -66,7 +66,7 @@ namespace ProjectWaterMelon.Network.Sytem
                 m_Acceptor = new CAcceptor(mListenSocket, lEndPoint);
                 Thread lAsyncThread = new Thread(m_Acceptor.Start);
                 lAsyncThread.Start();
-
+                
             }
             catch(Exception ex)
             {

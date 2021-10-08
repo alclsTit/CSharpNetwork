@@ -22,7 +22,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         public short mSocketState { get; private set; }
         private int mHeartBeatGauge;
         private bool mHeartBeatOnOff, mReconnectOnOff;
-   
+
         private System.Timers.Timer m_heartbeat_timer = new System.Timers.Timer();
         private System.Timers.Timer m_check_connection_timer = new System.Timers.Timer();
         private System.Timers.Timer mReconnectTimer = new System.Timers.Timer();
@@ -35,15 +35,15 @@ namespace ProjectWaterMelon.Network.CustomSocket
             Dispose(true);
         }
 
-        public void SetEventArgs(in SocketAsyncEventArgs recvArgs,in SocketAsyncEventArgs sendArgs)
+        public void SetEventArgs(SocketAsyncEventArgs recvArgs, SocketAsyncEventArgs sendArgs)
         {
             mRecvArgs = recvArgs;
             mSendArgs = sendArgs;
         }
 
-        public void SetSendRecvArgs(eSocketType type ,SocketAsyncEventArgs args)
+        public void SetSendRecvArgs(eSocketType type, SocketAsyncEventArgs args)
         {
-            switch(type)
+            switch (type)
             {
                 case eSocketType.RECV:
                     mRecvArgs = args;
@@ -112,13 +112,13 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
         public void OnHeartBeatTimerHandler(object sender, System.Timers.ElapsedEventArgs e)
         {
-            if (!mIsConnected)
+            if (mIsConnected)
             {
                 OnCancelHeartBeatTimer();
                 // [주석] CSocketBase 로그 추가 - Socket Disconnect
                 return;
             }
-            
+
             if (mHeartBeatGauge <= 0)
             {
                 // [주석] CSocketBase 로그 추가 - Socket Disconnect // 하트비트 기준 (20초 * 8연속) 초과
@@ -142,10 +142,19 @@ namespace ProjectWaterMelon.Network.CustomSocket
             else
             {
                 // DOTO: Reconnect 기능 구현 (소켓 재접속)
+                if (mReconnectCount >= 0)
+                {
+                    mReconnectCount -= 1;
+                }
+                else
+                {
+                    OnCancelReconnectTimer();
+                    Disconnect();
+                }
 
             }
         }
- 
+
         /*
         public void OnCheckConnectionTimerHandler(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -155,7 +164,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
         public void OnCreateHeartBeatTimer()
         {
-            if (!mIsConnected)
+            if (mIsConnected == false)
             {
                 // [주석] CSocketBase 로그 추가 - Socket Disconnect
                 return;
@@ -239,10 +248,10 @@ namespace ProjectWaterMelon.Network.CustomSocket
             if (oldState == (short)eSocketState.CONNECTED && curState != (short)eSocketState.CONNECTED)
             {
                 //하트비트 캔슬
-                
+
             }
         }
-        
+
         public virtual void Disconnect()
         {
             if (!mIsConnected)

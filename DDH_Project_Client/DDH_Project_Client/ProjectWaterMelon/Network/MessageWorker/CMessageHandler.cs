@@ -10,7 +10,7 @@ using ProjectWaterMelon.Network.CustomSocket;
 
 namespace ProjectWaterMelon.Network.MessageWorker
 {
-    public class CMessageHandler
+    public class CMessageHandler : IMessageBase
     {
         public Protocol.PacketId mMessageId { get; private set; }
         public CTcpSocket mSocket { get; private set; }

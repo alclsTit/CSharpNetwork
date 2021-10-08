@@ -12,6 +12,8 @@ namespace ProjectWaterMelon.Network.MessageWorker
 {
     public class CMessageProcessor<T> where T : new()
     {
+        public CMessageProcessor() { }
+
         public Protocol.PacketId MessageId()
         {
             var handler = (IMessageBase)new T();

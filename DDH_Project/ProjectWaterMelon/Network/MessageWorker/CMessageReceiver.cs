@@ -10,10 +10,11 @@ using static ProjectWaterMelon.Network.MessageWorker.CMessageProcessorManager;
 
 namespace ProjectWaterMelon.Network.MessageWorker
 {
-    public class CMessageReceiver
+    public static class CMessageReceiver
     {
-        public CMessageReceiver() 
+        public static void Init()
         {
+            RegisterMessageHandler<handler_notify_test_packet_game2user>();
             RegisterMessageHandler<handler_req_network_session_game2user>();
         }
     }

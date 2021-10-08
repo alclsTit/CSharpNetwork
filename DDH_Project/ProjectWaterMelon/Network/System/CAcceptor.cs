@@ -197,7 +197,7 @@ namespace ProjectWaterMelon.Network.Sytem
 
                     // SEND TEST PACKET 
                     var notify_msg = new Protocol.msg_test.notify_test_packet_game2user();
-                    notify_msg.cur_datetime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                    notify_msg.cur_datetime = "2021-10-08 22:00:00";
                     lUserToken.mTcpSocket.AsyncSend<Protocol.msg_test.notify_test_packet_game2user>(notify_msg.msg_id, notify_msg);            
                 }
                 else

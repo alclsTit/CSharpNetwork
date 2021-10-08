@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading;
 // --- custom --- //
-using ProjectWaterMelon.Network.Sytem;  
+using ProjectWaterMelon.Network.Sytem;
+using ProjectWaterMelon.Network.MessageWorker;
 // -------------- //
 
 namespace ProjectWaterMelon
@@ -10,6 +11,9 @@ namespace ProjectWaterMelon
     {
         public static void Main()
         {
+            // register MessageHandler
+            CMessageReceiver.Init();
+
             CConnector lConnector = new CConnector();
             lConnector.Init(8800);
 

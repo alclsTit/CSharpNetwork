@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 // --- custom --- //
 using ProjectWaterMelon.Network.Sytem;
+using ProjectWaterMelon.Network.MessageWorker;
 using ProjectWaterMelon.Log;
 // -------------- //
 
@@ -16,6 +17,9 @@ namespace ProjectWaterMelon
         {
             try
             {
+                // register MessageHandler
+                CMessageReceiver.Init();
+
                 CListener lListener = new CListener();
                 lListener.Start(8800);
             }

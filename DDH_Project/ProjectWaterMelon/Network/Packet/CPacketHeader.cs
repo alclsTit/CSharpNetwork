@@ -26,19 +26,37 @@ namespace ProjectWaterMelon.Network.Packet
         [ProtoMember(4)]
         public long mProcessTickCount { get; private set; }
 
-        public CPacketHeader(Protocol.PacketId msgid = Protocol.PacketId.notify_nohandled_packet)
+        public CPacketHeader() { }
+
+        // 패킷 수신받았을 때 디시리얼라이징된 대상으로 세팅되는 패킷생성자
+        public CPacketHeader(Protocol.PacketId msgid, int headersize, int totalsize, long processTickCnt)
         {
             mMessageId = msgid;
-            mHeaderSize = Marshal.SizeOf(this);
-            mTotalSize = mHeaderSize + MAX_BUFFER_SIZE;
+            mHeaderSize = headersize;
+            mTotalSize = totalsize;
+            mProcessTickCount = processTickCnt;
         }
 
-        //패킷 송신시 사용하는 생성자
-        public CPacketHeader(in byte[] msgbuffer, bool setTick, Protocol.PacketId msgid = Protocol.PacketId.notify_nohandled_packet)
+        // 더미 생성자 
+        public CPacketHeader(int LenOfMsgBuff, bool setTick, bool dummyFlag, Protocol.PacketId msgid = Protocol.PacketId.notify_nohandled_packet)
         {
             mMessageId = msgid;
             mHeaderSize = Marshal.SizeOf(this);
-            mTotalSize = mHeaderSize + msgbuffer.Length;
+            mTotalSize = MAX_PACKET_HEADER_SIZE + mHeaderSize + LenOfMsgBuff;
+
+            if (setTick) SetProcessTickCount();
+            if (!dummyFlag) Init(LenOfMsgBuff, setTick, msgid);
+        }
+
+        // HeaderSize 때문에 CPacketHeader 클래스를 한번 생성자초기화 시킨다음에 이를 시리얼라이징해서 실제사용할 헤더사이즈를 가져온다.
+        // 메시지 버퍼 사이즈와 헤더사이즈를 더해서 실제 사용할 버퍼에 담길 패킷사이즈를 저장한다.
+        // 외부에서 CPacketHeader 생성자 호출로 더미세팅 이후 Init을 호출하여야 한다.
+        public void Init(int LenOfMsgBuff, bool setTick, Protocol.PacketId msgid = Protocol.PacketId.notify_nohandled_packet)
+        {
+            var lPacketHeader = new CPacketHeader(LenOfMsgBuff, setTick, true, msgid);
+            mMessageId = msgid;
+            mHeaderSize = CProtobuf.ProtobufSerialize<CPacketHeader>(lPacketHeader).Length;
+            mTotalSize = MAX_PACKET_HEADER_SIZE + mHeaderSize + LenOfMsgBuff;
 
             if (setTick) SetProcessTickCount();
         }

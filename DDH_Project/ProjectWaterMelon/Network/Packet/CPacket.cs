@@ -32,18 +32,27 @@ namespace ProjectWaterMelon.Network.Packet
         public CTcpSocket mTcpSocket { get; private set; }
         public CPacketHeader mPacketHeader { get; private set; }
 
-        public CPacket(int packet_size = ConstDefine.MAX_BUFFER_SIZE)
+        public CPacket()
         {
-            mMsgBuffer = new byte[packet_size];
-            mPacketHeader = new CPacketHeader(mMsgBuffer, false);
+            //mMsgBuffer = new byte[ConstDefine.MAX_BUFFER_SIZE];
+            //mPacketHeader = new CPacketHeader(mMsgBuffer.Length, false);
+        }
+
+        // 패킷 수신받았을 때 디시리얼라이징된 대상으로 세팅되는 패킷생성자
+        public CPacket(in CTcpSocket _TcpSocket, in byte[] _HeaderBuffer, in byte[] _BodyBuffer)
+        {
+            mTcpSocket = _TcpSocket;
+            mMsgHeaderBuffer = _HeaderBuffer;
+            mMsgBuffer = _BodyBuffer;
+            mPacketHeader = CProtobuf.ProtobufDeserialize<CPacketHeader>(_HeaderBuffer);
         }
 
         // 패킷 송,수신 시 호출되는 CPacket 생성자 
-        public CPacket(in CTcpSocket _TcpSocket, in byte[] _MsgBuffer, Protocol.PacketId type)
+        public CPacket(in CTcpSocket _TcpSocket, in byte[] _MsgBuffer, Protocol.PacketId msgid)
         {
             mTcpSocket = _TcpSocket;
             mMsgBuffer = _MsgBuffer;
-            mPacketHeader = new CPacketHeader(_MsgBuffer, true, type);
+            mPacketHeader = new CPacketHeader(_MsgBuffer.Length, true, false, msgid);
             mMsgHeaderBuffer = CProtobuf.ProtobufSerialize<CPacketHeader>(mPacketHeader);    
         }
 
@@ -93,32 +102,22 @@ namespace ProjectWaterMelon.Network.Packet
             return mPacketHeader.mMessageId;
         }
 
+        // 패킷 헤더 버퍼사이즈
         public int GetHeaderSize()
         {
             return mPacketHeader.mHeaderSize;
         }
 
-        public int GetTotalSize()
-        {
-            return mPacketHeader.mTotalSize;
-        }
-
         // 패킷 바디 버퍼사이즈
-        public int GetBodyBufferSize()
+        public int GetBodySize()
         {
             return mMsgBuffer.Length;
         }
 
-        // 패킷 헤더 버퍼사이즈
-        public int GetHeaderBufferSize()
+        // 패킷 헤더사이즈 + 패킷 헤더 + 바디 버퍼사이즈 
+        public int GetTotalSize()
         {
-            return mMsgHeaderBuffer.Length;
-        }
-
-        // 패킷 헤더사이즈 + 패킷 헤더 +바디 버퍼사이즈 
-        public int GetTotalBufferSize()
-        {
-            return MAX_PACKET_HEADER_SIZE + mMsgHeaderBuffer.Length + mMsgBuffer.Length ;
+            return mPacketHeader.mTotalSize;
         }
 
         // 사용한 패킷 반환
