@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 //LogFolder 네이밍
-namespace ConstModule
+namespace ProjectWaterMelon
 {   
     public static class ConstLogsFolder
     {
@@ -28,6 +28,7 @@ namespace ConstModule
         public const int MAX_BUFFER_SIZE = 1024;
         public const int MAX_HEADER_BUFFER_SIZE = 1024;
         public const uint MAX_SOCKET_RECONNECT_COUNT = 6;
+        public const double MAX_PACKET_DELAY_TIME = 1.0;
 
         public static readonly string DateFormatYMDHMS = "yyyy-MM-dd hh:mm:ss";
         public static readonly string DateFormatYMD = "yyyy-MM-dd";
@@ -36,7 +37,6 @@ namespace ConstModule
         public static readonly string DateFormatHMSf = "HH:mm:ss.f";
         public static readonly string DateFormatHMSff = "HH:mm:ss.ff";
         public static readonly string DateFormatHMSfff = "HH:mm:ss.fff";
-
     }
 
     public static class GSocketState

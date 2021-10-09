@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
-using ConstModule;
 using System.Collections.Concurrent;
 using System.Runtime.InteropServices;
 // --- custom --- //
@@ -12,7 +11,7 @@ using ProjectWaterMelon.Network.Packet;
 using ProjectWaterMelon.Network.CustomSocket;
 using ProjectWaterMelon.Log;
 using ProjectWaterMelon.Network.Session;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.MessageWorker
@@ -71,7 +70,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
         }
 
         // 수신된 패킷 읽을 때 최초로 진입하는 부분
-        public bool OnReadUntilHeader(byte[] Buffer, ref int Offset)
+        public bool OnReadUntilHeader(in byte[] Buffer, ref int Offset)
         {
             if (mRemainBytes < 0)
                 return false;
@@ -100,7 +99,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
         }
 
 
-        public bool OnReadUntilBody(byte[] Buffer, ref int Offset, int PosToRead)
+        public bool OnReadUntilBody(in byte[] Buffer, ref int Offset, int PosToRead)
         {
             if (mRemainBytes < 0)
                 return false;
@@ -120,7 +119,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
             return true;
         }
 
-        public void OnReceive(CSession Session, byte[] Buffer, int Offset, int ByteTransferred)
+        public void OnReceive(in CSession Session, in byte[] Buffer, int Offset, int ByteTransferred)
         {
             try
             {
@@ -173,7 +172,8 @@ namespace ProjectWaterMelon.Network.MessageWorker
 
                     // 데이터를 모두 받았으면 이를 이용해서 패킷으로 만든다
                     CPacket packet = new CPacket(Session.mTcpSocket, mHeaderBuffer, mMessageBuffer);
-                    CMessageProcessorManager.HandleProcess(packet.GetMessageId(), packet);
+                    if (packet.CheckValidate())
+                        CMessageProcessorManager.HandleProcess(packet.GetMessageId(), packet);
                     ClearBuffer();
                 }
                 else
@@ -240,6 +240,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
         public void ClearBuffer()
         {
             Array.Clear(mHeaderSizeBuffer, 0, mHeaderSizeBuffer.Length);
+            Array.Clear(mHeaderBuffer, 0, mHeaderBuffer.Length);
             Array.Clear(mMessageBuffer, 0, mMessageBuffer.Length);
             mRemainBytes = 0;
             mReadMsgPos = 0;

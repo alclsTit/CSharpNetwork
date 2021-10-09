@@ -7,8 +7,8 @@ using System.Net.Sockets;
 using System.Collections.Concurrent;
 // --- custom --- //
 using ProjectWaterMelon.Log;
-using static ConstModule.ConstDefine;
-using static ConstModule.GSocketState;
+using static ProjectWaterMelon.ConstDefine;
+using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.CustomSocket

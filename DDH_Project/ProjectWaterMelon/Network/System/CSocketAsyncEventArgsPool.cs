@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Threading;
 // --- custom --- //
 using ProjectWaterMelon.Log;
-using static ConstModule.GSocketState;
+using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Sytem

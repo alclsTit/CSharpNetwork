@@ -29,4 +29,3 @@ D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Cli
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.csproj.CopyComplete
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.exe
 D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.pdb
-D:\visual studio 2019\C#\Server\CSharpNetwork\DDH_Project_Client\DDH_Project_Client\ProjectWaterMelon\obj\Debug\ProjectWaterMelon.csprojAssemblyReference.cache

@@ -11,7 +11,7 @@ using ProjectWaterMelon.Network.MessageWorker;
 using ProjectWaterMelon.Network.Packet;
 using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.CustomSocket
@@ -91,9 +91,38 @@ namespace ProjectWaterMelon.Network.CustomSocket
             return mSendPacketQ.TryPeek(out packet);
         }
 
-        public void AsyncSend<T>(Protocol.PacketId msgId, T handler) where T : class
+        /*
+             public void AsyncSend<T>(Protocol.PacketId msgid, T handler) where T : class
+             {
+                 CPacket packet = new CPacket(this, CProtobuf.ProtobufSerialize<T>(handler), msgid);
+
+                 if (mRawSocket == null)
+                 {
+                     CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket NULL Error");
+                     return;
+                 }
+
+                 if (!IsAbleToSend())
+                 {
+                     CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket state isn't to send packet");
+                     return;
+                 }
+
+                 if (!packet.CheckValidate())
+                 {
+                     CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Packet CheckValidate Error");
+                     return;
+                 }
+
+                 // thread-safe 
+                 mSendPacketQ.Enqueue(packet);
+                 StartSend(packet); 
+             }
+             */
+
+        public void Relay<T>(Protocol.PacketId msgid, T hander, bool directFlag = false) where T : class
         {
-            CPacket packet = new CPacket(this, CProtobuf.ProtobufSerialize<T>(handler), msgId);
+            CPacket lPacket = new CPacket(this, CProtobuf.ProtobufSerialize<T>(hander), msgid);
 
             if (mRawSocket == null)
             {
@@ -107,15 +136,21 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 return;
             }
 
-            if (!packet.CheckValidate())
+            if (!lPacket.CheckValidate())
             {
                 CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Packet CheckValidate Error");
                 return;
             }
 
-            // thread-safe 
-            mSendPacketQ.Enqueue(packet);
-            StartSend(packet);
+            if (directFlag)
+            {
+                StartSend(lPacket);
+            }
+            else
+            {
+                // thread-safe 
+                CMessageProcessorManager.PushMsgToQueue(lPacket);
+            }
         }
 
         public void StartSend(in CPacket packet)
@@ -206,8 +241,8 @@ namespace ProjectWaterMelon.Network.CustomSocket
                         if (e.BytesTransferred == lUserToken.mTcpSocket.mHaveToSendBytes)
                         {
                             lUserToken.mTcpSocket.mAlreadySendBytes = e.BytesTransferred;
-                            if (!lUserToken.mTcpSocket.TryPopPacketForSendQ(out packet))
-                                CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send queue Pop Error");
+                            //if (!lUserToken.mTcpSocket.TryPopPacketForSendQ(out packet))
+                            //    CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send queue Pop Error");
                         }
                         else
                         {
@@ -230,11 +265,6 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 // 패킷 메시지 정상 전송 실패, 후처리 작업 진행 
                 OnBadSendHandler(e);
             }
-        }
-
-        public void AsyncRecv()
-        {
-
         }
 
         // Recv Handler after operating async recv

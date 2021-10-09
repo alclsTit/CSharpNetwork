@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 // --- custom --- //
+using ProjectWaterMelon.Log;
 using ProjectWaterMelon.Network.Packet;
 using ProjectWaterMelon.Network.CustomSocket;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.MessageWorker
@@ -40,6 +42,20 @@ namespace ProjectWaterMelon.Network.MessageWorker
 
         public virtual void CleanUp()
         {
+        }
+
+        public long GetTickCount()
+        {
+            return DateTime.Now.Ticks;
+        }
+
+        public void ChkPacketDelay(in string cname, long curTick, long packetTick)
+        {
+            var lElaspedTime = new TimeSpan(curTick - packetTick);
+            if (lElaspedTime.TotalSeconds > MAX_PACKET_DELAY_TIME)
+            {
+                CLog4Net.LogMsgHandlerError($"Error in {cname} - Packet Time Delay!!!({lElaspedTime.TotalSeconds}");
+            }
         }
 
         public void Relay(Protocol.PacketId msgid, IMessageBase handler)

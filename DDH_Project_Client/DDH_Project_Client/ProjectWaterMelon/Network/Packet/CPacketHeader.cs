@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // --- custom --- //
 using ProjectWaterMelon.Log;
 using ProtoBuf;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Packet

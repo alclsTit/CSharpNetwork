@@ -8,8 +8,8 @@ using ProjectWaterMelon.Network.Sytem;
 using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
 using ProjectWaterMelon.Game;
-using static ConstModule.ConstDefine;
-using static ConstModule.GSocketState;
+using static ProjectWaterMelon.ConstDefine;
+using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Sytem
@@ -106,9 +106,7 @@ namespace ProjectWaterMelon.Network.Sytem
                     var req_msg = new Protocol.msg_test.req_network_sessionid_user2game();
                     req_msg.session_id = lUserToken.mSessionID;
                     req_msg.cur_datetime = DateTime.Now.ToString(DateFormatYMDHMS);
-                    //req_msg.BuildPacketClassProtoBuf(ref req_msg,(int)Protocol.PacketId.req_network_sessionid);
-                    //lUserToken.mTcpSocket.AsyncSend(req_msg);
-                    lUserToken.mTcpSocket.AsyncSend<Protocol.msg_test.req_network_sessionid_user2game>(req_msg.msg_id, req_msg);
+                    lUserToken.mTcpSocket.Relay<Protocol.msg_test.req_network_sessionid_user2game>(req_msg.msg_id, req_msg, true);
                 }
                 else
                 {

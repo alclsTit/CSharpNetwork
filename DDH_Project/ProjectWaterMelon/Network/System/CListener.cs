@@ -9,8 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 // --- custom --- //
 using ProjectWaterMelon.Log;
-using static ConstModule.ConstDefine;
-using static ConstModule.GSocketState;
+using static ProjectWaterMelon.ConstDefine;
+using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Sytem

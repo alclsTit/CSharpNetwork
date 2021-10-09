@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.IO;
 // --- custom --- //
 using ProjectWaterMelon.Log;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Packet

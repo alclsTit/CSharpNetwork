@@ -11,7 +11,7 @@ using ProjectWaterMelon.Network.MessageWorker;
 using ProjectWaterMelon.Network.Packet;
 using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.CustomSocket
@@ -26,7 +26,6 @@ namespace ProjectWaterMelon.Network.CustomSocket
         // 메시지 Send 처리
         private int mAlreadySendBytes;
         private int mHaveToSendBytes;
-        public int mTotalSendBytes { get; private set; }  
 
         public System.Net.IPEndPoint mRemoteEP { get; set;}
 
@@ -91,9 +90,10 @@ namespace ProjectWaterMelon.Network.CustomSocket
             return mSendPacketQ.TryPeek(out packet);
         }
 
-        public void AsyncSend<T>(Protocol.PacketId msgId, T handler) where T : class
+        /*
+        public void AsyncSend<T>(Protocol.PacketId msgid, T handler) where T : class
         {
-            CPacket packet = new CPacket(this, CProtobuf.ProtobufSerialize<T>(handler), msgId);
+            CPacket packet = new CPacket(this, CProtobuf.ProtobufSerialize<T>(handler), msgid);
 
             if (mRawSocket == null)
             {
@@ -117,6 +117,41 @@ namespace ProjectWaterMelon.Network.CustomSocket
             mSendPacketQ.Enqueue(packet);
             StartSend(packet); 
         }
+        */
+
+        public void Relay<T>(Protocol.PacketId msgid, T hander, bool directFlag = false) where T : class
+        {
+            CPacket lPacket = new CPacket(this, CProtobuf.ProtobufSerialize<T>(hander), msgid);
+
+            if (mRawSocket == null)
+            {
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket NULL Error");
+                return;
+            }
+
+            if (!IsAbleToSend())
+            {
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket state isn't to send packet");
+                return;
+            }
+
+            if (!lPacket.CheckValidate())
+            {
+                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Packet CheckValidate Error");
+                return;
+            }
+
+            if (directFlag)
+            {
+                StartSend(lPacket);
+            }
+            else
+            {
+                // thread-safe 
+                CMessageProcessorManager.PushMsgToQueue(lPacket);
+            }
+        }
+       
 
         public void StartSend(in CPacket packet)
         {
@@ -126,8 +161,6 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 {
                     // 해당 패킷을 처음 보내는 경우
                     mHaveToSendBytes = packet.GetTotalSize();
-                    mTotalSendBytes = packet.GetTotalSize();
-
                     // 송신 버퍼 세팅
                     mSendArgs.SetBuffer(new byte[mHaveToSendBytes], 0, mHaveToSendBytes);
                     // 패킷 버퍼에 담긴 내용을 비동기 소켓 전달 객체인 SocketAsyncEventArgs 버퍼(송신버퍼)에 담는다
@@ -206,8 +239,8 @@ namespace ProjectWaterMelon.Network.CustomSocket
                         if (e.BytesTransferred == lUserToken.mTcpSocket.mHaveToSendBytes)
                         {
                             lUserToken.mTcpSocket.mAlreadySendBytes = e.BytesTransferred;
-                            if (!lUserToken.mTcpSocket.TryPopPacketForSendQ(out packet))
-                                CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send queue Pop Error");
+                            //if (!lUserToken.mTcpSocket.TryPopPacketForSendQ(out packet))
+                            //    CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send queue Pop Error");
                         }
                         else
                         {
@@ -230,12 +263,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 // 패킷 메시지 정상 전송 실패, 후처리 작업 진행 
                 OnBadSendHandler(e);
             }
-        }
-      
-        public void AsyncRecv()
-        {
-
-        }
+        }   
 
         // Recv Handler after operating async recv
         public void OnReceiveHandler(object sender, SocketAsyncEventArgs e)

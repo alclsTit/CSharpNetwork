@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Concurrent;
 // --- custom --- //
-using static ConstModule.GSocketState;
+using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Session

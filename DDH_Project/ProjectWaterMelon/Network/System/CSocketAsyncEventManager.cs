@@ -6,8 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 // --- custom --- //
 using ProjectWaterMelon.Network.Session;
-using static ConstModule.GSocketState;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.GSocketState;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Sytem

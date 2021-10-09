@@ -62,15 +62,11 @@ namespace ProjectWaterMelon.Network.MessageWorker
             return mHandlers.ContainsKey(msgid);
         }
 
-        static public void NotifyMessage(in CPacket packet, bool directflag = false)
+        public static void PushMsgToQueue(in CPacket packet)
         {
-            if (directflag)
-            {
-            }
-            else
-            {
-                mConQueue.Enqueue(packet);
-            }
+            if (packet == null) return;
+
+            mConQueue.Enqueue(packet);
         }
 
         static public void HandleProcess(Protocol.PacketId msgid, CPacket packet)

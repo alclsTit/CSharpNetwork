@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 // --- custom --- //
 using ProjectWaterMelon.Log;
 using ProtoBuf;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Packet
@@ -27,15 +27,6 @@ namespace ProjectWaterMelon.Network.Packet
         public long mProcessTickCount { get; private set; }
 
         public CPacketHeader() { }
-
-        // 패킷 수신받았을 때 디시리얼라이징된 대상으로 세팅되는 패킷생성자
-        public CPacketHeader(Protocol.PacketId msgid, int headersize, int totalsize, long processTickCnt)
-        {
-            mMessageId = msgid;
-            mHeaderSize = headersize;
-            mTotalSize = totalsize;
-            mProcessTickCount = processTickCnt;
-        }
 
         // 더미 생성자 
         public CPacketHeader(int LenOfMsgBuff, bool setTick, bool dummyFlag, Protocol.PacketId msgid = Protocol.PacketId.notify_nohandled_packet)

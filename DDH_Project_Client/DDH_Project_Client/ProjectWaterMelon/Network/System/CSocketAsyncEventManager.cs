@@ -3,8 +3,8 @@ using System.Net.Sockets;
 // --- custom --- //
 using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
-using static ConstModule.GSocketState;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.GSocketState;
+using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Sytem

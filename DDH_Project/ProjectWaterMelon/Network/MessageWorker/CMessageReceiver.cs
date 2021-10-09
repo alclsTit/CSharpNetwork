@@ -15,7 +15,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
         public static void Init()
         {
             RegisterMessageHandler<handler_notify_test_packet_game2user>();
-            RegisterMessageHandler<handler_req_network_session_game2user>();
+            RegisterMessageHandler<handler_req_network_session_user2game>();
         }
     }
 }

@@ -8,8 +8,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 // --- custom --- //
 using ProjectWaterMelon.Network.CustomSocket;
 using ProjectWaterMelon.Log;
-using ConstModule;
-using static ConstModule.ConstDefine;
+using static ProjectWaterMelon.ConstDefine;
 // ------------- //
 
 /*

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 // --- custom --- //
+using ProjectWaterMelon.Log;
 using ProjectWaterMelon.Network.MessageWorker;
 // -------------- //
 
@@ -17,13 +18,17 @@ namespace ProjectWaterMelon.Network.Handlers
         {
             try
             {
+                var curTick = GetTickCount();
                 var notify_msg = mPacket.BufferToMessage<Protocol.msg_test.notify_test_packet_game2user>(mPacket.mMsgBuffer);
                 Console.WriteLine($"{notify_msg.msg_id} --- {notify_msg.cur_datetime}");
+
+                ChkPacketDelay(this.GetType().Name, curTick, mPacket.mPacketHeader.mProcessTickCount);
 
                 return true;
             }
             catch (Exception ex)
             {
+                CLog4Net.gLog4Net.Error($"Exception in handler_notify_test_packet_game2user - {ex.Message} - {ex.StackTrace}");
                 return false;
             }
         }
@@ -34,21 +39,25 @@ namespace ProjectWaterMelon.Network.Handlers
         }
     }
 
-    public class handler_req_network_session_game2user : CMessageHandler
+    public class handler_ack_network_session_game2user : CMessageHandler
     {
-        public handler_req_network_session_game2user() : base(Protocol.PacketId.req_network_sessionid) { }
+        public handler_ack_network_session_game2user() : base(Protocol.PacketId.ack_network_sessionid) { }
 
         public override bool Process()
         {
             try
             {
-                var req_msg = mPacket.BufferToMessage<Protocol.msg_test.req_network_sessionid_user2game>(mPacket.mMsgBuffer);
-                Console.WriteLine($"{req_msg.cur_datetime} --- {req_msg.session_id}");
+                var curTick = GetTickCount();
+                var ack_msg = mPacket.BufferToMessage<Protocol.msg_test.ack_network_sessionid_game2user>(mPacket.mMsgBuffer);
+                Console.WriteLine($"{ack_msg.msg_id} - {ack_msg.session_id} --- {ack_msg.cur_datetime}");
+
+                ChkPacketDelay(this.GetType().Name, curTick, mPacket.mPacketHeader.mProcessTickCount);
 
                 return true;
             }
             catch (Exception ex)
             {
+                CLog4Net.gLog4Net.Error($"Exception in handler_ack_network_session_game2user - {ex.Message} - {ex.StackTrace}");
                 return false;
             }
         }

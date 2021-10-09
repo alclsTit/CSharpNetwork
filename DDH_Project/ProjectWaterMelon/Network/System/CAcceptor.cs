@@ -11,8 +11,8 @@ using ProjectWaterMelon.Network.CustomSocket;
 using ProjectWaterMelon.Network.Sytem;
 using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
-using static ConstModule.ConstDefine;
-using static ConstModule.GSocketState;
+using static ProjectWaterMelon.ConstDefine;
+using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Sytem
@@ -198,7 +198,7 @@ namespace ProjectWaterMelon.Network.Sytem
                     // SEND TEST PACKET 
                     var notify_msg = new Protocol.msg_test.notify_test_packet_game2user();
                     notify_msg.cur_datetime = "2021-10-08 22:00:00";
-                    lUserToken.mTcpSocket.AsyncSend<Protocol.msg_test.notify_test_packet_game2user>(notify_msg.msg_id, notify_msg);            
+                    lUserToken.mTcpSocket.Relay<Protocol.msg_test.notify_test_packet_game2user>(notify_msg.msg_id, notify_msg, true);            
                 }
                 else
                 {

@@ -64,7 +64,7 @@ namespace ProjectWaterMelon.Protocol
         }
 
         [ProtoContract]
-        public class ack_network_sessionid_user2game
+        public class ack_network_sessionid_game2user
         {
             [ProtoMember(1)]
             public readonly PacketId msg_id = PacketId.ack_network_sessionid;

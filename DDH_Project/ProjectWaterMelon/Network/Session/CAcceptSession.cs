@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
-using static ConstModule.GResult;
+using static ProjectWaterMelon.GResult;
 
 namespace CModule.Network
 {

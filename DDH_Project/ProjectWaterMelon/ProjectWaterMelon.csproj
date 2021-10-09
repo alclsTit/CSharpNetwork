@@ -7,7 +7,7 @@
     <ProjectGuid>{74A17446-6A50-4BE0-A00F-0E73E2E2D42B}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>CModule</RootNamespace>
-    <AssemblyName>CModule</AssemblyName>
+    <AssemblyName>PR</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

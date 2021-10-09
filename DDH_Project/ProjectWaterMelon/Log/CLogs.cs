@@ -38,6 +38,11 @@ namespace ProjectWaterMelon.Log
         {
             gLog4Net.ErrorFormat(message);
         }
+
+        public static void LogMsgHandlerError(string message)
+        {
+            gLog4Net.ErrorFormat(message);
+        }
     }
 
     public class CLogger
