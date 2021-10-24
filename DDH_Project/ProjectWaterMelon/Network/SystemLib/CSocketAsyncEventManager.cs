@@ -10,7 +10,7 @@ using static ProjectWaterMelon.GSocketState;
 using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
-namespace ProjectWaterMelon.Network.Sytem
+namespace ProjectWaterMelon.Network.SystemLib
 {
     // 유저 객체당 할당되는 CSession에 대한 관리  
     static class CSocketAsyncEventManager
@@ -30,7 +30,7 @@ namespace ProjectWaterMelon.Network.Sytem
         }
 
         // 미리 사용할 유저 send/recv pool을 생성한다
-        public static void InitRecvAndSendArgsMax(in Socket socket, in System.Net.IPEndPoint IPEndPoint)
+        public static void InitRecvAndSendArgsMax()
         {
             for (var i = 0; i < MAX_CONNECTION; ++i)
             {

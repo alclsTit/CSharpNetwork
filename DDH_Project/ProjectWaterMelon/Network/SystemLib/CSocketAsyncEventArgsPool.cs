@@ -11,7 +11,7 @@ using ProjectWaterMelon.Log;
 using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
-namespace ProjectWaterMelon.Network.Sytem
+namespace ProjectWaterMelon.Network.SystemLib
 {
     internal sealed class CSocketAsyncEventArgsPool
     {
@@ -34,7 +34,7 @@ namespace ProjectWaterMelon.Network.Sytem
             return Interlocked.Increment(ref mTokenId);
         }
 
-        internal void Push(SocketAsyncEventArgs data)
+        internal void Push(in SocketAsyncEventArgs data)
         {
             if (data == null)
                 throw new ArgumentNullException("Items added to a SocketAsyncEventArgsPool cannot be null");

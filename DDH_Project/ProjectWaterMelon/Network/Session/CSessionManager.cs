@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
 using System.Collections.Concurrent;
+
 // --- custom --- //
 using static ProjectWaterMelon.GSocketState;
 // -------------- //
@@ -32,6 +33,7 @@ namespace ProjectWaterMelon.Network.Session
                 mSessionId = Interlocked.Increment(ref mSessionId);
                 lock(mSessionContainer)
                 {
+                    user_session.OnCloseEvent += OnCloseEventHandler;
                     user_session.SetSessionID(mSessionId);
                 }
                 mSessionContainer.TryAdd(mSessionId, user_session);
@@ -40,25 +42,22 @@ namespace ProjectWaterMelon.Network.Session
 
         // 세션 아이디를 이용하여 대상 세션객체를 관리 컨테이너에서 삭제하는 함수
         // thread-safe
-        public static bool Remove(long session_id)
+        public static ValueTask OnCloseEventHandler(object sender, EventArgs e)
         {
-            var local_user_session = GetSessionByKey(session_id);
-            return mSessionContainer.TryRemove(session_id, out local_user_session);
+            var session = sender as CSession;
+           
+            session.OnCloseEvent -= OnCloseEventHandler;
+            mSessionContainer.TryRemove(session.mSessionID, out CSession removedSession);
+
+            return new ValueTask();
         }
 
         // 세션 아이디를 이용하여 대상 세션 객체를 가져오는 함수
         // thread-safe
         public static CSession GetSessionByKey(long session_id)
         {
-            CSession local_user_session;
-            if (mSessionContainer.TryGetValue(session_id, out local_user_session))
-            {
-                return local_user_session;
-            }
-            else
-            {
-                return null;
-            }
+            mSessionContainer.TryGetValue(session_id, out CSession result);
+            return result;
         }
 
         public static bool IsExist(long session_id)
@@ -67,13 +66,6 @@ namespace ProjectWaterMelon.Network.Session
             {
                 return mSessionContainer.ContainsKey(session_id);
             }
-        }
-
-        // 현재 세션객체 총 갯수 반환 함수
-        // thread-safe
-        public static int Count()
-        {
-            return mSessionContainer.Count;
         }
 
         // 별도의 스레드에서 체크하는 세션 상태
@@ -92,6 +84,26 @@ namespace ProjectWaterMelon.Network.Session
                 }
             }
         }
-        
+
+        // 현재 세션객체 총 갯수 반환 함수
+        // thread-safe
+        public static int Count() { return mSessionContainer.Count; }
+
+        // 시퀀스로 사용될 대상은 단일객체 리턴보다 시퀀스 리턴이 좋다
+        public static IEnumerable<TCSession> GetSessionSeq<TCSession>() where TCSession : CSession
+        {
+            var lEnumerator = mSessionContainer.GetEnumerator();
+
+            while(lEnumerator.MoveNext())
+            {
+                if (lEnumerator.Current.Value == null || lEnumerator.Current.Value.mTcpSocket == null)
+                    continue;
+
+                if (lEnumerator.Current.Value is TCSession ret)
+                    yield return ret;
+            }
+        }
+
+        public static long GetCurSessionId() { return mSessionId; }
     }
 }

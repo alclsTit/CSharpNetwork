@@ -8,7 +8,7 @@ using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
 using static ProjectWaterMelon.GSocketState;
 
-namespace ProjectWaterMelon.Network.Sytem
+namespace Network.SystemLib
 {
     class CHeartbeatManager
     {

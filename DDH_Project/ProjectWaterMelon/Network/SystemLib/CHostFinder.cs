@@ -5,7 +5,7 @@ using System.Net;
 using ProjectWaterMelon.Log;
 // -------------- //
 
-namespace ProjectWaterMelon.Network.Sytem
+namespace ProjectWaterMelon.Network.SystemLib
 {
     public static class CHostFinder
     {

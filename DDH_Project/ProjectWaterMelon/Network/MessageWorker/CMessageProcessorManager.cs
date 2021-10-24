@@ -13,7 +13,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
 {
     static public class CMessageProcessorManager
     {
-        static private ConcurrentQueue<CPacket> mConQueue = new ConcurrentQueue<CPacket>();
+        static public ConcurrentQueue<CPacket> mConQueue { get; private set; } = new ConcurrentQueue<CPacket>();
 
         public delegate void MessageProcessFunc(CPacket packet);
         static public Dictionary<Protocol.PacketId, MessageProcessFunc> mHandlers = new Dictionary<Protocol.PacketId, MessageProcessFunc>();
@@ -62,12 +62,36 @@ namespace ProjectWaterMelon.Network.MessageWorker
             return mHandlers.ContainsKey(msgid);
         }
 
-        public static void PushMsgToQueue(in CPacket packet)
+        // 20211013 SendQ 패킷처리 변경(CMessageProcessManager -> TcpSocket의 mSendPacketQ)
+        /*
+        public static void PushPacketToSendQ(in CPacket packet)
         {
-            if (packet == null) return;
-
+            if (packet == null) 
+                return;
             mConQueue.Enqueue(packet);
         }
+        */
+
+        // 20211013 SendQ 패킷처리 변경(CMessageProcessManager -> TcpSocket의 mSendPacketQ)
+        /*
+        public static CPacket PeekPacketSendQ()
+        {
+            CPacket lResult;
+            if (mConQueue.TryPeek(out lResult))
+                return lResult;
+            else
+                return null;
+        }
+
+        public static bool PopPacketSendQ()
+        {
+            CPacket lResult;
+            if (mConQueue.TryDequeue(out lResult))
+                return true;
+            else
+                return false;
+        }
+        */
 
         static public void HandleProcess(Protocol.PacketId msgid, CPacket packet)
         {

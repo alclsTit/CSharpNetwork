@@ -11,7 +11,7 @@ using ProjectWaterMelon.Network.Session;
 using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
-namespace ProjectWaterMelon.Network.Sytem
+namespace ProjectWaterMelon.Network.SystemLib
 {
     internal sealed class CSocketAsyncEventArgsPool
     {

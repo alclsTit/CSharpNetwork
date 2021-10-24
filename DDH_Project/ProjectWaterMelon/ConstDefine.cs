@@ -29,6 +29,7 @@ namespace ProjectWaterMelon
         public const int MAX_HEADER_BUFFER_SIZE = 1024;
         public const uint MAX_SOCKET_RECONNECT_COUNT = 6;
         public const double MAX_PACKET_DELAY_TIME = 1.0;
+        public const uint MAX_SERVER_MONITER_INTERVAL = 5;
 
         public static readonly string DateFormatYMDHMS = "yyyy-MM-dd hh:mm:ss";
         public static readonly string DateFormatYMD = "yyyy-MM-dd";

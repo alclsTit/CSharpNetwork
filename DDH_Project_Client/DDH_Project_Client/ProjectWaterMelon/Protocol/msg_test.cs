@@ -27,20 +27,22 @@ namespace ProjectWaterMelon.Protocol
          *      ...    
          * }
          */
-
-        [StructLayout(LayoutKind.Sequential)]
+        [ProtoContract]
         public class req_test_packet_user2game
         {
+            [ProtoMember(1)]
             public readonly PacketId msg_id = PacketId.req_test_packet;
-            public long session_id;
-            public string req_logdate;
+            [ProtoMember(2)]
+            public string logdate;
         }
 
+        [ProtoContract]
         public class ack_test_packet_user2game
         {
+            [ProtoMember(1)]
             public readonly PacketId msg_id = PacketId.ack_test_packet;
-            public long session_id;
-            public string ack_logdate;
+            [ProtoMember(2)]
+            public string logdate;
         }
 
         [ProtoContract]
@@ -52,26 +54,5 @@ namespace ProjectWaterMelon.Protocol
             public string cur_datetime { get; set; }
         }
 
-        [ProtoContract]
-        public class req_network_sessionid_user2game
-        {
-            [ProtoMember(1)]
-            public readonly PacketId msg_id = PacketId.req_network_sessionid;
-            [ProtoMember(2)]
-            public long session_id { get; set; }
-            [ProtoMember(3)]
-            public string cur_datetime { get; set; }
-        }
-
-        [ProtoContract]
-        public class ack_network_sessionid_game2user
-        {
-            [ProtoMember(1)]
-            public readonly PacketId msg_id = PacketId.ack_network_sessionid;
-            [ProtoMember(2)]
-            public long session_id { get; set; }
-            [ProtoMember(3)]
-            public string cur_datetime { get; set; }
-        }
     }
 }

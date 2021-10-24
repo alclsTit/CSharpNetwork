@@ -7,7 +7,7 @@ using static ProjectWaterMelon.GSocketState;
 using static ProjectWaterMelon.ConstDefine;
 // -------------- //
 
-namespace ProjectWaterMelon.Network.Sytem
+namespace ProjectWaterMelon.Network.SystemLib
 {
     // 유저 객체당 할당되는 CSession에 대한 관리  
     static class CSocketAsyncEventManager

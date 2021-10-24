@@ -6,8 +6,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{74A17446-6A50-4BE0-A00F-0E73E2E2D42B}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>CModule</RootNamespace>
-    <AssemblyName>PR</AssemblyName>
+    <RootNamespace>ProjectWaterMelon</RootNamespace>
+    <AssemblyName>ProjectWaterMelon</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -60,6 +60,9 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.4.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.3\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -69,15 +72,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Network\Handlers\Handlers_Network.cs" />
-    <Compile Include="Network\System\CBufferManager.cs" />
-    <Compile Include="Network\System\CAcceptor.cs" />
+    <Compile Include="Network\SystemLib\CBufferManager.cs" />
+    <Compile Include="Network\SystemLib\CAcceptor.cs" />
     <Compile Include="CMemoryPool.cs" />
     <Compile Include="Log\CFileIOSystemManager.cs" />
     <Compile Include="Log\CFileIOSystemModule.cs" />
     <Compile Include="Network\Session\CAcceptSession.cs" />
-    <Compile Include="Network\System\CHeartbeatManager.cs" />
-    <Compile Include="Network\System\CHostFinder.cs" />
-    <Compile Include="Network\System\CListener.cs" />
+    <Compile Include="Network\SystemLib\CHeartbeatManager.cs" />
+    <Compile Include="Network\SystemLib\CHostFinder.cs" />
+    <Compile Include="Network\SystemLib\CListener.cs" />
     <Compile Include="Log\CLogs.cs" />
     <Compile Include="ConstDefine.cs" />
     <Compile Include="Network\MessageWorker\CMessageResolver.cs" />
@@ -87,15 +90,16 @@
     <Compile Include="Network\Packet\CProtobuf.cs" />
     <Compile Include="Network\Session\CSession.cs" />
     <Compile Include="Network\Session\CSessionManager.cs" />
-    <Compile Include="Network\System\CSocketAsyncEventManager.cs" />
+    <Compile Include="Network\SystemLib\CSocketAsyncEventManager.cs" />
     <Compile Include="Network\CustomSocket\CTcpSocket.cs" />
-    <Compile Include="Network\System\CSocketAsyncEventArgsPool.cs" />
+    <Compile Include="Network\SystemLib\CSocketAsyncEventArgsPool.cs" />
     <Compile Include="Network\CustomSocket\CSocketBase.cs" />
     <Compile Include="Network\MessageWorker\CMessageHandler.cs" />
     <Compile Include="Network\MessageWorker\CMessageProcessor.cs" />
     <Compile Include="Network\MessageWorker\CMessageProcessorManager.cs" />
     <Compile Include="Network\MessageWorker\IMessageBase.cs" />
     <Compile Include="Network\ModifyInfo.cs" />
+    <Compile Include="Network\SystemLib\CThreadWorker.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\FlatBuffers\ByteBuffer.cs" />
@@ -106,11 +110,12 @@
     <Compile Include="Protocol\FlatBuffers\Offset.cs" />
     <Compile Include="Protocol\FlatBuffers\Struct.cs" />
     <Compile Include="Protocol\FlatBuffers\Table.cs" />
+    <Compile Include="Protocol\msg_network.cs" />
     <Compile Include="Protocol\msg_test.cs" />
     <Compile Include="Protocol\PacketId.cs" />
     <Compile Include="Protocol\PacketMsg\PacketMsg.cs" />
     <Compile Include="Protocol\PacketMsg\sPacketInfo.cs" />
-    <Compile Include="UtilityLib\CUtility.cs" />
+    <Compile Include="Utility\CAsyncEventHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

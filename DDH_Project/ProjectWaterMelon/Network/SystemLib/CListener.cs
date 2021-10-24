@@ -13,7 +13,7 @@ using static ProjectWaterMelon.ConstDefine;
 using static ProjectWaterMelon.GSocketState;
 // -------------- //
 
-namespace ProjectWaterMelon.Network.Sytem
+namespace ProjectWaterMelon.Network.SystemLib
 {
     class CListener
     {
@@ -60,17 +60,16 @@ namespace ProjectWaterMelon.Network.Sytem
 
                 // recv/send pool 생성 
                 CSocketAsyncEventManager.Init(MAX_CONNECTION, eSockEvtType.CONCURRENT);
-                CSocketAsyncEventManager.InitRecvAndSendArgsMax(mListenSocket, lEndPoint);
+                CSocketAsyncEventManager.InitRecvAndSendArgsMax();
 
                 // accept 
                 m_Acceptor = new CAcceptor(mListenSocket, lEndPoint);
                 Thread lAsyncThread = new Thread(m_Acceptor.Start);
                 lAsyncThread.Start();
-                
             }
             catch(Exception ex)
             {
-                CLog4Net.LogError($"Exception in CListener.Start!!! - {ex.Message},{ex.StackTrace}, host = {lEndPoint.Address}, port = {lEndPoint.Port}");
+                CLog4Net.LogError($"Exception in CListener.Start!!! - {ex.Message} - {ex.StackTrace}, host = {lEndPoint.Address}, port = {lEndPoint.Port}");
             }
         }
     }

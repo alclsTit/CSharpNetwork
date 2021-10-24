@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Net;
 // --- custom --- //
 using ProjectWaterMelon.Network.MessageWorker;
 using ProjectWaterMelon.Network.Packet;
@@ -27,11 +29,14 @@ namespace ProjectWaterMelon.Network.CustomSocket
         private int mAlreadySendBytes;
         private int mHaveToSendBytes;
 
-        public System.Net.IPEndPoint mRemoteEP { get; set;}
+        public EndPoint mRemoteEP { get; private set;}
+        public EndPoint mLocalEP { get; private set; }
 
         // tcp 소켓의 경우 소켓 송, 수신 버퍼 사용 (클라 -> 송신 버퍼 -> 전송 -> 수신 버퍼 -> 서버)
         private ConcurrentQueue<CPacket> mSendPacketQ = new ConcurrentQueue<CPacket>();
         private ConcurrentQueue<CPacket> mRecvPacketQ = new ConcurrentQueue<CPacket>();
+
+        //private AutoResetEvent mFlowControlEvt = new AutoResetEvent(false);
 
         public CTcpSocket()
         {
@@ -50,12 +55,13 @@ namespace ProjectWaterMelon.Network.CustomSocket
             // nagle 알고리즘은 리얼타임 어플리케이션에서는 성능이 안좋음(반응속도가 느려지기 때문에)
             base.mRawSocket.NoDelay = true;
             base.mRawSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
-            base.mRawSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
+            base.mRawSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);          
         }
 
-        public void SetRemoteIPEndPoint(in System.Net.IPEndPoint IPEndPoint)
+        public void SetRemoteAndLocalEP(EndPoint remoteEP, EndPoint localEP)
         {
-            mRemoteEP = IPEndPoint;
+            mRemoteEP = remoteEP;
+            mLocalEP = localEP;
         }
 
         protected override sealed void Dispose(bool isDisposed) 
@@ -67,7 +73,11 @@ namespace ProjectWaterMelon.Network.CustomSocket
             {
                 // dispose managed resource
                 mMessageReceiver = null;
+                mSendPacketQ = null;
+                mRecvPacketQ = null;
+                //mFlowControlEvt = null;
             }
+
             // dispose unmanaged resource
 
             mIsDisposed = true;
@@ -90,38 +100,14 @@ namespace ProjectWaterMelon.Network.CustomSocket
             return mSendPacketQ.TryPeek(out packet);
         }
 
-        /*
-        public void AsyncSend<T>(Protocol.PacketId msgid, T handler) where T : class
+        public ConcurrentQueue<CPacket> GetPacketSendQ()
         {
-            CPacket packet = new CPacket(this, CProtobuf.ProtobufSerialize<T>(handler), msgid);
-
-            if (mRawSocket == null)
-            {
-                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket NULL Error");
-                return;
-            }
-
-            if (!IsAbleToSend())
-            {
-                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Socket state isn't to send packet");
-                return;
-            }
-
-            if (!packet.CheckValidate())
-            {
-                CLog4Net.LogError($"Error in CTcpSocket.AsyncSend - Packet CheckValidate Error");
-                return;
-            }
-
-            // thread-safe 
-            mSendPacketQ.Enqueue(packet);
-            StartSend(packet); 
+            return mSendPacketQ;
         }
-        */
 
         public void Relay<T>(Protocol.PacketId msgid, T hander, bool directFlag = false) where T : class
         {
-            CPacket lPacket = new CPacket(this, CProtobuf.ProtobufSerialize<T>(hander), msgid);
+            CPacket lPacket = new CPacket(this, CProtobuf.ProtobufSerialize<T>(hander), directFlag, msgid);
 
             if (mRawSocket == null)
             {
@@ -148,7 +134,9 @@ namespace ProjectWaterMelon.Network.CustomSocket
             else
             {
                 // thread-safe 
-                CMessageProcessorManager.PushMsgToQueue(lPacket);
+                // 20211013 SendQ 패킷처리 변경(CMessageProcessManager -> TcpSocket의 mSendPacketQ)
+                //CMessageProcessorManager.PushPacketToSendQ(lPacket);
+                PushPacketToSendQ(lPacket);
             }
         }
        
@@ -157,6 +145,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         {
             try
             {
+                packet.SetSendingStart();
                 if (mAlreadySendBytes == 0)
                 {
                     // 해당 패킷을 처음 보내는 경우
@@ -202,25 +191,24 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 {
                     OnSendHandler(this, mSendArgs);
                 }
+                //mFlowControlEvt.WaitOne();
             }
             catch (Exception ex)
             {
                 CLog4Net.LogError($"Exception in CTcpSocket.StartSend({(mSendArgs.UserToken as CSession)?.mSessionID.ToString()}) - {ex.Message} - {ex.StackTrace}");
             }
         }
+
         public void OnBadSendHandler(in SocketAsyncEventArgs e)
         {
-            var lUserToken = e.UserToken as CSession;
-            var lSessionID = 0L;
-            if (lUserToken != null)
+            if (e.UserToken is CSession lUserToken)
             {
-                lSessionID = lUserToken.mSessionID;
-                lUserToken.mTcpSocket?.Disconnect();
-            
-                // TODO: lUserToken 객체 초기화
-            }
+                var lSessionID = lUserToken.mSessionID;
+                lUserToken.mTcpSocket.Disconnect();
 
-            CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send Error(SessionID = {lSessionID}, BytesTransferred = {e.BytesTransferred}, SocketError = {e.SocketError}, SendQueueSize = {mSendPacketQ.Count}");
+                // TODO: lUserToken 객체 초기화
+                CLog4Net.LogError($"Error in CTcpSocket.OnBadSendHandler - Packet Send Error(SessionID = {lSessionID}, BytesTransferred = {e.BytesTransferred}, SocketError = {e.SocketError}, SendQueueSize = {mSendPacketQ.Count}");
+            }
         }
 
         // Send Handler after operating async send
@@ -235,25 +223,27 @@ namespace ProjectWaterMelon.Network.CustomSocket
                     {
                         CLog4Net.LogDebugSysLog($"5.CTcpSocket.OnSendHandler({lUserToken.mSessionID})", $"Async Send End(Success)(total = {e.BytesTransferred}, sent = {lUserToken.mTcpSocket.mHaveToSendBytes})");
                         
-                        CPacket packet = new CPacket();
                         if (e.BytesTransferred == lUserToken.mTcpSocket.mHaveToSendBytes)
                         {
-                            lUserToken.mTcpSocket.mAlreadySendBytes = e.BytesTransferred;
-                            //if (!lUserToken.mTcpSocket.TryPopPacketForSendQ(out packet))
-                            //    CLog4Net.LogError($"Error in CTcpSocket.OnSendHandler - Packet Send queue Pop Error");
+                            // 패킷을 정상적으로 모두 보냈을 때 (큐잉된 패킷은 pop)
+                            CPacket packet = new CPacket();
+                            lUserToken.mTcpSocket.TryPopPacketForSendQ(out packet);
+
+                            lUserToken.mTcpSocket.mHaveToSendBytes = 0;
+                            lUserToken.mTcpSocket.mAlreadySendBytes = 0;
                         }
                         else
                         {
                             // 패킷을 정상적으로 모두 보내지 못했을 때
                             lUserToken.mTcpSocket.mAlreadySendBytes = e.BytesTransferred;
+
+                            // 같은 Session에서 보낸 패킷전송은 큐에 순차적으로 들어가있기 때문에 
+                            // 미전송된 패킷 처리도 순차처리해도 된다 
+                            CPacket packet = new CPacket();
                             if (lUserToken.mTcpSocket.TryPeekPacketForSendQ(out packet))
-                            {
                                 StartSend(packet);
-                            }
-                            else
-                            {
+                            else  
                                 CLog4Net.LogError("$Error in CTcpSocket.OnSendHandler - Packet Send queue Peek Error");
-                            }
                         }
                     }
                 }
@@ -263,6 +253,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 // 패킷 메시지 정상 전송 실패, 후처리 작업 진행 
                 OnBadSendHandler(e);
             }
+            //mFlowControlEvt.Set();
         }   
 
         // Recv Handler after operating async recv
@@ -270,10 +261,10 @@ namespace ProjectWaterMelon.Network.CustomSocket
         {
             if (e.SocketError == SocketError.Success)
             {              
-                if (e.BytesTransferred > 0)
+                if (e.BytesTransferred > 0 && e.UserToken is CSession lUserToken)
                 {
-                    mMessageReceiver.OnReceive((CSession)e.UserToken, e.Buffer, e.Offset, e.BytesTransferred);
-                    var lPending = mRawSocket.ReceiveAsync(e);
+                    mMessageReceiver.OnReceive(lUserToken, e.Buffer, e.Offset, e.BytesTransferred);
+                    var lPending = lUserToken.mTcpSocket.mRawSocket.ReceiveAsync(e);
                     if (!lPending)
                     {
                         OnReceiveHandler(this, mRecvArgs);

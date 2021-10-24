@@ -54,7 +54,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
             var lElaspedTime = new TimeSpan(curTick - packetTick);
             if (lElaspedTime.TotalSeconds > MAX_PACKET_DELAY_TIME)
             {
-                CLog4Net.LogMsgHandlerError($"Error in {cname} - Packet Time Delay!!!({lElaspedTime.TotalSeconds}");
+                CLog4Net.LogMsgHandlerError($"Error in {cname} - Packet Time Delay!!!({lElaspedTime.TotalSeconds})");
             }
         }
 

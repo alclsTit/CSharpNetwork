@@ -17,7 +17,14 @@ namespace ProjectWaterMelon.Protocol
         notify_test_packet = 4,
         req_network_sessionid = 5,
         ack_network_sessionid = 6,
-        _TEST_PACKET_END = 10
+        notify_network_sessionid = 7,
+        _TEST_PACKET_END = 10,
         //
+
+        _MSG_NETWORK_BEGIN = 20,
+        notify_socket_session_connect = 21,
+        notify_socket_session_close = 22,
+
+        _MSG_NETWORK_END = 30
     }
 }

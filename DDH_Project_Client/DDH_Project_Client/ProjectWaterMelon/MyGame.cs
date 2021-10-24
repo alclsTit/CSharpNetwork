@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 // --- custom --- //
-using ProjectWaterMelon.Network.Sytem;
+using ProjectWaterMelon.Network.SystemLib;
 using ProjectWaterMelon.Network.MessageWorker;
 // -------------- //
 
@@ -20,7 +20,10 @@ namespace ProjectWaterMelon
             Thread lAsyncConnectThread = new Thread(lConnector.Start);
             lAsyncConnectThread.Start();
 
-            while(true)
+            CThreadWorker lWorkerThread = new CThreadWorker();
+            lWorkerThread.Start();
+
+            while (true)
             {
                 Thread.Sleep(1000);
             }

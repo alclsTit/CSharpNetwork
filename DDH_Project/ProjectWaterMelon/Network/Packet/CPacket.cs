@@ -30,6 +30,7 @@ namespace ProjectWaterMelon.Network.Packet
         public byte[] mMsgHeaderBuffer { get; private set; }
         public CTcpSocket mTcpSocket { get; private set; }
         public CPacketHeader mPacketHeader { get; private set; }
+        public bool mSending { get; private set; } = false;
 
         public CPacket()
         {
@@ -47,12 +48,17 @@ namespace ProjectWaterMelon.Network.Packet
         }
 
         // 패킷 송,수신 시 호출되는 CPacket 생성자 
-        public CPacket(in CTcpSocket _TcpSocket, in byte[] _MsgBuffer, Protocol.PacketId msgid)
+        public CPacket(in CTcpSocket _TcpSocket, in byte[] _MsgBuffer, bool _directFlag, Protocol.PacketId msgid)
         {
             mTcpSocket = _TcpSocket;
             mMsgBuffer = _MsgBuffer;
-            mPacketHeader = new CPacketHeader(_MsgBuffer.Length, true, false, msgid);
-            mMsgHeaderBuffer = CProtobuf.ProtobufSerialize<CPacketHeader>(mPacketHeader);    
+            mPacketHeader = new CPacketHeader(_MsgBuffer.Length, true, false, _directFlag, msgid);
+            mMsgHeaderBuffer = CProtobuf.ProtobufSerialize<CPacketHeader>(mPacketHeader);
+        }
+
+        public void SetSendingStart()
+        {
+            mSending = true;
         }
 
         // check packet validate
@@ -74,7 +80,7 @@ namespace ProjectWaterMelon.Network.Packet
             var lHeaderBuffer = CProtobuf.ProtobufSerialize<CPacketHeader>(mPacketHeader);
             var lBodyBuffer = MessageToBuffer<T>(data);
             var lResultBuffer = new byte[lHeaderBuffer.Length + lBodyBuffer.Length];
-            
+
             Buffer.BlockCopy(lHeaderBuffer, 0, lResultBuffer, 0, lHeaderBuffer.Length);
             Buffer.BlockCopy(lBodyBuffer, 0, lResultBuffer, lHeaderBuffer.Length, lBodyBuffer.Length);
 

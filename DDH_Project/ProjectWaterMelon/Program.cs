@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 // --- custom --- //
-using ProjectWaterMelon.Network.Sytem;
+using ProjectWaterMelon.Network.SystemLib;
 using ProjectWaterMelon.Network.MessageWorker;
 using ProjectWaterMelon.Log;
 // -------------- //
@@ -22,6 +23,15 @@ namespace ProjectWaterMelon
 
                 CListener lListener = new CListener();
                 lListener.Start(8800);
+
+                CThreadWorker lWorkerThread = new CThreadWorker();
+                lWorkerThread.Start();
+
+                /*while(true)
+                {
+                    Thread.Sleep(1000);
+                }*/
+
             }
             catch(Exception ex)
             {
