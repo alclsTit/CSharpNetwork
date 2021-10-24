@@ -29,7 +29,6 @@ namespace ProjectWaterMelon
         public const int MAX_HEADER_BUFFER_SIZE = 1024;
         public const uint MAX_SOCKET_RECONNECT_COUNT = 6;
         public const double MAX_PACKET_DELAY_TIME = 1.0;
-        public const uint MAX_SERVER_MONITER_INTERVAL = 5;
 
         public static readonly string DateFormatYMDHMS = "yyyy-MM-dd hh:mm:ss";
         public static readonly string DateFormatYMD = "yyyy-MM-dd";
@@ -63,9 +62,11 @@ namespace ProjectWaterMelon
         }
 
         public static readonly int MAX_SOCKET_HEARTBEAT_GAUGE = 6;              // 6회
-        public static readonly double MAX_HEARTBEAT_INTERVAL = 10000;           // 10초
         public static readonly double MAX_CHECK_CONNECTION_INTERVAL = 50;       // 0.5초
         public static readonly double MAX_RECONNECT_INTERVAL = 20000;           // 20초
+        
+        public static readonly double MAX_HEARTBEAT_INTERVAL = 10;              // 10초
+        public static readonly uint MAX_SERVER_MONITER_INTERVAL = 5;            // 5초 
 
     }
 

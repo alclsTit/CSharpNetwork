@@ -14,35 +14,21 @@ namespace ProjectWaterMelon.Network.SystemLib
         private object mLockObj = new object();
         private Thread mThreadSendQ;
 
-        // 임시 서버 모니터링 
-        private System.Timers.Timer mMoniterTimer = new System.Timers.Timer();
+        // 하트비트 체크 
+        private CHeartbeatManager mHearbeatMng = new CHeartbeatManager();
 
         public CThreadWorker() { }
 
-        ~CThreadWorker()
-        {
-            mMoniterTimer.Enabled = false;
-            mMoniterTimer.Stop();
-        }
-
         public void Start()
         {
-            // 모니터링 체크 
-            mMoniterTimer.Interval = ConstDefine.MAX_SERVER_MONITER_INTERVAL * 1000;
-            mMoniterTimer.Elapsed += new System.Timers.ElapsedEventHandler(OnMoniterHandler);
-            mMoniterTimer.Enabled = true;
-
             // SendQ 는 스레드 1개 할당 
             mThreadSendQ = new Thread(ProcessSendQ);
             mThreadSendQ.Start();
 
-            mMoniterTimer.Start();
+            // 모니터링 체크 on
+            mHearbeatMng.MoniterTimerOn();
         }
 
-        private void OnMoniterHandler(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            Console.WriteLine($"Server Sate => [TotalSession = {CSessionManager.Count()}]");
-        }
 
         public void ProcessSendQ()
         {
