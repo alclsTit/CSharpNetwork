@@ -60,9 +60,11 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
         public void CreateTimers()
         {
+            /*
             m_heartbeat_timer.Interval = MAX_HEARTBEAT_INTERVAL;
             m_heartbeat_timer.Elapsed += new System.Timers.ElapsedEventHandler(OnHeartBeatTimerHandler);
             m_heartbeat_timer.Enabled = true;
+            */
 
             /*
             m_check_connection_timer.Interval = MAX_CHECK_CONNECTION_INTERVAL;
@@ -110,7 +112,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
             //OnCheckConnectionTimer();
         }
 
-        public void OnHeartBeatTimerHandler(object sender, System.Timers.ElapsedEventArgs e)
+        /*public void OnHeartBeatTimerHandler(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (mIsConnected)
             {
@@ -130,6 +132,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
             // 하트비트 메시지 클라이언트에 전송 
         }
+        */
 
         public void OnReconnectTimerHandler(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -149,18 +152,11 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 else
                 {
                     OnCancelReconnectTimer();
-                    Disconnect();
+                    //Disconnect();
                 }
 
             }
         }
- 
-        /*
-        public void OnCheckConnectionTimerHandler(object sender, System.Timers.ElapsedEventArgs e)
-        {
-
-        }
-        */
 
         public void OnCreateHeartBeatTimer()
         {
@@ -252,14 +248,10 @@ namespace ProjectWaterMelon.Network.CustomSocket
             }
         }
         
-        public virtual void Disconnect()
+        public virtual void Disconnect(SocketAsyncEventArgs e)
         {
             if (!mIsConnected)
-            {
-                // [주석] CSocketBase 로그 추가 - Already Socket Disconnect   
-                CLog4Net.LogError("Exception in CSocketBase.Disconnect!!! - Socket is already destroyed");
                 return;
-            }
 
             mSocketState = (short)eSocketState.DISCONNECTED;
             mRawSocket.Shutdown(SocketShutdown.Both);

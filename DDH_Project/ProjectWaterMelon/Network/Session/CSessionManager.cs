@@ -52,6 +52,12 @@ namespace ProjectWaterMelon.Network.Session
             return new ValueTask();
         }
 
+        // 세션 아이디를 이용하여 대상 세션객체를 관리 컨테이너에서 삭제하는 함수 (동기)
+        public static bool Remove(in CSession session)
+        {
+            return mSessionContainer.TryRemove(session.mSessionID, out CSession removedSession);
+        }
+
         // 세션 아이디를 이용하여 대상 세션 객체를 가져오는 함수
         // thread-safe
         public static CSession GetSessionByKey(long session_id)

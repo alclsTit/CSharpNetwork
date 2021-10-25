@@ -57,10 +57,5 @@ namespace ProjectWaterMelon.Network.MessageWorker
                 CLog4Net.LogMsgHandlerError($"Error in {cname} - Packet Time Delay!!!({lElaspedTime.TotalSeconds})");
             }
         }
-
-        public void Relay(Protocol.PacketId msgid, IMessageBase handler)
-        {
-            //mSocket?.AsyncSend<IMessageBase>(mMessageId, message);
-        }
     }
 }

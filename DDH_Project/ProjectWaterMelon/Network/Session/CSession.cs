@@ -28,7 +28,7 @@ namespace ProjectWaterMelon.Network.Session
 
         public void SetSessionID(long id)
         {
-            mSessionID = id;
+            mSessionID = id;       
         }
 
         public void NotifyConnected()

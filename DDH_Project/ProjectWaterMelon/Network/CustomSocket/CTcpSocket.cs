@@ -201,14 +201,17 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
         public void OnBadSendHandler(in SocketAsyncEventArgs e)
         {
+            Disconnect(e);
+            /*
             if (e.UserToken is CSession lUserToken)
             {
                 var lSessionID = lUserToken.mSessionID;
-                lUserToken.mTcpSocket.Disconnect();
+                lUserToken.mTcpSocket.Disconnect(e);
 
                 // TODO: lUserToken 객체 초기화
                 CLog4Net.LogError($"Error in CTcpSocket.OnBadSendHandler - Packet Send Error(SessionID = {lSessionID}, BytesTransferred = {e.BytesTransferred}, SocketError = {e.SocketError}, SendQueueSize = {mSendPacketQ.Count}");
             }
+            */
         }
 
         // Send Handler after operating async send
@@ -282,16 +285,26 @@ namespace ProjectWaterMelon.Network.CustomSocket
             {
                 // 소켓 통신 에러 - 리시브 에러 
                 CLog4Net.LogError($"Exception in CTcpSocket.OnReceiveHandler - Data receive error!!!(BytesTransferred = {e.BytesTransferred}, SocketError = {e.SocketError})");
-                Disconnect();
+                Disconnect(e);
                 return;
             }
         }
 
         // TODO
         // 나중에 필요없으면 삭제 
-        public override void Disconnect()
+        public override void Disconnect(SocketAsyncEventArgs e)
         {
-            base.Disconnect();
+            // 1. 세션 삭제 
+            var lUserToken = e.UserToken as CSession;
+            if (!CSessionManager.Remove(lUserToken))
+                CLog4Net.LogError($"Error in CTcpSocket.Disconnect - Session({lUserToken.mSessionID}) remove Error...");
+
+            // Todo: 비동기 작업 필요
+            //await lUserToken?.OnCloseEvent(lUserToken, EventArgs.Empty).ConfigureAwait(false);
+
+            // Todo: 동기화 작업 필요   
+            e.UserToken = null;
+            base.Disconnect(e);
         }
     }
 }
