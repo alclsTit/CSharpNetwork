@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LAB_ROOM4
+namespace WebSystem
 {
     public interface IWebContent
     {

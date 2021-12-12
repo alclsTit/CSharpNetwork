@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LAB_ROOM4
+namespace WebSystem
 {
-    public enum eHTTPTYPE
+    /*public enum eHTTPTYPE
     {
         GET = 1,
         POST,
@@ -30,7 +30,8 @@ namespace LAB_ROOM4
 
         }
 
-        public abstract void BuildHttpQuery();
+        public abstract void BuildHttpQuery(string url, string param);
 
     }
+    */
 }

@@ -7,14 +7,14 @@ using System.Threading;
 using System.Net;
 using System.Net.Http;
 
-namespace LAB_ROOM4
+namespace WebSystem
 {
     class CWebCancelToken
     {
 
     }
 
-    class CWebManager
+    public static class CWebManager
     {
         /// <summary>
         /// httpclient 를 클래스 종속 인스턴스로 만들면 부하발생 및 소켓 수 고갈
@@ -22,7 +22,7 @@ namespace LAB_ROOM4
         /// </summary>
         private static readonly HttpClient httpClient;
 
-        private bool mDisposeOnce = false;
+        private static bool mDisposeOnce = false;
 
         static CWebManager()
         {
@@ -34,19 +34,24 @@ namespace LAB_ROOM4
         /// </summary>
         /// <param name="url"></param>
         /// <returns></returns>
-        public static async Task<bool> DoHttpGetAsync(string url, string param)
+        public static async Task DoHttpGetAsync(string url, string param)
         {
             var real_url = url + "?" + param;
-            var result = await httpClient.GetAsync(real_url);
+            HttpResponseMessage result = new HttpResponseMessage();
+            try
+            {
+                result = await httpClient.GetAsync(real_url);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Exception in CWebManager.DoHttpGetAsync - {ex.Message}");           
+            }
+
             if (result.IsSuccessStatusCode)
             {
-                var response_message = result.Content.ReadAsStringAsync();
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+                var response = await result.Content.ReadAsStringAsync();
+                ResultSuccess(response);
+            }      
         }
 
         /// <summary>
@@ -55,24 +60,34 @@ namespace LAB_ROOM4
         /// <param name="url"></param>
         /// <param name="client"></param>
         /// <returns></returns>
-        public static async Task<bool> DoHttpPostAsync(string url, string param, HttpContent client)
+        public static async Task DoHttpPostAsync(string url, string param, HttpContent client)
         {
             var real_url = url + param;
-            var result = await httpClient.PostAsync(real_url, client);
+            HttpResponseMessage result = new HttpResponseMessage();
+            try
+            {
+                result = await httpClient.PostAsync(real_url, client);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Exception in CWebManager.DoHttpPostAsync - {ex.Message}");
+            }
+
             if (result.IsSuccessStatusCode)
             {
-                var response_message = result.Content.ReadAsStringAsync();
-                return true;
-            }
-            else
-            {
-                return false;
+                var response = await result.Content.ReadAsStringAsync();
+                ResultSuccess(response);
             }
         }
 
+
+        public static void ResultSuccess(string response)
+        {
+            
+        }
         
 
-        public void Dispose(bool flag)
+        public static void Dispose(bool flag)
         {
             if (mDisposeOnce)
                 return;
