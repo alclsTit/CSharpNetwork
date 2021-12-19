@@ -80,10 +80,17 @@ namespace WebSystem
             }
         }
 
-
+        /// <summary>
+        /// Http Method에 대한 웹 응답이 성공하였을 때 후처리 작업 진행 함수
+        /// </summary>
+        /// <param name="response">웹 서버 응답 메시지</param>
         public static void ResultSuccess(string response)
         {
-            
+            var responseArray = response.Split(',');
+            foreach (var target in responseArray)
+            {
+                Console.WriteLine($"{target}");
+            }
         }
         
 

@@ -11,8 +11,9 @@ namespace WebSystem
     {
         public static void Main(string[] args)
         {
-            CWebCotentManager Content = new CWebCotentManager();
-            Content.LoadConfig("WebInfo");
+            CWebCotentManager Content = new CWebCotentManager("WebInfo");
+
+            Console.ReadLine();
 
         }
     }

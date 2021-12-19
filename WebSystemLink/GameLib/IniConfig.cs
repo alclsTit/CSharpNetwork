@@ -9,15 +9,19 @@ namespace GameLib
 {
     public static class IniConfig
     {
-        [DllImport("kernel32")]
+        private const int MAXLEN = 255;
+        private static StringBuilder mStringBuiler;  
+
+        [DllImport("kernel32", CharSet = CharSet.Unicode)]
         private static extern long WritePrivateProfileString(string section, string key, string value, string filePath);
 
-        [DllImport("kernel32")]
-        private static extern int GetPrivateProfileString(string section, string key, string def_value, int size, string filePath);
+        [DllImport("kernel32", CharSet = CharSet.Unicode)]
+        private static extern int GetPrivateProfileString(string section, string key, string def_value, StringBuilder retval, int size, string filePath);
 
         static IniConfig()
         {
             // 정적생성자 내용이 필요한 경우 이곳에 기입
+            mStringBuiler = new StringBuilder(MAXLEN);
         }
 
         /// <summary>
@@ -40,9 +44,10 @@ namespace GameLib
         /// <param name="filePath"></param>
         /// <param name="def_value"></param>
         /// <param name="size"></param>
-        public static void IniFileRead(string section, string key, string value, string filePath, int size = 256)
+        public static string IniFileRead(string section, string key, string value, string filePath)
         {
-            GetPrivateProfileString(section, key, value, size, filePath);
+            var ret = GetPrivateProfileString(section, key, value, mStringBuiler, MAXLEN, filePath);
+            return mStringBuiler.ToString().Trim();
         }
 
     }

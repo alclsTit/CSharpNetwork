@@ -14,38 +14,54 @@ namespace WebSystem
     public enum eHTTPTYPE
     {
         GET = 1,
-        POST
+        POST = 2
     }
 
     public class CWebCotentManager 
     {
-        public CWebCotentManager()
+        public CWebCotentManager(string iniFileName)
         {
-
+            LoadConfig(iniFileName);
         }
 
+        /// <summary>
+        /// Ini 파일 로드
+        /// </summary>
+        /// <param name="fileName"></param>
         public void LoadConfig(string fileName)
         {
-            var ExePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
-            var filePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(ExePath, @"..\..\..\")) + $"Config\\{fileName}.ini";
+            var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
+            var filePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(exePath, @"..\..\..\..\")) + @"Config\" + $"{fileName}.ini";
 
+            var temp = GameLib.IniConfig.IniFileRead("URL", "TEST", "http://192.168.0.12:8800", filePath);
 
-            GameLib.IniConfig.IniFileRead("URL", "TEST", "", filePath);
-
+            DoHttpReqest(eHTTPTYPE.GET, temp);
         }
 
-        public void BuildHttpQuery(eHTTPTYPE type, string url, string param, HttpContent client = null)
+        public void DoHttpReqest(eHTTPTYPE type, string url, string param = "", HttpContent client = null)
         {
-            switch (type)
+            var result = WorkHttpRequestByMethodAsync(type, url, param, client);
+        }
+  
+        private async Task WorkHttpRequestByMethodAsync(eHTTPTYPE type, string url, string param = "", HttpContent client = null)
+        {
+            try
             {
-                case eHTTPTYPE.GET:
-                    CWebManager.DoHttpGetAsync(url, param);
-                    break;
-                case eHTTPTYPE.POST:
-                    CWebManager.DoHttpPostAsync(url, param, client);
-                    break;
-                default:
-                    break;
+                switch (type)
+                {
+                    case eHTTPTYPE.GET:
+                        await CWebManager.DoHttpGetAsync(url, param);
+                        break;
+                    case eHTTPTYPE.POST:
+                        await CWebManager.DoHttpPostAsync(url, param, client);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.GCLogger.Error(nameof(CWebCotentManager), "BuildHttpQuery", ex);
             }
         }
 
