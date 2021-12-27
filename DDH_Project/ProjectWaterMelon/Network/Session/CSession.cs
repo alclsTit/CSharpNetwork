@@ -12,7 +12,7 @@ using ProjectWaterMelon.Network.CustomSocket;
 namespace ProjectWaterMelon.Network.Session
 {
     // 실제 유저 객체 
-    class CSession
+    public class CSession
     {
         // 세션 이벤트 핸들러
         public event AsyncEventHandler OnCloseEvent;

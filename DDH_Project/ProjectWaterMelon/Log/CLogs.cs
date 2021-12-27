@@ -45,23 +45,6 @@ namespace ProjectWaterMelon.Log
         }
     }
 
-    public class CLogger
-    {
-        public readonly ILog mLog;
-
-        public void init()
-        {
-
-        }
-
-        public void SetLogEnvironment()
-        {
-            var start_time = System.Diagnostics.Process.GetCurrentProcess().StartTime;
-
-        }
-    }
-
-
     // CustomLog - Contents Log
     internal sealed class CLogs
     {

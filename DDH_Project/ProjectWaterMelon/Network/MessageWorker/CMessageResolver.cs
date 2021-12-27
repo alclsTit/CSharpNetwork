@@ -16,7 +16,7 @@ using static ProjectWaterMelon.ConstDefine;
 
 namespace ProjectWaterMelon.Network.MessageWorker
 {
-    class CMessageResolver
+    public class CMessageResolver
     {
         public delegate void OnReceiveCallback(CPacket Packet);
 
@@ -39,7 +39,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
         }
 
         // 수신된 패킷 읽을 때 최초 진입, 헤더 사이즈를 얻는다
-        public bool OnReadHeaderSize(in byte[] Buffer, ref int Offset, int BytesTransferred)
+        private bool OnReadHeaderSize(in byte[] Buffer, ref int Offset, int BytesTransferred)
         {
             if (mRemainBytes < 0) 
                 return false;
@@ -70,7 +70,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
         }
 
         // 수신된 패킷 읽을 때 최초로 진입하는 부분
-        public bool OnReadUntilHeader(in byte[] Buffer, ref int Offset)
+        private bool OnReadUntilHeader(in byte[] Buffer, ref int Offset)
         {
             if (mRemainBytes < 0)
                 return false;
@@ -98,8 +98,7 @@ namespace ProjectWaterMelon.Network.MessageWorker
             return true;
         }
 
-
-        public bool OnReadUntilBody(in byte[] Buffer, ref int Offset, int PosToRead)
+        private bool OnReadUntilBody(in byte[] Buffer, ref int Offset, int PosToRead)
         {
             if (mRemainBytes < 0)
                 return false;
@@ -119,7 +118,8 @@ namespace ProjectWaterMelon.Network.MessageWorker
             return true;
         }
 
-        public void OnReceive(in CSession Session, in byte[] Buffer, int Offset, int ByteTransferred)
+        //public void OnReceive(in CSession Session, in byte[] Buffer, int Offset, int ByteTransferred)
+        public void OnReceive(in CSessionTest Session, in byte[] Buffer, int Offset, int ByteTransferred)
         {
             try
             {
@@ -171,7 +171,8 @@ namespace ProjectWaterMelon.Network.MessageWorker
                     CLog4Net.LogDebugSysLog($"4.CMessageReceiver.OnReceive", $"OnRecive Call Success(total = {mMessageSize}, recv = {ByteTransferred})");
 
                     // 데이터를 모두 받았으면 이를 이용해서 패킷으로 만든다
-                    CPacket packet = new CPacket(Session.mTcpSocket, mHeaderBuffer, mMessageBuffer);
+                    // CPacket packet = new CPacket(Session.mTcpSocket, mHeaderBuffer, mMessageBuffer);
+                    CPacket packet = new CPacket(Session.clientsocket, mHeaderBuffer, mMessageBuffer);
                     if (packet.CheckValidate())
                         CMessageProcessorManager.HandleProcess(packet.GetMessageId(), packet);
                     ClearBuffer();
@@ -185,56 +186,6 @@ namespace ProjectWaterMelon.Network.MessageWorker
             {
                 CLog4Net.LogError($"Exception in CMessageResolver.OnReceive - {ex.Message}, {ex.StackTrace}");
             }
-        }
-
-        public void ProcessPacket(CPacket packet)
-        {
-            try
-            {
-                switch (packet.GetMessageId())
-                {
-                    case Protocol.PacketId.req_test_packet:
-                        //packet.DeSerializePacket<Protocol.msg_test.handler_req_test_packet_user2game>(packet.mMsgBuffer);
-                        break;
-                    case Protocol.PacketId.ack_test_packet:
-                        break;
-                    case Protocol.PacketId.notify_test_packet:
-                        var data = CProtobuf.ProtobufDeserialize<Protocol.msg_test.notify_test_packet_game2user>(packet.mMsgBuffer);
-                        Console.WriteLine($"RecvData = {data.cur_datetime}");
-                        break;
-                    default:
-                        CLog4Net.LogError($"Error in CMessageResolver.ProcessPacket - Packet Type Error({packet.GetMessageId()})");
-                        break;
-                }
-                Console.WriteLine($"=========TEST PACKET => {packet.GetMessageId()}=========");
-            }
-            catch (Exception ex)
-            {
-                CLog4Net.LogError($"Exception in CMessageResolver.ProcessPacket - {ex.Message},{ex.StackTrace}");
-            }
-        }
-
-        public int GetMessageBodySize()
-        {
-            var type = MAX_PACKET_HEADER_SIZE.GetType();
-            if (type.Equals(typeof(UInt16)))
-                return BitConverter.ToInt16(mHeaderBuffer, 0);
-
-            return BitConverter.ToInt32(mHeaderBuffer, 0);
-        }
-
-        public uint GetMessageType()
-        {
-            var type = MAX_PACKET_TYPE_SIZE.GetType();
-            if (type.Equals(typeof(UInt16)))
-                return BitConverter.ToUInt16(mHeaderBuffer, MAX_PACKET_HEADER_SIZE);
-
-            return (BitConverter.ToUInt32(mHeaderBuffer, MAX_PACKET_HEADER_SIZE));
-        }
-
-        public byte[] GetMessageBuffer()
-        {
-            return mMessageBuffer;
         }
 
         public void ClearBuffer()

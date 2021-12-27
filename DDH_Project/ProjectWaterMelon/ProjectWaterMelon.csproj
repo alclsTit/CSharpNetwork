@@ -71,7 +71,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameLib\Extensions.cs" />
+    <Compile Include="GameLib\IniConfig.cs" />
+    <Compile Include="GameLib\ListenOption.cs" />
+    <Compile Include="Log\GCLogger.cs" />
+    <Compile Include="Network\Config\CListenConfig.cs" />
+    <Compile Include="Network\Config\CServerConfig.cs" />
+    <Compile Include="Network\Config\IListenConfig.cs" />
+    <Compile Include="Network\Config\IServerConfig.cs" />
+    <Compile Include="Network\CustomSocket\AbstractAsyncSocket.cs" />
+    <Compile Include="Network\CustomSocket\CTcpAsyncSocket.cs" />
+    <Compile Include="Network\CustomSocket\ISocketBase.cs" />
     <Compile Include="Network\Handlers\Handlers_Network.cs" />
+    <Compile Include="Network\Session\CSessionTest.cs" />
+    <Compile Include="Network\Session\ISessionBase.cs" />
+    <Compile Include="Network\Session\ISessionRoot.cs" />
+    <Compile Include="Network\SystemLib\CAsyncSocketServer.cs" />
     <Compile Include="Network\SystemLib\CBufferManager.cs" />
     <Compile Include="Network\SystemLib\CAcceptor.cs" />
     <Compile Include="CMemoryPool.cs" />
@@ -80,7 +95,7 @@
     <Compile Include="Network\Session\CAcceptSession.cs" />
     <Compile Include="Network\SystemLib\CHeartbeatManager.cs" />
     <Compile Include="Network\SystemLib\CHostFinder.cs" />
-    <Compile Include="Network\SystemLib\CListener.cs" />
+    <Compile Include="Network\SystemLib\CTcpListener.cs" />
     <Compile Include="Log\CLogs.cs" />
     <Compile Include="ConstDefine.cs" />
     <Compile Include="Network\MessageWorker\CMessageResolver.cs" />
@@ -90,6 +105,7 @@
     <Compile Include="Network\Packet\CProtobuf.cs" />
     <Compile Include="Network\Session\CSession.cs" />
     <Compile Include="Network\Session\CSessionManager.cs" />
+    <Compile Include="Network\SystemLib\CListenInfo.cs" />
     <Compile Include="Network\SystemLib\CSocketAsyncEventManager.cs" />
     <Compile Include="Network\CustomSocket\CTcpSocket.cs" />
     <Compile Include="Network\SystemLib\CSocketAsyncEventArgsPool.cs" />
@@ -99,7 +115,12 @@
     <Compile Include="Network\MessageWorker\CMessageProcessorManager.cs" />
     <Compile Include="Network\MessageWorker\IMessageBase.cs" />
     <Compile Include="Network\ModifyInfo.cs" />
+    <Compile Include="Network\SystemLib\IThreadBase.cs" />
+    <Compile Include="Network\SystemLib\SocketListenBase.cs" />
     <Compile Include="Network\SystemLib\CThreadWorker.cs" />
+    <Compile Include="Network\SystemLib\ISocketListenBase.cs" />
+    <Compile Include="Network\SystemLib\ISocketServerBase.cs" />
+    <Compile Include="Network\SystemLib\SocketServerBase.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Protocol\FlatBuffers\ByteBuffer.cs" />
@@ -116,6 +137,12 @@
     <Compile Include="Protocol\PacketMsg\PacketMsg.cs" />
     <Compile Include="Protocol\PacketMsg\sPacketInfo.cs" />
     <Compile Include="Utility\CAsyncEventHandler.cs" />
+    <Compile Include="Utility\CPoolingManager.cs" />
+    <Compile Include="Utility\CSendingQueue.cs" />
+    <Compile Include="Utility\CSendingQueueCreator.cs" />
+    <Compile Include="Utility\IPoolCreator.cs" />
+    <Compile Include="Utility\IPoolingManager.cs" />
+    <Compile Include="Utility\IPoolingManagerBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

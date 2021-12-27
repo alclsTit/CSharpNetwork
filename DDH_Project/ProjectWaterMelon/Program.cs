@@ -8,7 +8,12 @@ using System.Threading;
 using ProjectWaterMelon.Network.SystemLib;
 using ProjectWaterMelon.Network.MessageWorker;
 using ProjectWaterMelon.Log;
+using ProjectWaterMelon.Network.Config;
 // -------------- //
+
+// test
+using ProjectWaterMelon.Network.CustomSocket;
+using ProjectWaterMelon.Network.Packet;
 
 namespace ProjectWaterMelon
 {
@@ -21,8 +26,15 @@ namespace ProjectWaterMelon
                 // register MessageHandler
                 CMessageReceiver.Init();
 
-                CListener lListener = new CListener();
-                lListener.Start(8800);
+                // Listen Config
+                CServerConfig lServerConfig = new CServerConfig();
+                CListenInfo ListenInfo = new CListenInfo(lServerConfig);
+
+                CTcpAsyncSocket test = new CTcpAsyncSocket(lServerConfig);
+                test.StartSend(new CPacket());
+
+                CTcpListener lListener = new CTcpListener(ListenInfo);
+                lListener.Start(lServerConfig);
 
                 CThreadWorker lWorkerThread = new CThreadWorker();
                 lWorkerThread.Start();

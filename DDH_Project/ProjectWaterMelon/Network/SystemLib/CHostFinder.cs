@@ -28,7 +28,7 @@ namespace ProjectWaterMelon.Network.SystemLib
             }
             catch(Exception ex)
             {
-                CLog4Net.gLog4Net.ErrorFormat($"Exception in CHostFinder.GetServerIPEndPointByHostEntry - {ex.Message},{ex.StackTrace},{host}-{port}-{ipV4Flag}");
+                GCLogger.Error(nameof(CHostFinder), $"GetServerIPEndPointByIPAddress", ex, $"Host = {host} - Port = {port} - IPv4 = {ipV4Flag}");
             }
             return retIPEndPoint;
         }
@@ -42,7 +42,7 @@ namespace ProjectWaterMelon.Network.SystemLib
             }
             catch(Exception ex)
             {
-                CLog4Net.gLog4Net.ErrorFormat($"Exception in CHostFinder.GetServerIPEndPointByIPAddress - {ex.Message},{ex.StackTrace},{host}-{port}");
+                GCLogger.Error(nameof(CHostFinder), $"GetServerIPEndPointByIPAddress", ex, $"Host = {host} - Port = {port}");
             }
             return retIPEndPoint;
         }

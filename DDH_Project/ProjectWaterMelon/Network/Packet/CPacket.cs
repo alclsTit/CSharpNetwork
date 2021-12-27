@@ -9,6 +9,8 @@ using System.Runtime.Serialization.Formatters.Binary;
 using ProjectWaterMelon.Network.CustomSocket;
 using ProjectWaterMelon.Log;
 using static ProjectWaterMelon.ConstDefine;
+// 2021.11.07 테스트코드 
+using ProjectWaterMelon.Utility;
 // ------------- //
 
 /*
@@ -28,7 +30,8 @@ namespace ProjectWaterMelon.Network.Packet
         public byte[] mMsgBuffer { get; private set; }
         // 패킷 데이터(헤더)
         public byte[] mMsgHeaderBuffer { get; private set; }
-        public CTcpSocket mTcpSocket { get; private set; }
+        //public CTcpSocket mTcpSocket { get; private set; }
+        public CTcpAsyncSocket mTcpSocket { get; private set; }
         public CPacketHeader mPacketHeader { get; private set; }
         public bool mSending { get; private set; } = false;
 
@@ -39,7 +42,8 @@ namespace ProjectWaterMelon.Network.Packet
         }
 
         // 패킷 수신받았을 때 디시리얼라이징된 대상으로 세팅되는 패킷생성자
-        public CPacket(in CTcpSocket _TcpSocket, in byte[] _HeaderBuffer, in byte[] _BodyBuffer)
+        //public CPacket(in CTcpSocket _TcpSocket, in byte[] _HeaderBuffer, in byte[] _BodyBuffer)
+        public CPacket(in CTcpAsyncSocket _TcpSocket, in byte[] _HeaderBuffer, in byte[] _BodyBuffer)
         {
             mTcpSocket = _TcpSocket;
             mMsgHeaderBuffer = _HeaderBuffer;
@@ -48,7 +52,8 @@ namespace ProjectWaterMelon.Network.Packet
         }
 
         // 패킷 송,수신 시 호출되는 CPacket 생성자 
-        public CPacket(in CTcpSocket _TcpSocket, in byte[] _MsgBuffer, bool _directFlag, Protocol.PacketId msgid)
+        // public CPacket(in CTcpSocket _TcpSocket, in byte[] _MsgBuffer, bool _directFlag, Protocol.PacketId msgid)
+        public CPacket(in CTcpAsyncSocket _TcpSocket, in byte[] _MsgBuffer, bool _directFlag, Protocol.PacketId msgid)
         {
             mTcpSocket = _TcpSocket;
             mMsgBuffer = _MsgBuffer;
@@ -129,6 +134,16 @@ namespace ProjectWaterMelon.Network.Packet
         public void Destroy()
         {
 
+        }
+
+        // 2021.11.07 테스트코드 
+
+        public void BuildPacket(in CSendingQueue queue)
+        {
+            byte[] lMsgBuffer = new byte[queue.Capacity];
+          
+
+           
         }
 
         #region 주석코드[테스트 코드]

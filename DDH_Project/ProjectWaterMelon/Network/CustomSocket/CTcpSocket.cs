@@ -18,17 +18,46 @@ using static ProjectWaterMelon.ConstDefine;
 
 namespace ProjectWaterMelon.Network.CustomSocket
 {
+    /// <summary>
+    /// Reason for socket close
+    /// </summary>
+    public enum CloseReason
+    {
+        /// <summary>
+        /// Socket close Unknown reason
+        /// </summary>
+        UnKnown = 0,
+
+        /// <summary>
+        /// Socket close by server shutdown
+        /// </summary>
+        ServerShutdown = 1,
+
+        /// <summary>
+        /// Socket close by client close
+        /// </summary>
+        ClientClose = 2,
+        
+        /// <summary>
+        /// Socket close by server timeout
+        /// </summary>
+        TimeOut = 3,
+
+        /// <summary>
+        /// Socket close by socket error
+        /// </summary>
+        SocketError = 4
+    }
+
     // Session(UserToken)개별 소유
     public sealed class CTcpSocket : CSocketBase
     {
         private bool mIsDisposed = false;
         // 메시지 Recv 처리 
-        private CMessageResolver mMessageReceiver = new CMessageResolver();
-        
+        private CMessageResolver mMessageReceiver = new CMessageResolver();    
         // 메시지 Send 처리
         private int mAlreadySendBytes;
-        private int mHaveToSendBytes;
-
+        public int mHaveToSendBytes { get; private set; }
         public EndPoint mRemoteEP { get; private set;}
         public EndPoint mLocalEP { get; private set; }
 

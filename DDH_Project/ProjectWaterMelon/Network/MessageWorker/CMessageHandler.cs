@@ -15,7 +15,8 @@ namespace ProjectWaterMelon.Network.MessageWorker
     public class CMessageHandler : IMessageBase
     {
         public Protocol.PacketId mMessageId { get; private set; }
-        public CTcpSocket mSocket { get; private set; }
+        //public CTcpSocket mSocket { get; private set; }
+        public CTcpAsyncSocket mSocket { get; private set; }
         public CPacket mPacket { get; private set; }
 
         public CMessageHandler(Protocol.PacketId _MessageId)

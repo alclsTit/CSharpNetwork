@@ -11,4 +11,6 @@ namespace ProjectWaterMelon.Network
     // [주석] CSocketBase 로그 추가 
 
     // 20211013 SendQ 패킷처리 변경(CMessageProcessManager -> TcpSocket의 mSendPacketQ)
+
+    // 20211103 GetLogger 로거 세팅필요
 }

@@ -41,39 +41,6 @@ namespace ProjectWaterMelon.Network.CustomSocket
             mSendArgs = sendArgs;
         }
 
-        public void SetSendRecvArgs(eSocketType type ,SocketAsyncEventArgs args)
-        {
-            switch(type)
-            {
-                case eSocketType.RECV:
-                    mRecvArgs = args;
-                    break;
-                case eSocketType.SEND:
-                    mSendArgs = args;
-                    break;
-                default:
-                    CLog4Net.LogError("Exception in CSocketBase.SetSendRecvArgs!!! - Socket Type Set Error");
-                    break;
-            }
-        }
-
-
-        public void CreateTimers()
-        {
-            /*
-            m_heartbeat_timer.Interval = MAX_HEARTBEAT_INTERVAL;
-            m_heartbeat_timer.Elapsed += new System.Timers.ElapsedEventHandler(OnHeartBeatTimerHandler);
-            m_heartbeat_timer.Enabled = true;
-            */
-
-            /*
-            m_check_connection_timer.Interval = MAX_CHECK_CONNECTION_INTERVAL;
-            m_check_connection_timer.Elapsed += new System.Timers.ElapsedEventHandler(OnCheckConnectionTimerHandler);
-            m_check_connection_timer.AutoReset = true;
-            m_check_connection_timer.Enabled = true;
-            */
-        }
-
         public void ReconnectTimer()
         {
             mReconnectOnOff = true;

@@ -1,0 +1,45 @@
+1. ISessionBase
+	- 서버 접속 클라이언트 
+	- session은 클라와 1:1 매칭 
+	- 1. 연결된 세션의 주소 정보 (세션은 원격지와 연결된 것이므로 원격지 주소정보만 가지고 있으면 된다)
+	  2. 연결된 세션 아이디 
+
+2. IServerConfig
+	- 서버 설정 값 세팅
+
+
+3. ISocketSession
+- ISessionBase 상속
+- 소켓 세션정보, 소켓과 관련된 작업 포함 
+
+
+4. CMessageResolver
+- 메시지 수신처리 클래스
+- session : tcpsocket = 1 : 1
+  tcpsocket : CMessageResolver = 1 : 1
+
+=> OnReceiveHandler 에서 
+    CMessageResolver.OnReceive 를 async 로 호출?
+    아님, 절차적 처리 
+
+[멤버 변수]
+1. 서버(호스트) 주소 => LocalEndPoint 
+2. 송신 버퍼 (SocketAsyncEventArgs)
+3. 수신 버퍼 (SocketAsyncEventArgs)
+4. 연결 유무
+5. 패킷 송,수신 타임아웃 값  
+6. 소켓 객체 
+
+
+[멤버 메서드]
+1. 패킷 송신 
+2. 패킷 수신 
+3. 패킷 송신 콜백 메서드
+4. 패킷 수신 콜백 메서드 
+5. 소켓 옵션 세팅
+6. 소켓 중단에 따른 후처리 메서드 
+
+
+4. IAsyncSocketBase
+	- 비동기 소켓과 관련된 작업 포함
+	- 비동기 소켓은 송신버퍼, 수신버퍼 하나씩을 갖고있다 (버퍼관리 메모리풀 존재)
