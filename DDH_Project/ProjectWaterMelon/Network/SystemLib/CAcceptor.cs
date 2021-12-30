@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 // --- custom --- //
+using ProjectWaterMelon.GameLib;
 using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
 using static ProjectWaterMelon.ConstDefine;
@@ -21,9 +22,10 @@ using static ProjectWaterMelon.GSocketState;
 //var result = listenSocket.AcceptAsync().ConfigureAwait(false);
 //OnAcceptHandler(acceptAsyncObject);
 
+// acceptasync에서 사용하는 socketasynceventargs 객체 풀링필요없음
 namespace ProjectWaterMelon.Network.SystemLib
 {
-    class CAcceptor
+    public sealed class CAcceptor : SocketServerBase
     {
         /// <summary>
         /// Client 소켓통신에 사용될 Socket 객체, 연결된 클라이언트 소켓 끝점에 대한 정보를 가진다
@@ -39,88 +41,72 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// <summary>
         /// Accept SocketAsyncEventArgs 풀링객체
         /// </summary>
-        private CSocketAsyncEventArgsPool mConcurrentAcceptPool;
+        private SocketAsyncEventArgs mAsyncAcceptEvtObj; 
 
         /// <summary>
         /// 비동기 작업 취소에 따른 후처리를 위한 객체
         /// </summary>
         private CancellationTokenSource mCancelTokenSource = new CancellationTokenSource();
 
+        public int mNumberOfMaxConnect { get; private set; }
+
         /// <summary>
         /// 현재 서버에 accept 된 대상 카운트
         /// </summary>
         public int mCurAcceptCount { get; private set; } = 0;
 
-        public delegate void OnSocketAsyncEventArgsInput(object sender, SocketAsyncEventArgs args);
-        public delegate void OnNewClientHandler(Socket Socket, object UserToken);
+        private object mLockObj = new object();
 
-        public CAcceptor(int numberOfMaxConnect)
+        //public delegate void OnSocketAsyncEventArgsInput(object sender, SocketAsyncEventArgs args);
+        //public delegate void OnNewClientHandler(Socket Socket, object UserToken);
+
+        public CAcceptor(in Socket socket, int numberOfMaxConnect) : base(false)
         {
-            mConcurrentAcceptPool = new CSocketAsyncEventArgsPool(numberOfMaxConnect);
+            mClientSocket = socket;
 
-            // SocketAsyncEventArgs의 UserToken 및 Buffer는 사용할 일이 없으므로 따로 세팅하지 않는다
-            for(var idx = 0; idx < numberOfMaxConnect; ++idx)
-            {
-                SocketAsyncEventArgs accept = new SocketAsyncEventArgs();
-                accept.Completed += new EventHandler<SocketAsyncEventArgs>(PrevWork_OnAcceptHandler);
-                mConcurrentAcceptPool.Push(accept);
-            }
+            this.Initialize(numberOfMaxConnect);
+        }
+
+        public override void Initialize(int numberOfMaxConnect)
+        {
+            mNumberOfMaxConnect = numberOfMaxConnect;
         }
 
         /// <summary>
-        /// Accept 전용 SocketAsyncEventArgs 객체 생성 
-        /// 이벤트 핸들러만 지정해서 생성. 변동적인건 추후 세팅
-        /// </summary>
-        /// <param name="handler"></param>
-        /// <returns></returns>
-        private SocketAsyncEventArgs CreateDirectAcceptAsyncEventObject(OnSocketAsyncEventArgsInput handler)
-        {
-            SocketAsyncEventArgs accept = new SocketAsyncEventArgs();
-            accept.Completed += new EventHandler<SocketAsyncEventArgs>(handler);
-
-            return accept;
-        }
-
-        /// <summary>
-        /// 전달받은 listen socket으로 비동기 accept 진행
+        /// 전달받은 listen socket으로 비동기 accept 진행, Accept 스레드에서 별도로 진행 (Not need thread safe)
         /// </summary>
         /// <param name="listenSocket"></param>
         /// <returns></returns>
-        public void StartAcceptLoop(Socket listenSocket)
+        public override bool Start()
         {
-            // 별도의 비동기 작업 취소가 없을 때까지 루프
-            while(!mCancelTokenSource.IsCancellationRequested)
+            try
             {
-                try
-                {
-                    var acceptAsyncObject = mConcurrentAcceptPool.GetCurPoolingCount > 0 ? mConcurrentAcceptPool.Pop() : CreateDirectAcceptAsyncEventObject(PrevWork_OnAcceptHandler);
-                    if (acceptAsyncObject != null)
-                    {
-                        if (!listenSocket.AcceptAsync(acceptAsyncObject))
-                            OnAcceptHandler(acceptAsyncObject);
+                mAsyncAcceptEvtObj = new SocketAsyncEventArgs();
+                mAsyncAcceptEvtObj.Completed += new EventHandler<SocketAsyncEventArgs>(PrevWork_OnAcceptHandler);
 
-                        // AcceptAsync를 통해 비동기로 클라접속을 받은 뒤 처리될 때까지 start 함수호출 스레드 대기상태로 변경
-                        mFlowControlEvt.WaitOne();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    if (ex is ObjectDisposedException || ex is NullReferenceException)
-                        break;
+                if (!mClientSocket.AcceptAsync(mAsyncAcceptEvtObj))
+                    OnAcceptHandler(mAsyncAcceptEvtObj);
 
-                    if (ex is SocketException se)
-                    {
-                        var errorCode = se.ErrorCode;
-
-                        //The listen socket was closed
-                        if (errorCode == 125 || errorCode == 89 || errorCode == 995 || errorCode == 10004 || errorCode == 10038)
-                            break;
-                    }
-
-                    GCLogger.Error(nameof(CAcceptor), $"Start", ex);
-                    continue;
-                }
+                return true;
             }
+            catch (Exception ex)
+            {
+                if (ex is ObjectDisposedException || ex is NullReferenceException)
+                    return false;
+
+                if (ex is SocketException se)
+                {
+                    var errorCode = se.ErrorCode;
+
+                    //The listen socket was closed
+                    if (errorCode == 995 || errorCode == 10004 || errorCode == 10038)
+                        return false;
+                }
+
+                GCLogger.Error(nameof(CAcceptor), $"Start", ex);
+            }
+
+            return false;
         }
 
         private void PrevWork_OnAcceptHandler(object sender, SocketAsyncEventArgs e)
@@ -163,109 +149,131 @@ namespace ProjectWaterMelon.Network.SystemLib
             lUserToken.mTcpSocket.SetEventArgs(recvArgs, sendArgs);
         }
 
-        /// <summary>
-        /// 비동기 소켓통신 응답에 대한 콜백함수가 호출될 때, 체크사항 (1.통신 성공유무 2.수신된 데이터바이트 크기)
-        /// 수신된 데이터바이트 크기가 0인 경우 TCP에서는 소켓통신이 종료된 것으로 인식
-        /// </summary>
-        /// <param name="e"></param>
-        /// <returns></returns>
-        private bool CheckCallbackHandler(in SocketAsyncEventArgs e)
-        {
-            if (e.SocketError == SocketError.Success)
-            {
-                if (e.BytesTransferred > 0)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         private void OnAcceptHandler(SocketAsyncEventArgs e)
         {
-            if (!this.CheckCallbackHandler(e))
-            {
-                GCLogger.Error(nameof(CAcceptor), "OnAcceptHandler", $"Accept callback error - [ErrorCode] = {e.SocketError}, [ByteTransferred] = {e.BytesTransferred.ToString()}");
-            }
-            else
+            if (AsyncSocketCommonFunc.CheckCallbackHandler(e.SocketError))
             {
                 Socket client = null;
                 client = e.AcceptSocket;
 
+           
 
-            }
-        }
 
-        /*
-         * 정의: accept 비동기 호출 완료 시 호출되는 콜백함수
-         * 성공 시 recv 진행, 실패 시 onBadAcceptHandler 호출 
-         */
-        // Accept - Connect의 경우 buffer에 별도의 내용을 보내주지 않기때문에 bytetransferred = 0
-        private void OnAcceptHandler(object sender, SocketAsyncEventArgs e)
-        {
-            Console.WriteLine($"Thread[OnConnectHandler] ID => {Thread.CurrentThread.ManagedThreadId} ---- { Thread.CurrentThread.ThreadState}");
-            if (!CheckCallbackHandler(e))
-            {
-                GCLogger.LogDebugMode(nameof(CAcceptor), $"OnAcceptHandler", $"Call OnAccpetHandler(Accpet is success)");
-            }
-            
-            if (e.SocketError == SocketError.Success)
-            {
-                CLog4Net.LogDebugSysLog($"2.CAcceptor.OnAcceptHandler", $"Call OnAccpetHandler(Accpet is success)");
-
-                var recvArgs = CSocketAsyncEventManager.GetRecvSendSocketAsyncEventArgsPools(eSocketType.RECV);
-                if (recvArgs == null) recvArgs = CSocketAsyncEventManager.GetRecvSendSocketAsyncEventArgs(eSocketType.RECV);
-
-                var sendArgs = CSocketAsyncEventManager.GetRecvSendSocketAsyncEventArgsPools(eSocketType.SEND);
-                if (sendArgs == null) sendArgs = CSocketAsyncEventManager.GetRecvSendSocketAsyncEventArgs(eSocketType.SEND);
-
-                // 여기서 pop을 통해 받아온 recv/sendargs 값의 UserToken의 socket 은 listen socket으로 되어있다
-                // 반면, GetRecvSendSocketAsyncEventArgs 을 통해 받아온 UserToken의 socket은 accpet Socket으로 되어있다
-                if (recvArgs != null && sendArgs != null)
-                {
-                    ResetAndSetCSession(e.AcceptSocket, ref recvArgs, ref sendArgs);
-                    CLog4Net.LogDebugSysLog($"3.CAcceptor.OnAcceptHandler", $"Receive Start");
-
-                    var lUserToken = recvArgs.UserToken as CSession;
-                    CSessionManager.Add(ref lUserToken);
-
-                    bool lPending = lUserToken.mTcpSocket.mRawSocket.ReceiveAsync(recvArgs);
-                    if (!lPending)
-                    {
-                        CLog4Net.LogDebugSysLog($"3.CAcceptor.OnAcceptHandler", $"Call OnReceiveHandler(No Async Call)");
-                        lUserToken.mTcpSocket.OnReceiveHandler(this, recvArgs);
-                    }
-
-                    lUserToken.NotifyConnected();
-                }
-                else
-                {
-                    onBadAcceptHandler(ref e);
-                    if (recvArgs == null)
-                    {
-                        CLog4Net.LogError($"Error in CAcceptor.OnAcceptHandler!!! - Recv socketAsyncEventArgs is NULL");
-                    }
-                    else if (sendArgs == null)
-                    {
-                        CLog4Net.LogError($"Error in CAcceptor.OnAcceptHandler!!! - Send socketAsyncEventArgs is NULL");
-                    }
-                    else
-                    {
-                        CLog4Net.LogError($"Error in CAcceptor.OnAcceptHandler!!! - Recv && Send socketAsyncEventArgs is NULL");
-                    }
-                }
             }
             else
             {
-                onBadAcceptHandler(ref e);
-                CLog4Net.LogError($"Error in CAcceptor.OnAcceptHandler!!! - {e.SocketError}");
+                GCLogger.Error(nameof(CAcceptor), "OnAcceptHandler", $"Accept callback error - [ErrorCode] = {e.SocketError}, [ByteTransferred] = {e.BytesTransferred.ToString()}");
+
+                var errorCode = (int)e.SocketError;
+
+                //The listen socket was closed
+                if (errorCode == 995 || errorCode == 10004 || errorCode == 10038)
+                    return;
+
+                //ToDo: 소켓 후처리 
             }
-            mFlowControlEvt.Set();
+
+            e.AcceptSocket = null;
+            
+            var asyncResult = mClientSocket.AcceptAsync(e);
         }
+
+        public override void Stop()
+        {
+            var socket = mClientSocket;
+
+            if (socket == null)
+                return;
+
+            try
+            {
+                lock(mLockObj)
+                {
+                    mAsyncAcceptEvtObj.Completed -= new EventHandler<SocketAsyncEventArgs>(PrevWork_OnAcceptHandler);
+                    mAsyncAcceptEvtObj.Dispose();
+                    mAsyncAcceptEvtObj = null;          
+                 
+                    socket.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                GCLogger.Error(nameof(CAcceptor), "Stop", ex);
+            }
+        }     
     }
 }
 
+/*
+/// <summary>
+/// 정의: accept 비동기 호출 완료 시 호출되는 콜백함수
+/// 성공 시 recv 진행, 실패 시 onBadAcceptHandler 호출 
+/// Accept - Connect의 경우 buffer에 별도의 내용을 보내주지 않기때문에 bytetransferred = 0
+/// </summary>
+/// <param name="sender"></param>
+/// <param name="e"></param>
+private void OnAcceptHandler(object sender, SocketAsyncEventArgs e)
+{
+    Console.WriteLine($"Thread[OnConnectHandler] ID => {Thread.CurrentThread.ManagedThreadId} ---- { Thread.CurrentThread.ThreadState}");
+    if (!AsyncSocketCommonFunc.CheckCallbackHandler(e.SocketError, e.BytesTransferred))
+    {
+        GCLogger.LogDebugMode(nameof(CAcceptor), $"OnAcceptHandler", $"Call OnAccpetHandler(Accpet is success)");
+    }
+
+    if (e.SocketError == SocketError.Success)
+    {
+        CLog4Net.LogDebugSysLog($"2.CAcceptor.OnAcceptHandler", $"Call OnAccpetHandler(Accpet is success)");
+
+        var recvArgs = CSocketAsyncEventManager.GetRecvSendSocketAsyncEventArgsPools(eSocketType.RECV);
+        if (recvArgs == null) recvArgs = CSocketAsyncEventManager.GetRecvSendSocketAsyncEventArgs(eSocketType.RECV);
+
+        var sendArgs = CSocketAsyncEventManager.GetRecvSendSocketAsyncEventArgsPools(eSocketType.SEND);
+        if (sendArgs == null) sendArgs = CSocketAsyncEventManager.GetRecvSendSocketAsyncEventArgs(eSocketType.SEND);
+
+        // 여기서 pop을 통해 받아온 recv/sendargs 값의 UserToken의 socket 은 listen socket으로 되어있다
+        // 반면, GetRecvSendSocketAsyncEventArgs 을 통해 받아온 UserToken의 socket은 accpet Socket으로 되어있다
+        if (recvArgs != null && sendArgs != null)
+        {
+            ResetAndSetCSession(e.AcceptSocket, ref recvArgs, ref sendArgs);
+            CLog4Net.LogDebugSysLog($"3.CAcceptor.OnAcceptHandler", $"Receive Start");
+
+            var lUserToken = recvArgs.UserToken as CSession;
+            CSessionManager.Add(ref lUserToken);
+
+            bool lPending = lUserToken.mTcpSocket.mRawSocket.ReceiveAsync(recvArgs);
+            if (!lPending)
+            {
+                CLog4Net.LogDebugSysLog($"3.CAcceptor.OnAcceptHandler", $"Call OnReceiveHandler(No Async Call)");
+                lUserToken.mTcpSocket.OnReceiveHandler(this, recvArgs);
+            }
+
+            lUserToken.NotifyConnected();
+        }
+        else
+        {
+            onBadAcceptHandler(ref e);
+            if (recvArgs == null)
+            {
+                CLog4Net.LogError($"Error in CAcceptor.OnAcceptHandler!!! - Recv socketAsyncEventArgs is NULL");
+            }
+            else if (sendArgs == null)
+            {
+                CLog4Net.LogError($"Error in CAcceptor.OnAcceptHandler!!! - Send socketAsyncEventArgs is NULL");
+            }
+            else
+            {
+                CLog4Net.LogError($"Error in CAcceptor.OnAcceptHandler!!! - Recv && Send socketAsyncEventArgs is NULL");
+            }
+        }
+    }
+    else
+    {
+        onBadAcceptHandler(ref e);
+        CLog4Net.LogError($"Error in CAcceptor.OnAcceptHandler!!! - {e.SocketError}");
+    }
+    mFlowControlEvt.Set();
+}
+*/
 
 /// <summary>
 /// Accept 스레드에서 비동기 Accept 진행

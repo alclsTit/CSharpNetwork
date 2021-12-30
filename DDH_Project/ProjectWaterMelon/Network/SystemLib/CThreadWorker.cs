@@ -46,10 +46,10 @@ namespace ProjectWaterMelon.Network.SystemLib
         }
 
         /// <summary>
-        /// ThreadPoolManager에서 관리하는 스레드 객체가 몇개 안되므로 메서드에서 생성       
+        /// ThreadPoolManager에서 관리하는 스레드 객체가 몇개 안되므로 메서드에서 생성, 비동기작업      
         /// </summary>
         /// <param name="work">파라미터 및 반환 값이 없는 메서드</param>
-        /// <param name="threadName"></param>
+        /// <param name="threadName">스레드작업 이름</param>
         /// <param name="isBackground">true => 메인스레드 종료시 같이 종료, false(foreground) => 메인스레드 종료와 무관하게 작동</param>
         /// <returns></returns>
         public Task<bool> SetupThreadInfo(Action work, string threadName, bool isBackground)

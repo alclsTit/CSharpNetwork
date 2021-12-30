@@ -89,9 +89,12 @@ namespace ProjectWaterMelon.Network.Session
         {
         }
 
+        /// <summary>
+        /// Recv 작업 진행 
+        /// </summary>
         public void Start()
         {
-            
+            clientsocket.StartReceive();
         }
 
         public void Close()

@@ -66,10 +66,10 @@ namespace ProjectWaterMelon.Network.SystemLib
             mServerConfig.keepAliveInterval = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Keep_Alive_Interval", "5", filePath));
 
             // Send 전용 버퍼사이즈 
-            mServerConfig.sendBufferSize = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Send_Buffer_Size", "1024", filePath));
+            mServerConfig.sendBufferSize = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Send_Buffer_Size", "4096", filePath));
 
             // Recv 전용 버퍼사이즈 
-            mServerConfig.recvBufferSize = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Recv_Buffer_Size", "1024", filePath));
+            mServerConfig.recvBufferSize = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Recv_Buffer_Size", "4096", filePath));
 
             // Send Queue 사이즈 
             mServerConfig.sendingQueueSize = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Send_Queue_Size", "5", filePath));
@@ -84,40 +84,47 @@ namespace ProjectWaterMelon.Network.SystemLib
             mServerConfig.maxThreadCount = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Max_Thread_Count", "8", filePath));
         }
 
-        public void Start()
+        public async Task Start()
         {
-            
-        }
-
-        public async ValueTask SetUp()
-        {
-            await SetupThreadPool();
-        }
+            var result = await SetupThreadPool();
 
 
-        /// <summary>
-        /// TcpListener 세팅, 많지않고 한번 세팅진행하므로 따로 풀링하지 않음 
-        /// </summary>
-        private void StartTcpListener()
-        {
-            foreach (var listenObj in mListenConfigList)
-            {
-                CTcpListener listener = new CTcpListener(listenObj);
-                listener.Start(mServerConfig.max_connect_count);
-            }
+            if (result)
+                mThreadPool?.StartAllThread();          
         }
 
         /// <summary>
         /// ThreadPoolManager 세팅
         /// </summary>
-        private async Task SetupThreadPool()
+        private async Task<bool> SetupThreadPool()
         {
             mThreadPool = new CThreadPoolManager(mServerConfig.minThreadCount, mServerConfig.maxThreadCount);
 
-            var result = await mThreadPool.SetupThreadInfo(this.StartTcpListener, "AcceptThread", true);
-            if (!result)
-                GCLogger.Error(nameof(CAsyncSocketServer), "SetupThreadPool", "ThreadPoolManager[AcceptThread] set fail");
+            try
+            {
+                // 1.Accept 전용 스레드 생성
+                var result = await mThreadPool.SetupThreadInfo(() => {
+                        foreach (var listenObj in mListenConfigList)
+                        {
+                            // TcpListener 세팅, 많지않고 한번 세팅진행하므로 따로 풀링하지 않음
+                            CTcpListener listener = new CTcpListener(listenObj, mServerConfig.max_connect_count);
+                            listener.Start();
+                        }
+                    }, "AcceptThread", true);
+                if (!result)
+                {
+                    GCLogger.Error(nameof(CAsyncSocketServer), "SetupThreadPool", "ThreadPoolManager[AcceptThread] set fail");
+                    return result;
+                }
 
+                return result;
+
+            }
+            catch (Exception ex)
+            {
+                GCLogger.Error(nameof(CAsyncSocketServer), "SetUpThreadPool", ex);
+                return false;
+            }
         }
 
     }

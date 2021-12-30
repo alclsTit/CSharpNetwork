@@ -19,7 +19,7 @@ namespace ProjectWaterMelon.Network.SystemLib
     /// <summary>
     /// Tcp ListenSocket Class
     /// </summary>
-    class CTcpListener : SocketListenBase
+    public sealed class CTcpListener : SocketServerBase //SocketListenBase
     {
         /// <summary>
         /// Listen 전용 클라이언트 통신 소켓, accept 소켓과 별도 
@@ -36,21 +36,30 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// </summary>
         private CAcceptor mAcceptObj;
 
+        private int mNumberOfMaxConnect;
+
         /// <summary>
         /// Listen, Accept 상태 
         /// </summary>
-        public bool isRunning { get; private set; } = false;
+        //public bool isRunning { get; private set; } = false;
 
         // 클라이언트 접속 시 호출될 델리게이트 
         public delegate void NewClientAccessHandler(Socket _clientSocket, object _tocken);
         public NewClientAccessHandler CallBack_On_NewClient = null;
 
-        public CTcpListener(IListenConfig config) 
+        public CTcpListener(IListenConfig config, int numberOfMaxConnect) : base(false)
         {       
             mListenInfo = config as CListenConfig;
+
+            this.Initialize(numberOfMaxConnect);
         }
 
-        public bool Start(int numberOfMaxConnect)
+        public override void Initialize(int numberOfMaxConnect)
+        {
+            mNumberOfMaxConnect = numberOfMaxConnect;
+        }
+
+        public override bool Start()
         {
             var listenInfo = mListenInfo;
             try
@@ -66,8 +75,8 @@ namespace ProjectWaterMelon.Network.SystemLib
                     listenSocket.Bind(listenInfo.mIPEndPoint);
                     listenSocket.Listen(listenInfo.backlog);
 
-                    mAcceptObj = new CAcceptor(numberOfMaxConnect);
-                    mAcceptObj.StartAcceptLoop(listenSocket);
+                    mAcceptObj = new CAcceptor(listenSocket, mNumberOfMaxConnect);
+                    mAcceptObj.Start();
 
                     return true;
                 }
@@ -80,26 +89,6 @@ namespace ProjectWaterMelon.Network.SystemLib
             catch (Exception ex)
             {
                 GCLogger.Error(nameof(CTcpListener), "Start", ex, "Listen start fail");
-                return false;
-            }
-        }
-
-        // Listen 소켓 하나당 Accpet Thread를 생성해서 Accpet 지속적으로 처리 
-        public override bool Start(in IListenConfig config, int maxAcceptSize)
-        {     
-            try
-            {
-               
-                // accept 
-                //mAcceptor = new CAcceptor(mListenSocket, EndPoint, maxAcceptSize);
-                //Thread lAsyncThread = new Thread(mAcceptor.Start);
-                //lAsyncThread.Start();
-
-                return true;
-            }
-            catch(Exception ex)
-            {
-                GCLogger.Error(nameof(CTcpListener), $"Start", ex, $"Host = {config.ip} - Port = {config.port}");
                 return false;
             }
         }
@@ -119,6 +108,25 @@ namespace ProjectWaterMelon.Network.SystemLib
 
 
         /*
+        // Listen 소켓 하나당 Accpet Thread를 생성해서 Accpet 지속적으로 처리 
+        public override bool Start(in IListenConfig config, int maxAcceptSize)
+        {     
+            try
+            {
+               
+                // accept 
+                //mAcceptor = new CAcceptor(mListenSocket, EndPoint, maxAcceptSize);
+                //Thread lAsyncThread = new Thread(mAcceptor.Start);
+                //lAsyncThread.Start();
+
+                return true;
+            }
+            catch(Exception ex)
+            {
+                GCLogger.Error(nameof(CTcpListener), $"Start", ex, $"Host = {config.ip} - Port = {config.port}");
+                return false;
+            }
+        }
          
         // Listen 소켓 하나당 Accpet Thread를 생성해서 Accpet 지속적으로 처리 
         public override bool Start(in IListenConfig config, int maxAcceptSize)

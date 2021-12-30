@@ -63,7 +63,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
         }
 
-        private void StartReceive()
+        public void StartReceive()
         {
 
         }
