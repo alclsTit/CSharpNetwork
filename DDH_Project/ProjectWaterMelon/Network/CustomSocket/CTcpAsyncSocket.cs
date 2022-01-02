@@ -5,11 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
+using System.Threading;
+
 using ProjectWaterMelon.Network.Packet;
 using ProjectWaterMelon.Network.MessageWorker;
 using ProjectWaterMelon.Utility;
 using ProjectWaterMelon.Network.Config;
 using ProjectWaterMelon.Log;
+using ProjectWaterMelon.GameLib;
 
 using ProjectWaterMelon.Network.Session;
 
@@ -19,9 +22,12 @@ namespace ProjectWaterMelon.Network.CustomSocket
     {
         public int mAlreadySendBytes { get; private set; } = 0;
         public int mHaveToSendBytes { get; private set; } = 0;
-        private SocketAsyncEventArgs mSocketEventSend;
-        public SocketAsyncEventArgs SocketEventSend => mSocketEventSend;
-        public SocketAsyncEventArgs mSocketEventRecv { get; private set; } = new SocketAsyncEventArgs();
+
+        /// <summary>
+        /// 비동기 소켓 커스텀 객체에서 통신에 사용할 recv/send 비동기 통신 객체 
+        /// </summary>
+        private SocketAsyncEventArgs mRecvAsyncEvtObj;
+        private SocketAsyncEventArgs mSendAsyncEvtObj;
 
         /// <summary>
         /// Session 클래스에 CTcpAsyncSocket 포함. Session 초기화 시, poolmanager 초기화
@@ -29,10 +35,37 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// <param name="config"></param>
         /// <param name="socket"></param>
         /// <param name="queueMaxSize"></param>
-        public CTcpAsyncSocket(IServerConfig config, in Socket socket, int queueMaxSize) : base(config.sendingQueueSize, queueMaxSize)
+        public CTcpAsyncSocket(in Socket socket, int sendingQueueSize, int queueMaxSize, ref SocketAsyncEventArgs recv, ref SocketAsyncEventArgs send, in CSessionTest session) : base(sendingQueueSize, queueMaxSize)
         {
             clientsocket = socket;
-            localEP = (IPEndPoint)socket.LocalEndPoint; 
+
+            localEP = (IPEndPoint)socket.LocalEndPoint;
+
+            recv.Completed += new EventHandler<SocketAsyncEventArgs>(OnReceiveHandler);
+            recv.UserToken = session;
+            
+            send.Completed += new EventHandler<SocketAsyncEventArgs>(OnSendHandler);
+            send.UserToken = session;
+
+            mRecvAsyncEvtObj = recv;
+            mSendAsyncEvtObj = send;
+        }
+
+        public void SetSocketOption(bool noDelay, int recvBufferSize, int sendBufferSize, bool socketCloseDelay, int socketCloseDelayTime, bool keepAliveOpt = true)
+        {
+            clientsocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, keepAliveOpt);
+            clientsocket.LingerState = new LingerOption(socketCloseDelay, socketCloseDelayTime);
+            
+            if (noDelay)
+                clientsocket.NoDelay = true;
+
+            if (recvBufferSize > 0)
+                clientsocket.ReceiveBufferSize = recvBufferSize;
+
+            if (sendBufferSize > 0)
+                clientsocket.SendBufferSize = sendBufferSize;
+
+            // Send Timeout은 동기호출에서만 적용
         }
 
         public void Send()
@@ -40,36 +73,32 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
         }
 
-        public void SetSocketEventSendRecv(in SocketAsyncEventArgs sendEvt, in SocketAsyncEventArgs recvEvt )
+        public void Receive()
         {
-            mSocketEventSend = sendEvt;
-            mSocketEventRecv = recvEvt;
-        }
-
-        public void SetSocketEventSend(in SocketAsyncEventArgs sendEvt)
-        {
-            mSocketEventSend = sendEvt;
-        }
-
-        public void SetSocketEventRecv(in SocketAsyncEventArgs recvEvt)
-        {
-            mSocketEventRecv = recvEvt;
+            // 비동기의 경우 ReceiveAsync 호출
+            ReceiveAsync();
         }
 
         protected override void ReceiveAsync()
         {
             try
             {
-                var lAsyncIOResult = clientsocket.ReceiveAsync(mSocketEventRecv);
+                if (!TryReceive())
+                {
+                    GCLogger.Error(nameof(CTcpAsyncSocket), "ReceiveAsync", $"Socket state error[{SocketState}]");
+                    return;
+                }
+
+                var lAsyncIOResult = clientsocket.ReceiveAsync(mRecvAsyncEvtObj);
                 if (!lAsyncIOResult)
                 {
-                    var socket = clientsocket;
-                    OnReceiveHandler(socket, mSocketEventRecv);
+                    OnReceiveHandler(clientsocket, mRecvAsyncEvtObj);
                 }
             }
             catch (Exception ex)
             {
-
+                GCLogger.Error(nameof(CTcpAsyncSocket), "ReceiveAsync", ex);
+                return;
             }
         }
 
@@ -79,26 +108,26 @@ namespace ProjectWaterMelon.Network.CustomSocket
             {
                 if (queue.Count > 1)
                 {
-                    mSocketEventSend.BufferList = queue;
+                    mSendAsyncEvtObj.BufferList = queue;
                 }
                 else
                 {
                     var item = queue[0];
-                    mSocketEventSend.SetBuffer(item.Array, item.Offset, item.Count);
+                    mSendAsyncEvtObj.SetBuffer(item.Array, item.Offset, item.Count);
                 }
 
-                var lAsyncIOResult = clientsocket.SendAsync(mSocketEventSend);
+                var lAsyncIOResult = clientsocket.SendAsync(mSendAsyncEvtObj);
                 if (!lAsyncIOResult)
                 {
                     var socket = clientsocket;
-                    OnSendHandler(socket, mSocketEventSend);
+                    OnSendHandler(socket, mSendAsyncEvtObj);
                 }
             }
             catch (Exception ex)
             {
                 GCLogger.Error(nameof(CTcpAsyncSocket), $"SendAsync", ex);
                 OnSendError(ref queue, eCloseReason.SocketError);
-                OnClearSendData(ref mSocketEventSend);
+                OnClearSendData(ref mSendAsyncEvtObj);
             }
         }
 
@@ -149,11 +178,24 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 return;
             }
 
-            if (!CheckCallbackHandler(e))
+            if (!AsyncSocketCommonFunc.CheckCallbackHandler(e.SocketError, e.BytesTransferred))
             {
-                mMsgRecevier.OnReceive(lUserToken, e.Buffer, e.Offset, e.BytesTransferred);
-                base.OnReceiveCompleted();
-            }             
+                try
+                {
+                    mMsgRecevier.OnReceive(lUserToken, e.Buffer, e.Offset, e.BytesTransferred);
+                    OnReceiveCompleted();
+                }
+                catch (Exception ex)
+                {
+                    GCLogger.Error(nameof(CTcpAsyncSocket), $"OnReceiveHandler", ex);
+                    return;
+                }
+            }     
+            else
+            {
+                GCLogger.Error(nameof(CTcpAsyncSocket), $"OnReceiveHandler", $"ReceAsync function error - [ErrorCode] = {e.SocketError}, [ByteTransferred] = {e.BytesTransferred.ToString()}");
+                return;
+            }
         }
 
         private void OnSendHandler(object send, SocketAsyncEventArgs e)

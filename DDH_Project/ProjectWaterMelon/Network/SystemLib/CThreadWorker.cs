@@ -67,13 +67,16 @@ namespace ProjectWaterMelon.Network.SystemLib
             return Task.FromResult(true);
         }
 
-        public void StartAllThread()
+        public async Task StartAllThread()
         {
-            foreach(var threadObj in mThreadInfo)
+            await Task.Run(() =>
             {
-                threadObj.Value.thread.Start();
-                threadObj.Value.SetState(true);
-            }
+                foreach (var threadObj in mThreadInfo)
+                {
+                    threadObj.Value.thread.Start();
+                    threadObj.Value.SetState(true);
+                }
+            });
         }
 
         public void Start()

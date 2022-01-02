@@ -32,31 +32,28 @@ namespace ProjectWaterMelon.Network.SystemLib
         private CListenConfig mListenInfo;
 
         /// <summary>
+        /// Server 전용 Config 설정 파일(recv, send buffer size, timeout...) 
+        /// </summary>
+        private CServerConfig mServerConfig;
+
+        /// <summary>
         /// Accept 처리 객체, Listen -> Accept가 진행(1:1관계)
         /// </summary>
         private CAcceptor mAcceptObj;
 
         private int mNumberOfMaxConnect;
 
-        /// <summary>
-        /// Listen, Accept 상태 
-        /// </summary>
-        //public bool isRunning { get; private set; } = false;
-
-        // 클라이언트 접속 시 호출될 델리게이트 
-        public delegate void NewClientAccessHandler(Socket _clientSocket, object _tocken);
-        public NewClientAccessHandler CallBack_On_NewClient = null;
-
-        public CTcpListener(IListenConfig config, int numberOfMaxConnect) : base(false)
+        public CTcpListener(IListenConfig config, IServerConfig serverConfig) : base(false)
         {       
             mListenInfo = config as CListenConfig;
+            mServerConfig = serverConfig as CServerConfig;
 
-            this.Initialize(numberOfMaxConnect);
+            this.Initialize();
         }
 
-        public override void Initialize(int numberOfMaxConnect)
+        public override void Initialize()
         {
-            mNumberOfMaxConnect = numberOfMaxConnect;
+
         }
 
         public override bool Start()
@@ -75,7 +72,7 @@ namespace ProjectWaterMelon.Network.SystemLib
                     listenSocket.Bind(listenInfo.mIPEndPoint);
                     listenSocket.Listen(listenInfo.backlog);
 
-                    mAcceptObj = new CAcceptor(listenSocket, mNumberOfMaxConnect);
+                    mAcceptObj = new CAcceptor(listenSocket, mServerConfig);
                     mAcceptObj.Start();
 
                     return true;

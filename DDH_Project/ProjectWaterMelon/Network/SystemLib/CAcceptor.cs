@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 // --- custom --- //
+using ProjectWaterMelon.Network.Config;
 using ProjectWaterMelon.GameLib;
 using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
@@ -41,7 +42,20 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// <summary>
         /// Accept SocketAsyncEventArgs 풀링객체
         /// </summary>
-        private SocketAsyncEventArgs mAsyncAcceptEvtObj; 
+        private SocketAsyncEventArgs mAsyncAcceptEvtObj;
+
+        /// <summary>
+        /// Server 전용 Config 설정 파일(recv, send buffer size, timeout...) 
+        /// </summary>
+        private CServerConfig mServerConfig;
+
+        /// <summary>
+        /// Recv SocketAsyncEventArgs Pool의 SetBuffer진행 시 사용할 버퍼 매니저
+        /// 서버에서 관리하는 모든 소켓 객체의 recv, send buffer 관리
+        /// </summary>
+        private CBufferManager mBufferManager;
+        private CSocketAsyncEventArgsPool mConcurrentRecvPool;
+        private CSocketAsyncEventArgsPool mConcurrentSendPool;
 
         /// <summary>
         /// 비동기 작업 취소에 따른 후처리를 위한 객체
@@ -55,21 +69,57 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// </summary>
         public int mCurAcceptCount { get; private set; } = 0;
 
+        /// <summary>
+        /// Lock 객체, 스레드간 동기화
+        /// </summary>
         private object mLockObj = new object();
 
-        //public delegate void OnSocketAsyncEventArgsInput(object sender, SocketAsyncEventArgs args);
-        //public delegate void OnNewClientHandler(Socket Socket, object UserToken);
 
-        public CAcceptor(in Socket socket, int numberOfMaxConnect) : base(false)
+        public CAcceptor(in Socket socket, IServerConfig serverConfig) : base(false)
         {
             mClientSocket = socket;
 
-            this.Initialize(numberOfMaxConnect);
+            mServerConfig = serverConfig as CServerConfig;
+
+            this.Initialize();
         }
 
-        public override void Initialize(int numberOfMaxConnect)
+        /// <summary>
+        /// CAcceptor 초기화 함수
+        /// Recv 전용 buffer Pool 생성 및 세팅, CAcceptor 하나당 buffer Pool 하나생성, max_connect_count 클라이언트 처리가능
+        /// </summary>
+        public override void Initialize()
         {
-            mNumberOfMaxConnect = numberOfMaxConnect;
+            if (mServerConfig != null)
+            {
+                mNumberOfMaxConnect = mServerConfig.max_connect_count;
+
+                mBufferManager = new CBufferManager(mServerConfig.recvBufferSize, mServerConfig.recvBufferSize * mServerConfig.max_connect_count);
+                mConcurrentRecvPool = new CSocketAsyncEventArgsPool(mServerConfig.max_connect_count);
+                mConcurrentSendPool = new CSocketAsyncEventArgsPool(mServerConfig.max_connect_count);
+
+                try
+                {
+                    for (var idx = 0; idx < mServerConfig.max_connect_count; ++idx)
+                    {
+                        SocketAsyncEventArgs recvAsyncEvtObj = new SocketAsyncEventArgs();
+                        if (mBufferManager.SetBuffer(ref recvAsyncEvtObj))
+                            mConcurrentRecvPool.Push(recvAsyncEvtObj);
+
+                        SocketAsyncEventArgs sendAsyncEvtObj = new SocketAsyncEventArgs();
+                        if (mBufferManager.SetBuffer(ref sendAsyncEvtObj))
+                            mConcurrentSendPool.Push(sendAsyncEvtObj);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    GCLogger.Error(nameof(CAcceptor), "SetupRecvBufferPool", ex);
+                }            
+            }
+            else
+            {
+                GCLogger.Error(nameof(CAcceptor), "Initialize", "ServerConfig is null");
+            }
         }
 
         /// <summary>
@@ -131,7 +181,7 @@ namespace ProjectWaterMelon.Network.SystemLib
             e.RemoteEndPoint = null;
 
             // 3.풀링 객체에 반납 
-            mConcurrentAcceptPool.Push(e);
+            //mConcurrentAcceptPool.Push(e);
         }
 
         private void ResetAndSetCSession(in Socket socket, ref SocketAsyncEventArgs recvArgs, ref SocketAsyncEventArgs sendArgs)
@@ -151,18 +201,17 @@ namespace ProjectWaterMelon.Network.SystemLib
 
         private void OnAcceptHandler(SocketAsyncEventArgs e)
         {
+            Socket client = null;
+            
             if (AsyncSocketCommonFunc.CheckCallbackHandler(e.SocketError))
             {
-                Socket client = null;
+                base.isRunning = true;
+
                 client = e.AcceptSocket;
-
-           
-
-
             }
             else
             {
-                GCLogger.Error(nameof(CAcceptor), "OnAcceptHandler", $"Accept callback error - [ErrorCode] = {e.SocketError}, [ByteTransferred] = {e.BytesTransferred.ToString()}");
+                GCLogger.Error(nameof(CAcceptor), "OnAcceptHandler", $"Socket error - [ErrorCode] = {e.SocketError}, [ByteTransferred] = {e.BytesTransferred.ToString()}");
 
                 var errorCode = (int)e.SocketError;
 
@@ -173,9 +222,49 @@ namespace ProjectWaterMelon.Network.SystemLib
                 //ToDo: 소켓 후처리 
             }
 
+            // Accept 용 SocketAsyncEventArgs 재사용을 위해서 null 세팅 
+            // UserToken이나 Setbuffer 등의 기능을 사용하지 않으므로 재사용
             e.AcceptSocket = null;
-            
-            var asyncResult = mClientSocket.AcceptAsync(e);
+
+            try
+            {
+                if (client != null)
+                    OnNewClientAccepted(client, e);
+
+                if (!mClientSocket.AcceptAsync(e))
+                    OnAcceptHandler(e);
+            }
+            catch (Exception ex)
+            {
+                GCLogger.Error(nameof(CAcceptor), "OnAcceptHandler", ex, $"Accept function error - [ErrorCode] = {e.SocketError}, [ByteTransferred] = {e.BytesTransferred.ToString()}");
+            }
+        }
+
+        /// <summary>
+        /// Accept handler callback 이후 본격적으로 클라이언트 소켓과 통신하기 위해 정보 세팅
+        /// client session 세팅 진행(session 에서 recv/send 세팅 및 클라이언트 통신진행)
+        /// </summary>
+        /// <param name="client">통신용 클라이언트 소켓</param>
+        /// <param name="e"></param>
+        private void OnNewClientAccepted(Socket client, SocketAsyncEventArgs e)
+        {
+            try
+            {
+                var serverConfig = mServerConfig;
+                if (serverConfig != null)
+                {
+                    var recvAsyncObj = mConcurrentRecvPool.Pop();
+                    var sendAsyncObj = mConcurrentSendPool.Pop();
+
+                    var session = new CSessionTest(serverConfig, client, serverConfig.sendingQueueSize, recvAsyncObj, sendAsyncObj);
+                    session.Start();
+
+                }
+            }
+            catch (Exception ex)
+            {
+                GCLogger.Error(nameof(CAcceptor), "OnNewClientAccepted", ex);
+            }
         }
 
         public override void Stop()
@@ -199,6 +288,7 @@ namespace ProjectWaterMelon.Network.SystemLib
             catch (Exception ex)
             {
                 GCLogger.Error(nameof(CAcceptor), "Stop", ex);
+                return;
             }
         }     
     }

@@ -3,22 +3,42 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net.Sockets;
 
 using ProjectWaterMelon.GameLib;
 using ProjectWaterMelon.Network.Config;
 using ProjectWaterMelon.Log;
+
 
 namespace ProjectWaterMelon.Network.SystemLib
 {
     /// <summary>
     /// 비동기 소켓서버 총괄
     /// </summary>
-    class CAsyncSocketServer
+    public sealed class CAsyncSocketServer
     {
+        /// <summary>
+        /// 서버 전용 Config (recv / send buffer 옵션 등)
+        /// </summary>
         private CServerConfig mServerConfig;
+        
+        /// <summary>
+        /// 지속적으로 사용되어야할 스레드 관리객체 
+        /// </summary>
         private CThreadPoolManager mThreadPool;
 
+        /// <summary>
+        /// Listen 전용 Config (ip, port, endpoint, backlog)
+        /// </summary>
         private List<CListenConfig> mListenConfigList = new List<CListenConfig>();
+
+        /// <summary>
+        /// Recv SocketAsyncEventArgs Pool의 SetBuffer진행 시 사용할 버퍼 매니저
+        /// 서버에서 관리하는 모든 소켓 객체의 recv buffer 관리
+        /// </summary>
+        private CBufferManager mBufferManager;
+
+        private CSocketAsyncEventArgsPool mConcurrentRecvPool;
 
         public CAsyncSocketServer(IServerConfig config)
         {
@@ -82,15 +102,55 @@ namespace ProjectWaterMelon.Network.SystemLib
 
             // 최대 스레드 갯수 (main thread 제외)
             mServerConfig.maxThreadCount = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Max_Thread_Count", "8", filePath));
+
+            // Session Socket Linger Option (false = 소켓 Close 요청 후 대기하지않고 Close, true = 소켓 Close 요청 후 일정시간 대기 후 Close)
+            mServerConfig.socketLingerFlag = Convert.ToBoolean(IniConfig.IniFileRead(secServerInfo, "Socket_Close_Delay", "false", filePath));
+
+            // Session Socket Linger Option (True) 일 때, delay 시간
+            mServerConfig.socketLingerDelayTime = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Socket_Close_DelayTime", "10", filePath));
+        
         }
 
         public async Task Start()
         {
-            var result = await SetupThreadPool();
+            bool result;
 
+            //result = await SetupRecvBufferPool();
 
-            if (result)
-                mThreadPool?.StartAllThread();          
+            if (await SetupThreadPool())
+                await mThreadPool.StartAllThread();          
+        }
+
+        /// <summary>
+        /// Recv 전용 buffer pool 생성 및 세팅
+        /// </summary>
+        /// <returns></returns>
+        private async Task<bool> SetupRecvBufferPool()
+        {
+            mBufferManager = new CBufferManager(mServerConfig.recvBufferSize, mServerConfig.recvBufferSize * mServerConfig.max_connect_count);
+            mConcurrentRecvPool = new CSocketAsyncEventArgsPool(mServerConfig.max_connect_count);
+
+            try
+            {
+                // 단순 루프문 및 이 곳에서만 사용되므로 람다식으로 작성
+                await Task.Run(() => {
+                    for (var idx = 0; idx < mServerConfig.max_connect_count; ++idx)
+                    {
+                        SocketAsyncEventArgs recvAsyncEvtObj = new SocketAsyncEventArgs();
+                        if (mBufferManager.SetBuffer(ref recvAsyncEvtObj))
+                        {
+                            mConcurrentRecvPool.Push(recvAsyncEvtObj);
+                        }
+                    }
+                });
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                GCLogger.Error(nameof(CAsyncSocketServer), "SetupRecvBufferPool", ex);
+                return false;
+            }
         }
 
         /// <summary>
@@ -107,7 +167,7 @@ namespace ProjectWaterMelon.Network.SystemLib
                         foreach (var listenObj in mListenConfigList)
                         {
                             // TcpListener 세팅, 많지않고 한번 세팅진행하므로 따로 풀링하지 않음
-                            CTcpListener listener = new CTcpListener(listenObj, mServerConfig.max_connect_count);
+                            CTcpListener listener = new CTcpListener(listenObj, mServerConfig);
                             listener.Start();
                         }
                     }, "AcceptThread", true);

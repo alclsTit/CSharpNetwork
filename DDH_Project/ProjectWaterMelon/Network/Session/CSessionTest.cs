@@ -14,27 +14,14 @@ namespace ProjectWaterMelon.Network.Session
 {
     public class CSessionTest : ISessionRoot
     {
-        public CTcpAsyncSocket clientsocket { get; private set; }
+        public CTcpAsyncSocket mClientSocket { get; private set; }
         public string mSessionId { get; private set; }
-        public IPEndPoint mLocalEP { get; private set; }
-        public IPEndPoint remoteEP { get; private set; }
-        public IServerConfig mIServerConfig { get; private set; }
+        public IPEndPoint mHostLocalEndPoint { get; private set; }
+        public IPEndPoint mRemoteClientEndPoint { get; private set; }
+        private CServerConfig mServerConfig;
 
-        /// <summary>
-        /// Recv SocketAsyncEventArgs Pool
-        /// </summary>
-        private CSocketAsyncEventArgsPool mConcurrentRecvPool;
 
-        /// <summary>
-        /// Recv SocketAsyncEventArgs Pool의 SetBuffer진행 시 사용할 버퍼 매니저
-        /// </summary>
-        private CBufferManager mBufferManager;
-
-        /// <summary>
-        /// 세션 아이디 저장
-        /// </summary>
-        /// <param name="sid"></param>
-        public void SetSessionId(string sid) { mSessionId = sid; }
+        public String GetSessionId => mSessionId;
 
         /// <summary>
         /// 세션 생성자, 클라이언트와 소켓 연결 후 세션 생성
@@ -42,8 +29,8 @@ namespace ProjectWaterMelon.Network.Session
         /// <param name="config"></param>
         /// <param name="socket"></param>
         /// <param name="queueMaxSize"></param>
-        public CSessionTest(IServerConfig config, in Socket socket, int queueMaxSize)
-            : this(config, socket, queueMaxSize, GSocketState.eSockEvtType.CONCURRENT)
+        public CSessionTest(IServerConfig config, in Socket socket, int queueMaxSize, in SocketAsyncEventArgs recv, in SocketAsyncEventArgs send)
+            : this(config, socket, queueMaxSize, recv, send, GSocketState.eSockEvtType.CONCURRENT)
         {
 
         }
@@ -54,39 +41,32 @@ namespace ProjectWaterMelon.Network.Session
         /// <param name="config"></param>
         /// <param name="socket"></param>
         /// <param name="queueMaxSize"></param>
-        public CSessionTest(IServerConfig config, in Socket socket, int queueMaxSize, GSocketState.eSockEvtType poolAsync)
+        public CSessionTest(IServerConfig config, in Socket socket, int queueMaxSize, SocketAsyncEventArgs recv, SocketAsyncEventArgs send, GSocketState.eSockEvtType poolAsync)
         {
-            clientsocket = new CTcpAsyncSocket(config, socket, queueMaxSize);
-            mLocalEP = clientsocket.localEP;
-            remoteEP = (IPEndPoint)socket.RemoteEndPoint;
+            mServerConfig = config as CServerConfig;
 
-            mIServerConfig = config;
-            mBufferManager = new CBufferManager(config.recvBufferSize, config.recvBufferSize * config.max_connect_count);
+            // Session 당 사용할 커스텀 소켓 객체 할당 및 옵션 설정
+            mClientSocket = new CTcpAsyncSocket(socket, mServerConfig.sendingQueueSize, queueMaxSize, ref recv, ref send, this);
+            mClientSocket.SetSocketOption(mServerConfig.noDelay, 
+                                         mServerConfig.recvBufferSize,
+                                         mServerConfig.sendBufferSize,
+                                         mServerConfig.socketLingerFlag,
+                                         mServerConfig.socketLingerDelayTime);
 
-            SetSockRecvPool();
+            mHostLocalEndPoint = (IPEndPoint)socket.LocalEndPoint;
+
+            mRemoteClientEndPoint = (IPEndPoint)socket.RemoteEndPoint;
+
+            mSessionId = Guid.NewGuid().ToString();
         }
 
         /// <summary>
-        /// Recv SocketAsyncEventArgs Pool 생성 
-        /// *[주의] clientsocket.OnReceiveHandler은 외부 클래스의 경우 이곳에서만 사용한다 
+        /// Session 객체 생성시 동반되는 초기화부분. recv 용 SocketAsyncEventPool 세팅 
         /// </summary>
-        /// <param name="poolAsync"></param>
-        private void SetSockRecvPool()
+        public void Initalize(in SocketAsyncEventArgs recv, in SocketAsyncEventArgs send)
         {
-            mConcurrentRecvPool = new CSocketAsyncEventArgsPool(mIServerConfig.recvBufferSize);
-
-            for(var idx = 0; idx < mIServerConfig.recvBufferSize; ++idx)
-            {
-                SocketAsyncEventArgs recv = new SocketAsyncEventArgs();
-                recv.Completed += new EventHandler<SocketAsyncEventArgs>(clientsocket.OnReceiveHandler);
-                mBufferManager.SetBuffer(recv);
-
-                mConcurrentRecvPool.Push(recv);
-            }
-        }
-
-        public void Initalize()
-        {
+     
+      
         }
 
         /// <summary>
@@ -94,7 +74,7 @@ namespace ProjectWaterMelon.Network.Session
         /// </summary>
         public void Start()
         {
-            clientsocket.StartReceive();
+            mClientSocket.Receive();
         }
 
         public void Close()

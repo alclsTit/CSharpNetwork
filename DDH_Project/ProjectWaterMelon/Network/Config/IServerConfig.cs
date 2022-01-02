@@ -49,10 +49,15 @@ namespace ProjectWaterMelon.Network.Config
         int listenBacklog { get; }
 
         // 13. Min Thread Count 
-        int minThreadCount { get; set; }
+        int minThreadCount { get; }
 
         // 14. Max Thread Count
-        int maxThreadCount { get; set; }
+        int maxThreadCount { get; }
 
+        // 15. Socket Option (Linger) flag
+        bool socketLingerFlag { get; }
+
+        // 16. Socket Option (Linger = true) DelayTime
+        int socketLingerDelayTime { get; }
     }
 }

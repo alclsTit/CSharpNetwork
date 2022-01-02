@@ -31,7 +31,7 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// </summary>
         /// <param name="e"></param>
         /// <returns></returns>
-        public bool SetBuffer(SocketAsyncEventArgs e)
+        public bool SetBuffer(ref SocketAsyncEventArgs e)
         {
             if (mBufferStack.Count > 0)
             {
@@ -39,7 +39,7 @@ namespace ProjectWaterMelon.Network.SystemLib
             }
             else
             {
-                // 전체 버퍼에서 현재 인덱스 + 버퍼 하나당 사이즈 > 전체 버퍼 사이즈
+                // 전체 버퍼에서 현재 인덱스 + 버퍼 하나당 사이즈 > 전체 버퍼 사이즈, 더 이상 할당할 수 없는 상태
                 if (mCurIndex + mBufferSize > mTotalBytes)
                     return false;
 

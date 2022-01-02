@@ -10,7 +10,7 @@ namespace ProjectWaterMelon.Network.SystemLib
     public abstract class SocketServerBase : ISocketServerBase
     {
         public bool isRunning { get; protected set; }
-        public abstract void Initialize(int numberOfMaxConnect);
+        public abstract void Initialize();
 
         public abstract bool Start();
 

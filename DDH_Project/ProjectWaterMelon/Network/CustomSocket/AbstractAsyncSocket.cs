@@ -55,17 +55,16 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// </summary>
         protected CMessageResolver mMsgRecevier = new CMessageResolver();
 
-        public bool TryReceive()
+        /// <summary>
+        /// Recv 가능한 상태인지 체크하는 함수
+        /// </summary>
+        /// <returns></returns>
+        protected bool TryReceive()
         {
-            if (!CheckSocketIsNormal())
-                return false;
+            if (this.CheckSocketIsNormal())
+                return true;
 
-
-        }
-
-        public void StartReceive()
-        {
-
+            return false;
         }
 
         protected abstract void ReceiveAsync();
@@ -235,7 +234,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// Socket IO 진행 시, 해당 소켓이 패킷을 보낼 수 있는 상태인지 체크
         /// </summary>
         /// <returns></returns>
-        protected bool CheckSocketIsNormal()
+        public bool CheckSocketIsNormal()
         {
             var socket = clientsocket;
             var curstate = mSocketState;
@@ -399,7 +398,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// </summary>
         protected virtual void OnReceiveCompleted()
         {
-            StartReceive();
+            ReceiveAsync();
         }
     }
 }

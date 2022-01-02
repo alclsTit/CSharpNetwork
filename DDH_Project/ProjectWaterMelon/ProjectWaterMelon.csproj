@@ -74,7 +74,7 @@
     <Compile Include="GameLib\Extensions.cs" />
     <Compile Include="GameLib\IniConfig.cs" />
     <Compile Include="GameLib\ListenOption.cs" />
-    <Compile Include="GameLib\SocketAsyncEventFactory.cs" />
+    <Compile Include="GameLib\AsyncSocketCommonFunc.cs" />
     <Compile Include="Log\GCLogger.cs" />
     <Compile Include="Network\Config\CListenConfig.cs" />
     <Compile Include="Network\Config\CServerConfig.cs" />

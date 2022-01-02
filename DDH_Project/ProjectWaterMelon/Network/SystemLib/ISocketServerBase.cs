@@ -17,7 +17,7 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// <summary>
         /// 서버 객체 초기화 (팩토리 패턴)
         /// </summary>
-        void Initialize(int numberOfMaxConnect);
+        void Initialize();
 
         /// <summary>
         /// 서버 객체 작업 시작 

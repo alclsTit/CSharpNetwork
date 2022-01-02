@@ -64,6 +64,12 @@ namespace ProjectWaterMelon.Network.Config
         /// </summary>
         public readonly int DefaultMaxThreadCount = 8;
 
+        // 15. Socket Option (Linger) flag
+        public readonly bool DefaultSocketLingerFlag = false;
+
+        // 16. Socket Option (Linger = true) DelayTime
+        public readonly int DefaultSocketLingerDelayTime = 10;
+
         //-------------------------------------------------------------------------
 
         // 1. Accept SocketAsyncEventArgs Pooling 갯수
@@ -108,6 +114,12 @@ namespace ProjectWaterMelon.Network.Config
         // 14. Max Thread Count
         public int maxThreadCount { get; set; }
 
+        // 15. Socket Option (Linger) flag
+        public bool socketLingerFlag { get; set; }
+
+        // 16. Socket Option (Linger = true) DelayTime
+        public int socketLingerDelayTime { get; set; }
+
         public CServerConfig()
         {
             max_accept_count = DefaultMaxAcceptCount;
@@ -120,6 +132,8 @@ namespace ProjectWaterMelon.Network.Config
             listenBacklog = DefaultListenbacklog;
             minThreadCount = DefaultMinThreadCount;
             maxThreadCount = DefaultMaxThreadCount;
+            socketLingerFlag = DefaultSocketLingerFlag;
+            socketLingerDelayTime = DefaultSocketLingerDelayTime;
         }
     }
 }
