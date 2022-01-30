@@ -19,7 +19,7 @@ namespace ProjectWaterMelon.GameLib
         private static extern long WritePrivateProfileString(string section, string key, string value, string filePath);
 
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
-        private static extern int GetPrivateProfileString(string section, string key, string def_value, StringBuilder retval, int size, string filePath);
+        private static extern long GetPrivateProfileString(string section, string key, string def_value, StringBuilder retval, int size, string filePath);
 
         static IniConfig()
         {
@@ -49,7 +49,7 @@ namespace ProjectWaterMelon.GameLib
         /// <param name="size"></param>
         public static string IniFileRead(string section, string key, string value, string filePath)
         {
-            var ret = GetPrivateProfileString(section, key, value, mStringBuiler, MAXLEN, filePath);
+            GetPrivateProfileString(section, key, value, mStringBuiler, MAXLEN, filePath);
             return mStringBuiler.ToString().Trim();
         }
 

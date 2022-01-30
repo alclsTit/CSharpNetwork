@@ -59,5 +59,11 @@ namespace ProjectWaterMelon.Network.Config
 
         // 16. Socket Option (Linger = true) DelayTime
         int socketLingerDelayTime { get; }
+
+        // 17. Server name 
+        string serverName { get; }
+
+        // 18. Encoding
+        string encoding { get; }
     }
 }

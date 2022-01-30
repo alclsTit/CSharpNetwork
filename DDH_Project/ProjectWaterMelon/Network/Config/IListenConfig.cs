@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace ProjectWaterMelon.Network.Config
 {
@@ -18,5 +19,7 @@ namespace ProjectWaterMelon.Network.Config
         int backlog { get; }
 
         bool noDelay { get; }
+
+        IPEndPoint endpoint { get; }
     }
 }

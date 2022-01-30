@@ -20,7 +20,7 @@ namespace ProjectWaterMelon.Network.SystemLib
     {
         IPEndPoint EndPoint { get; }
 
-        bool Start(in IListenConfig config, int maxAcceptSize);
+        bool Start(IListenConfig config, int maxAcceptSize);
 
         void Stop();
 

@@ -35,7 +35,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// <param name="config"></param>
         /// <param name="socket"></param>
         /// <param name="queueMaxSize"></param>
-        public CTcpAsyncSocket(in Socket socket, int sendingQueueSize, int queueMaxSize, ref SocketAsyncEventArgs recv, ref SocketAsyncEventArgs send, in CSessionTest session) : base(sendingQueueSize, queueMaxSize)
+        public CTcpAsyncSocket(Socket socket, int sendingQueueSize, int queueMaxSize, SocketAsyncEventArgs recv, SocketAsyncEventArgs send, CSessionTest session) : base(sendingQueueSize, queueMaxSize)
         {
             clientsocket = socket;
 

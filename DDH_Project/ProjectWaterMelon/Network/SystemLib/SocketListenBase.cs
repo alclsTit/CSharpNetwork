@@ -16,7 +16,7 @@ namespace ProjectWaterMelon.Network.SystemLib
 
         public SocketListenBase() { }
 
-        public abstract bool Start(in IListenConfig config, int maxAcceptSize);
+        public abstract bool Start(IListenConfig config, int maxAcceptSize);
 
         public abstract void Stop();
 

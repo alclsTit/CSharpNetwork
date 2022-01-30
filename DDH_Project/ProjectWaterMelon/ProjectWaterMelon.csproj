@@ -8,10 +8,12 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>ProjectWaterMelon</RootNamespace>
     <AssemblyName>ProjectWaterMelon</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <LangVersion>8.0</LangVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -84,9 +86,14 @@
     <Compile Include="Network\CustomSocket\CTcpAsyncSocket.cs" />
     <Compile Include="Network\CustomSocket\ISocketBase.cs" />
     <Compile Include="Network\Handlers\Handlers_Network.cs" />
+    <Compile Include="Network\Server\CAppServer.cs" />
+    <Compile Include="Network\Server\CAppServerBase.cs" />
+    <Compile Include="Network\Server\IAppServer.cs" />
+    <Compile Include="Network\Server\GServerState.cs" />
     <Compile Include="Network\Session\CSessionTest.cs" />
+    <Compile Include="Network\Session\GSessionState.cs" />
     <Compile Include="Network\Session\ISessionBase.cs" />
-    <Compile Include="Network\Session\ISessionRoot.cs" />
+    <Compile Include="Network\Session\CSessionRoot.cs" />
     <Compile Include="Network\SystemLib\CAsyncSocketServer.cs" />
     <Compile Include="Network\SystemLib\CBufferManager.cs" />
     <Compile Include="Network\SystemLib\CAcceptor.cs" />

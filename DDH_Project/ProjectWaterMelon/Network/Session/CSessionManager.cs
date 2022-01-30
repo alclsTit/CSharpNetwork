@@ -8,24 +8,80 @@ using System.Collections.Concurrent;
 
 // --- custom --- //
 using static ProjectWaterMelon.GSocketState;
+using ProjectWaterMelon.Log;
 // -------------- //
 
 namespace ProjectWaterMelon.Network.Session
 {
-    // 전역으로 관리되는 세션매니저 클래스
+    // Listen 서버당 1개, 해당 서버에서 세션을 관리하는 매니저 클래스 
     // *서버-클라 정상연결 시 세션이 생성되고 이를 관리하는 매니저 클래스, 세션의 접속상태 또한 관리한다 
-    static class CSessionManager
+    public class CSessionManager
     {
-        // 세션 매니저에서 관리하는 세션아이디 
-        private static long mSessionId;
         // 세션 컨테이너 - 스레드 세이프한 Dictionary 사용 (key = 세션 아이디, value = 세션 객체)
-        private static ConcurrentDictionary<long, CSession> mSessionContainer = new ConcurrentDictionary<long, CSession>();
+        private ConcurrentDictionary<string, CSessionTest> mSessionContainer = new ConcurrentDictionary<string, CSessionTest>();
         // 해당 클래스에서 관리하는 대상에 접근하는 다중 스레드의 동시성제어를 위한 Lock 객체 
         private static object mSessionLock = new object();
 
+        public int CurSessionCount => mSessionContainer.Count;
+
+        public bool HasSession(string sessionID) => mSessionContainer.ContainsKey(sessionID);
+
+        public bool Add(CSessionTest session)
+        {
+            if (mSessionContainer.TryAdd(session.GetSessionID, session))
+                return true;
+
+            //TODO: 옵션 true 일 때만 로그찍히도록 설정 
+            GCLogger.Error($"{nameof(CSessionManager)}", "Add", $"{session.GetSessionID} was not added session container successfully");
+
+            return false;
+        }
+
+        public CSessionTest Contains(string sessionID)
+        {
+            if (string.IsNullOrEmpty(sessionID))
+                return null;
+
+            if (mSessionContainer.TryGetValue(sessionID, out var sessionObject))
+                return sessionObject;
+            else
+                return null;
+        }
+
+        public bool Remove(string sessionID)
+        {
+            if (mSessionContainer.ContainsKey(sessionID))
+            {
+                if (mSessionContainer.TryRemove(sessionID, out var sessionObject))
+                    return true;
+            }
+
+            return false;
+        }
+
+        public IEnumerable<T> GetSessionSequence<T>() where T : CSessionTest
+        {
+            var enumerator = mSessionContainer.GetEnumerator();
+
+            while(!enumerator.MoveNext())
+            {
+                if (enumerator.Current.Value == null)
+                    continue;
+
+                if (enumerator.Current.Value is T result)
+                    yield return result;
+            }
+        }
+
+        public void OnClose()
+        {
+           
+        }
+
+
         // 세션객체를 관리 컨테이너에 추가하는 함수
         // thread-safe
-        public static void Add(ref CSession user_session)
+        /*public static void Add(ref CSession user_session)
         {
             var local_user_session = user_session;
             if (local_user_session != null)
@@ -39,6 +95,7 @@ namespace ProjectWaterMelon.Network.Session
                 mSessionContainer.TryAdd(mSessionId, user_session);
             }
         }
+        */
 
         // 세션 아이디를 이용하여 대상 세션객체를 관리 컨테이너에서 삭제하는 함수
         // thread-safe

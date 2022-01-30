@@ -9,26 +9,36 @@ using ProjectWaterMelon.Network.CustomSocket;
 
 namespace ProjectWaterMelon.Network.Session
 {
-    public interface ISessionRoot : ISessionBase
+    public abstract class CSessionRoot : ISessionBase
     {
+        /// <summary>
+        /// session id
+        /// </summary>
+        public string sessionID { get; protected set; }
+
+        public IPEndPoint remoteEndPoint { get; protected set; }
+
+        public IPEndPoint hostEndPoint { get; protected set; }
+
         /// <summary>
         /// init session
         /// </summary>
-        void Initalize();
+        public abstract void Initalize();
 
         /// <summary>
         /// start session
         /// </summary>
-        void Start();
+        public abstract void Start();
 
         /// <summary>
         /// close session
         /// </summary>
-        void Close();
+        public abstract void Close(eCloseReason reason);
 
         /// <summary>
         /// occur close event
         /// </summary>
-        Action<ISessionRoot, eCloseReason> OnClosed { get; }
+        protected Action<ISessionBase, eCloseReason> OnClose;
     }
 }
+

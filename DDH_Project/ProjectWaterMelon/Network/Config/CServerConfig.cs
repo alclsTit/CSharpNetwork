@@ -70,6 +70,12 @@ namespace ProjectWaterMelon.Network.Config
         // 16. Socket Option (Linger = true) DelayTime
         public readonly int DefaultSocketLingerDelayTime = 10;
 
+        // 17. Server Name
+        public readonly string DefaultServerName = "DefaultServerName";
+
+        // 18. encoding
+        public readonly string DefaultEncoding = Encoding.Default.ToString();
+
         //-------------------------------------------------------------------------
 
         // 1. Accept SocketAsyncEventArgs Pooling 갯수
@@ -120,6 +126,12 @@ namespace ProjectWaterMelon.Network.Config
         // 16. Socket Option (Linger = true) DelayTime
         public int socketLingerDelayTime { get; set; }
 
+        // 17. Server Name
+        public string serverName { get; set; }
+
+        // 18. Encoding
+        public string encoding { get; set; }
+
         public CServerConfig()
         {
             max_accept_count = DefaultMaxAcceptCount;
@@ -134,6 +146,8 @@ namespace ProjectWaterMelon.Network.Config
             maxThreadCount = DefaultMaxThreadCount;
             socketLingerFlag = DefaultSocketLingerFlag;
             socketLingerDelayTime = DefaultSocketLingerDelayTime;
+            serverName = DefaultServerName;
+            encoding = DefaultEncoding;
         }
     }
 }

@@ -4,11 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Net;
+using ProjectWaterMelon.Network.Server;
 
 namespace ProjectWaterMelon.Network.SystemLib
 {
     public interface ISocketServerBase
     {
+        /// <summary>
+        /// 서버객체(gameserver, worldserver...)
+        /// </summary>
+        IAppServer server { get; }
+
         /// <summary>
         /// 서버객체 상태 (false = 비활성화 / true = 활성화)
         /// </summary>
@@ -30,5 +37,6 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// </summary>
         void Stop();
 
+        EndPoint hostEndPoint { get; }
     }
 }

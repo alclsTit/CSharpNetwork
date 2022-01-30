@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 // --- custom --- //
 using ProjectWaterMelon.Log;
 using ProjectWaterMelon.Network.Config;
+using ProjectWaterMelon.Network.Server;
 using static ProjectWaterMelon.ConstDefine;
 using static ProjectWaterMelon.GSocketState;
 // -------------- //
@@ -29,26 +30,36 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// <summary>
         /// Listen 전용 Config 설정 파일(ip, port, backlog, ipendpoint)
         /// </summary>
-        private CListenConfig mListenInfo;
+        private IListenConfig mListenConfig;
 
         /// <summary>
         /// Server 전용 Config 설정 파일(recv, send buffer size, timeout...) 
         /// </summary>
-        private CServerConfig mServerConfig;
+        private IServerConfig mServerConfig;
 
         /// <summary>
         /// Accept 처리 객체, Listen -> Accept가 진행(1:1관계)
         /// </summary>
         private CAcceptor mAcceptObj;
 
-        private int mNumberOfMaxConnect;
+        /// <summary>
+        /// Lock 오브젝트
+        /// </summary>
+        private readonly object mLockObj = new object();
 
-        public CTcpListener(IListenConfig config, IServerConfig serverConfig) : base(false)
-        {       
-            mListenInfo = config as CListenConfig;
-            mServerConfig = serverConfig as CServerConfig;
+        /// <summary>
+        /// Listener와 연결된 Server 정보, CAcceptor 객체에 전달을 위해서 해당 값 정의
+        /// </summary>
+        private IAppServer mAppServer;
+
+        public CTcpListener(IListenConfig config, IAppServer server, IServerConfig serverConfig) : base(server, false)
+        {
+            mListenConfig = config;
+            mServerConfig = serverConfig;
+            mAppServer = server;
 
             this.Initialize();
+            this.AfterStop += new EventHandler(OnListenerAfterStop);
         }
 
         public override void Initialize()
@@ -58,30 +69,24 @@ namespace ProjectWaterMelon.Network.SystemLib
 
         public override bool Start()
         {
-            var listenInfo = mListenInfo;
+            var listenConfig = mListenConfig;
             try
             {
-                if (listenInfo != null)
-                {
-                    var listenSocket = mListenSocket = new Socket(listenInfo.mIPEndPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    listenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                var listenSocket = mListenSocket = new Socket(listenConfig.endpoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                listenSocket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
+                listenSocket.LingerState = new LingerOption(false, 0);
 
-                    if (listenInfo.noDelay)
-                        listenSocket.NoDelay = true;
+                if (listenConfig.noDelay)
+                    listenSocket.NoDelay = true;
 
-                    listenSocket.Bind(listenInfo.mIPEndPoint);
-                    listenSocket.Listen(listenInfo.backlog);
+                hostEndPoint = listenConfig.endpoint;
+                listenSocket.Bind(listenConfig.endpoint);
+                listenSocket.Listen(listenConfig.backlog);
 
-                    mAcceptObj = new CAcceptor(listenSocket, mServerConfig);
-                    mAcceptObj.Start();
+                mAcceptObj = new CAcceptor(listenSocket, mAppServer, mServerConfig);
+                mAcceptObj.Start();
 
-                    return true;
-                }
-                else
-                {
-                    GCLogger.Error(nameof(CTcpListener), "Start", "Listen config isn't set yet");
-                    return false;
-                }
+                return true;
             }
             catch (Exception ex)
             {
@@ -92,15 +97,39 @@ namespace ProjectWaterMelon.Network.SystemLib
 
         public override void Stop()
         {
-            if (mListenSocket == null)
-                return;
-
-            lock (this)
+            lock (mLockObj)
             {
+                if (mListenSocket == null)
+                    return;
 
+                try
+                {
+                    mListenSocket.Close();
+                }
+                catch (Exception ex)
+                {
+                    GCLogger.Error(nameof(CTcpListener), "Stop", ex); 
+                }
+                finally
+                {
+                    mListenSocket = null;
+                }
+
+                OnAfterStopHandler();
             }
+        }
 
-            OnStopped();
+        /// <summary>
+        /// Listen Stop 후처리 작업
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnListenerAfterStop(object sender, System.EventArgs e)
+        {
+            var listener = sender as ISocketServerBase;
+
+            if (listener != null)
+                GCLogger.Info(nameof(listener), "OnListenerAfterStop", $"Listen Stopped [EndPoint = {listener.hostEndPoint}]");
         }
 
 

@@ -12,6 +12,7 @@ using ProjectWaterMelon.Network.Config;
 using ProjectWaterMelon.GameLib;
 using ProjectWaterMelon.Network.Session;
 using ProjectWaterMelon.Log;
+using ProjectWaterMelon.Network.Server;
 using static ProjectWaterMelon.ConstDefine;
 using static ProjectWaterMelon.GSocketState;
 // -------------- //
@@ -37,7 +38,7 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// Accept 비동기 콜백함수가 순차적으로 진행될 수 있도록 하는데 사용
         /// AutoResetEvent 를 false로 지정시 해당 이벤트가 호출된 스레드는 다음 AutoResetEvent.Set을 만나기 전까지 대기상태
         /// </summary>
-        private AutoResetEvent mFlowControlEvt = new AutoResetEvent(true);
+        //private AutoResetEvent mFlowControlEvt = new AutoResetEvent(true);
 
         /// <summary>
         /// Accept SocketAsyncEventArgs 풀링객체
@@ -54,8 +55,7 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// 서버에서 관리하는 모든 소켓 객체의 recv, send buffer 관리
         /// </summary>
         private CBufferManager mBufferManager;
-        private CSocketAsyncEventArgsPool mConcurrentRecvPool;
-        private CSocketAsyncEventArgsPool mConcurrentSendPool;
+        private CSocketAsyncEventArgsPool mConcurrentRecvPool, mConcurrentSendPool;
 
         /// <summary>
         /// 비동기 작업 취소에 따른 후처리를 위한 객체
@@ -72,16 +72,22 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// <summary>
         /// Lock 객체, 스레드간 동기화
         /// </summary>
-        private object mLockObj = new object();
+        private readonly object mLockObj = new object();
 
+        /// <summary>
+        /// Acceptor와 연결된 Server 정보, Session 객체에 전달을 위해서 해당 값 정의
+        /// </summary>
+        private IAppServer mAppServer;
 
-        public CAcceptor(in Socket socket, IServerConfig serverConfig) : base(false)
+        public CAcceptor(Socket socket, IAppServer server, IServerConfig serverConfig) : base(server, false)
         {
             mClientSocket = socket;
+            hostEndPoint = socket.LocalEndPoint;
 
             mServerConfig = serverConfig as CServerConfig;
 
             this.Initialize();
+            this.AfterStop += new EventHandler(OnAcceptAfterStop);
         }
 
         /// <summary>
@@ -184,21 +190,6 @@ namespace ProjectWaterMelon.Network.SystemLib
             //mConcurrentAcceptPool.Push(e);
         }
 
-        private void ResetAndSetCSession(in Socket socket, ref SocketAsyncEventArgs recvArgs, ref SocketAsyncEventArgs sendArgs)
-        {
-            recvArgs.UserToken = null;
-            sendArgs.UserToken = null;
-
-            CSession lUserToken = new CSession();
-            lUserToken.mTcpSocket.SetSocket(socket);
-            lUserToken.mTcpSocket.SetRemoteAndLocalEP(socket.RemoteEndPoint, socket.LocalEndPoint);
-            lUserToken.mTcpSocket.SetSocketConnected(true);
-            recvArgs.UserToken = lUserToken;
-            sendArgs.UserToken = lUserToken;
-            
-            lUserToken.mTcpSocket.SetEventArgs(recvArgs, sendArgs);
-        }
-
         private void OnAcceptHandler(SocketAsyncEventArgs e)
         {
             Socket client = null;
@@ -256,7 +247,7 @@ namespace ProjectWaterMelon.Network.SystemLib
                     var recvAsyncObj = mConcurrentRecvPool.Pop();
                     var sendAsyncObj = mConcurrentSendPool.Pop();
 
-                    var session = new CSessionTest(serverConfig, client, serverConfig.sendingQueueSize, recvAsyncObj, sendAsyncObj);
+                    var session = new CSessionTest(mAppServer, client, serverConfig.sendingQueueSize, recvAsyncObj, sendAsyncObj);
                     session.Start();
 
                 }
@@ -269,28 +260,44 @@ namespace ProjectWaterMelon.Network.SystemLib
 
         public override void Stop()
         {
-            var socket = mClientSocket;
-
-            if (socket == null)
+            if (mClientSocket == null)
                 return;
 
-            try
+            lock (mLockObj)
             {
-                lock(mLockObj)
+                try
                 {
                     mAsyncAcceptEvtObj.Completed -= new EventHandler<SocketAsyncEventArgs>(PrevWork_OnAcceptHandler);
                     mAsyncAcceptEvtObj.Dispose();
-                    mAsyncAcceptEvtObj = null;          
-                 
-                    socket.Close();
+                    mAsyncAcceptEvtObj = null;
+
+                    mClientSocket.Close();
                 }
+                catch (Exception ex)
+                {
+                    GCLogger.Error(nameof(CAcceptor), "Stop", ex);
+                }
+                finally
+                {
+                    mClientSocket = null;
+                }
+
+                OnAfterStopHandler();
             }
-            catch (Exception ex)
-            {
-                GCLogger.Error(nameof(CAcceptor), "Stop", ex);
-                return;
-            }
-        }     
+        }
+
+        /// <summary>
+        /// Accept Stop 후처리 작업
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnAcceptAfterStop(object sender, System.EventArgs e)
+        {
+            var acceptor = sender as ISocketServerBase;
+
+            if (acceptor != null)
+                GCLogger.Info(nameof(acceptor), "OnAcceptAfterStop", $"Accept Stopped [EndPoint = {acceptor.hostEndPoint}]");
+        }
     }
 }
 

@@ -19,18 +19,21 @@ namespace ProjectWaterMelon.Network.Config
 
         public bool noDelay { get; private set; }
 
-        public IPEndPoint mIPEndPoint { get; private set; }
+        public string serverName { get; private set; }
 
-        public CListenConfig(string ip, ushort port, bool noDelay, int backlog)
+        public IPEndPoint endpoint { get; private set; }
+
+        public CListenConfig(string ip, ushort port, bool noDelay, string serverName, int backlog)
         {
             this.ip = ip;
             this.port = port;
             this.backlog = backlog;
+            this.serverName = serverName;
             this.noDelay = noDelay;
 
-            this.mIPEndPoint = ListenOption.GetListenIPEndPoint(ip, port);
+            this.endpoint = ListenOption.GetListenIPEndPoint(ip, port);
         }
 
-        public CListenConfig(string ip, ushort port, bool noDelay) : this(ip, port, noDelay, 100) { }
+        public CListenConfig(string ip, ushort port, bool noDelay, string serverName) : this(ip, port, noDelay, serverName, 100) { }
     }
 }

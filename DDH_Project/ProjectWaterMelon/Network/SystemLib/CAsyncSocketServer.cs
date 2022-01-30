@@ -42,11 +42,13 @@ namespace ProjectWaterMelon.Network.SystemLib
 
         public CAsyncSocketServer(IServerConfig config)
         {
-            mServerConfig = (CServerConfig)config;
+            mServerConfig = config as CServerConfig;
 
             // Load Server Config
             LoadConfig();
         }
+
+
 
         /// <summary>
         /// 서버에서 사용할 config(설정) 데이터로드
@@ -66,10 +68,11 @@ namespace ProjectWaterMelon.Network.SystemLib
             for(var idx = 1; idx <= connectedServerCnt; ++idx)
             {
                 // 연결될 서버 IP, PORT
-                var serverIP = IniConfig.IniFileRead(secConnectInfo, $"Server_IP_{idx}", "", filePath);
-                var serverPort = Convert.ToUInt16(IniConfig.IniFileRead(secConnectInfo, $"Server_Port_{idx}", "", filePath));
-                
-                CListenConfig listenConfig = new CListenConfig(serverIP, serverPort, true);
+                var serverIP = IniConfig.IniFileRead(secConnectInfo, $"Server_IP_{idx}", "127.0.0.1", filePath);
+                var serverPort = Convert.ToUInt16(IniConfig.IniFileRead(secConnectInfo, $"Server_Port_{idx}", "8800", filePath));
+                var serverName = IniConfig.IniFileRead(secConnectInfo, $"Server_Name_{idx}", $"{mServerConfig.DefaultServerName}", filePath);
+
+                CListenConfig listenConfig = new CListenConfig(serverIP, serverPort, true, serverName);
                 mListenConfigList.Add(listenConfig);
             }
 
@@ -156,10 +159,9 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// <summary>
         /// ThreadPoolManager 세팅
         /// </summary>
-        private async Task<bool> SetupThreadPool()
+        /*private async Task<bool> SetupThreadPool()
         {
-            mThreadPool = new CThreadPoolManager(mServerConfig.minThreadCount, mServerConfig.maxThreadCount);
-
+            mThreadPool??=new CThreadPoolManager (mServerConfig.minThreadCount, mServerConfig.maxThreadCount);
             try
             {
                 // 1.Accept 전용 스레드 생성
@@ -171,14 +173,11 @@ namespace ProjectWaterMelon.Network.SystemLib
                             listener.Start();
                         }
                     }, "AcceptThread", true);
+                
                 if (!result)
-                {
                     GCLogger.Error(nameof(CAsyncSocketServer), "SetupThreadPool", "ThreadPoolManager[AcceptThread] set fail");
-                    return result;
-                }
 
                 return result;
-
             }
             catch (Exception ex)
             {
@@ -186,7 +185,7 @@ namespace ProjectWaterMelon.Network.SystemLib
                 return false;
             }
         }
-
+        */
     }
 
    

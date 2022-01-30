@@ -9,28 +9,50 @@ using System.Net.Sockets;
 using ProjectWaterMelon.Network.SystemLib;
 using ProjectWaterMelon.Network.Config;
 using ProjectWaterMelon.Network.CustomSocket;
+using ProjectWaterMelon.Network.Server;
 
 namespace ProjectWaterMelon.Network.Session
 {
-    public class CSessionTest : ISessionRoot
+    public class CSessionTest : CSessionRoot
     {
+        /// <summary>
+        /// 세션에서 통신에 사용할 소켓 정보
+        /// </summary>
         public CTcpAsyncSocket mClientSocket { get; private set; }
-        public string mSessionId { get; private set; }
-        public IPEndPoint mHostLocalEndPoint { get; private set; }
-        public IPEndPoint mRemoteClientEndPoint { get; private set; }
-        private CServerConfig mServerConfig;
 
+        /// <summary>
+        /// 현재 세션 상태
+        /// </summary>
+        public SessionState mSessionState { get; private set; } = SessionState.NotInitialized;
 
-        public String GetSessionId => mSessionId;
+        /// <summary>
+        /// 세션과 연결된 서버 정보 (서버는 여러종류가 있으므로 인터페이스로 보유)
+        /// </summary>
+        public IAppServer mIAppServer { get; private set; }
 
+        /// <summary>
+        /// 세션 아이디 반환
+        /// </summary>
+        public String GetSessionID => sessionID;
+
+        /// <summary>
+        /// 세션을 관리하는 서버의 상태 반환
+        /// </summary>
+        public ServerState GetServerState => mIAppServer.state;
+
+        /// <summary>
+        /// 세션을 관리하는 서버의 타입 반환
+        /// </summary>
+        public ServerType GetServerType => mIAppServer.type;
+        
         /// <summary>
         /// 세션 생성자, 클라이언트와 소켓 연결 후 세션 생성
         /// </summary>
         /// <param name="config"></param>
         /// <param name="socket"></param>
         /// <param name="queueMaxSize"></param>
-        public CSessionTest(IServerConfig config, in Socket socket, int queueMaxSize, in SocketAsyncEventArgs recv, in SocketAsyncEventArgs send)
-            : this(config, socket, queueMaxSize, recv, send, GSocketState.eSockEvtType.CONCURRENT)
+        public CSessionTest(IAppServer server, Socket socket, int queueMaxSize, SocketAsyncEventArgs recv, SocketAsyncEventArgs send)
+            : this(server, socket, queueMaxSize, recv, send, GSocketState.eSockEvtType.CONCURRENT)
         {
 
         }
@@ -41,23 +63,29 @@ namespace ProjectWaterMelon.Network.Session
         /// <param name="config"></param>
         /// <param name="socket"></param>
         /// <param name="queueMaxSize"></param>
-        public CSessionTest(IServerConfig config, in Socket socket, int queueMaxSize, SocketAsyncEventArgs recv, SocketAsyncEventArgs send, GSocketState.eSockEvtType poolAsync)
+        public CSessionTest(IAppServer server, Socket socket, int queueMaxSize, SocketAsyncEventArgs recv, SocketAsyncEventArgs send, GSocketState.eSockEvtType poolAsync)
         {
-            mServerConfig = config as CServerConfig;
+            var config = server.config;
+
+            mIAppServer = server;
 
             // Session 당 사용할 커스텀 소켓 객체 할당 및 옵션 설정
-            mClientSocket = new CTcpAsyncSocket(socket, mServerConfig.sendingQueueSize, queueMaxSize, ref recv, ref send, this);
-            mClientSocket.SetSocketOption(mServerConfig.noDelay, 
-                                         mServerConfig.recvBufferSize,
-                                         mServerConfig.sendBufferSize,
-                                         mServerConfig.socketLingerFlag,
-                                         mServerConfig.socketLingerDelayTime);
+            mClientSocket = new CTcpAsyncSocket(socket, config.sendingQueueSize, queueMaxSize, recv, send, this);
+            mClientSocket.SetSocketOption(config.noDelay,
+                                         config.recvBufferSize,
+                                         config.sendBufferSize,
+                                         config.socketLingerFlag,
+                                         config.socketLingerDelayTime);
 
-            mHostLocalEndPoint = (IPEndPoint)socket.LocalEndPoint;
+            hostEndPoint = (IPEndPoint)socket.LocalEndPoint;
 
-            mRemoteClientEndPoint = (IPEndPoint)socket.RemoteEndPoint;
+            remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
 
-            mSessionId = Guid.NewGuid().ToString();
+            sessionID = Guid.NewGuid().ToString();
+
+            this.OnClose += OnSessionClose;
+
+            mSessionState = SessionState.Initialized;
         }
 
         /// <summary>
@@ -72,15 +100,32 @@ namespace ProjectWaterMelon.Network.Session
         /// <summary>
         /// Recv 작업 진행 
         /// </summary>
-        public void Start()
+        public override void Start()
         {
             mClientSocket.Receive();
         }
 
-        public void Close()
+        /// <summary>
+        /// 세션 종료 시 후처리 작업 진행
+        /// </summary>
+        /// <param name="reason"></param>
+        public override void Close(eCloseReason reason)
+        {
+            mSessionState = SessionState.Stop;
+
+            mClientSocket.Close(reason);
+        }
+
+        /// <summary>
+        /// Session Close 후처리 작업
+        /// </summary>
+        /// <param name="session"></param>
+        /// <param name="closeReason"></param>
+        private void OnSessionClose(ISessionBase session, eCloseReason closeReason)
         {
 
         }
+
     }
 }
 

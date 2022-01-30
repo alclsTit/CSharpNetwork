@@ -19,12 +19,32 @@ namespace ProjectWaterMelon.Network.Session
         /// <summary>
         /// session id (set each client)
         /// </summary>
-        string sessionId { get; }
+        string sessionID { get; }
 
         /// <summary>
         /// 원격지(client) ip, port 정보
         /// </summary>
-        IPEndPoint remoteEP { get; }
-              
+        IPEndPoint remoteEndPoint { get; }
+
+        /// <summary>
+        /// 서버 호스트 ip, port 정보
+        /// </summary>
+        IPEndPoint hostEndPoint { get; }
+
+        /// <summary>
+        /// init session
+        /// </summary>
+        void Initalize();
+
+        /// <summary>
+        /// start session
+        /// </summary>
+        void Start();
+
+        /// <summary>
+        /// close session
+        /// </summary>
+        void Close(eCloseReason reason);
+
     }
 }
