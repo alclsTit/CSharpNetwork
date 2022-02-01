@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 
-using ProjectWaterMelon.Network.CustomSocket;
+using ProjectWaterMelon.Log;
 using ProjectWaterMelon.Network.Config;
+using ProjectWaterMelon.Network.Server;
 
 namespace ProjectWaterMelon.Network.Session
 {
@@ -16,6 +17,26 @@ namespace ProjectWaterMelon.Network.Session
     /// </summary>
     public interface ISessionBase
     {
+        /// <summary>
+        /// Session과 연동된 Server 
+        /// </summary>
+        IAppServer server { get; }
+
+        /// <summary>
+        /// Session에서 사용될 config
+        /// </summary>
+        IServerConfig config { get; }
+
+        /// <summary>
+        /// logger 클래스
+        /// </summary>
+        CLogger logger { get; }        
+
+        /// <summary>
+        /// session 연결 유무
+        /// </summary>
+        bool isConnected { get; }
+
         /// <summary>
         /// session id (set each client)
         /// </summary>

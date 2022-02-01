@@ -30,6 +30,11 @@ namespace ProjectWaterMelon.Network.CustomSocket
         private SocketAsyncEventArgs mSendAsyncEvtObj;
 
         /// <summary>
+        /// release resource check flag
+        /// </summary>
+        private bool mIsDisposed = false;
+
+        /// <summary>
         /// Session 클래스에 CTcpAsyncSocket 포함. Session 초기화 시, poolmanager 초기화
         /// </summary>
         /// <param name="config"></param>
@@ -228,6 +233,34 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
             OnClearSendData(ref e);
             base.OnSendCompleted(queue);
+        }
+
+        /// <summary>
+        /// Socket 종료시 관련 후처리 작업 (base.Close -> Dispose 순서대로 진행되어야한다)
+        /// base.Close 메서드를 통해 소켓 갱신(종료체크, 상태, 남은패킷처리) 
+        /// Dispose 메서드를 통해 객체 소멸로직 진행
+        /// </summary>
+        /// <param name="reason"></param>
+        public override void Close(eCloseReason reason)
+        {
+            base.Close(reason);
+            Dispose(true);
+        }
+
+        protected override void Dispose(bool disposed)
+        {
+            if (!mIsDisposed)
+            {
+                if (disposed)
+                {
+                    mRecvAsyncEvtObj.Dispose();
+                    mSendAsyncEvtObj.Dispose();
+                }
+
+                base.Dispose(disposed);
+                
+                mIsDisposed = true;
+            }
         }
     }
 }

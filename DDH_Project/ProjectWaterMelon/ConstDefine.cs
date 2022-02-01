@@ -7,26 +7,6 @@ using System.Threading.Tasks;
 //LogFolder 네이밍
 namespace ProjectWaterMelon
 {
-    /// <summary>
-    /// Socket State
-    /// Interlocked.CompareExchange 사용을 위해서는 소켓 상태값이 참조형식이 되어야한다
-    /// 따라서 enum이 아닌 전역클래스로 정의
-    /// </summary>
-    public static class GSocketCondition
-    {
-        public const int Unknown = 0;
-
-        public const int Connected = 1;
-
-        public const int Disconnected = 2;
-
-        public const int Sending = 3;
-
-        public const int Receiving = 4;
-
-        public const int InClosing = 5;
-    }
-
     public enum eCloseReason
     {
         /// <summary>

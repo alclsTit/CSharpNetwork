@@ -29,6 +29,11 @@ namespace ProjectWaterMelon.Network.CustomSocket
         private CPoolingManager<CSendingQueue> mSendingQueuePool;
 
         /// <summary>
+        /// RecvMessage Managing 
+        /// </summary>
+        protected CMessageResolver mMsgRecevier = new CMessageResolver();
+
+        /// <summary>
         /// connected client socket
         /// </summary>
         public Socket clientsocket { get; protected set; }
@@ -41,19 +46,34 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// <summary>
         /// state of socket
         /// </summary>
-        private int mSocketState;
+        private int mSocketState = GSocketCondition.Initialized;
 
+        /// <summary>
+        /// release resource check flag
+        /// </summary>
+        private bool mIsDisposed = false;
+
+        /// <summary>
+        /// get socket state
+        /// </summary>
         public int SocketState => mSocketState;
 
         /// <summary>
         /// Get SendingQueue
         /// </summary>
         public CSendingQueue SendingQueue => mSendingQueue;
-
+        
         /// <summary>
-        /// RecvMessage Managing 
+        /// AbstractAsyncSocket Constructor
         /// </summary>
-        protected CMessageResolver mMsgRecevier = new CMessageResolver();
+        /// <param name="queuePerSize"></param> CSendingPool per size 
+        /// <param name="queueMaxSize"></param> pool size
+        public AbstractAsyncSocket(int queuePerSize, int queueMaxSize)
+        {
+            mSocketState = GSocketCondition.Initialized;
+
+            mSendingQueuePool = new CPoolingManager<CSendingQueue>(new CSendingQueueCreator(queuePerSize), queueMaxSize);
+        }
 
         /// <summary>
         /// Recv 가능한 상태인지 체크하는 함수
@@ -66,20 +86,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
             return false;
         }
-
         protected abstract void ReceiveAsync();
-        
-        /// <summary>
-        /// AbstractAsyncSocket Constructor
-        /// </summary>
-        /// <param name="queuePerSize"></param> CSendingPool per size 
-        /// <param name="queueMaxSize"></param> pool size
-        public AbstractAsyncSocket(int queuePerSize, int queueMaxSize)
-        {
-            mSocketState = GSocketCondition.Unknown;
-
-            mSendingQueuePool = new CPoolingManager<CSendingQueue>(new CSendingQueueCreator(queuePerSize), queueMaxSize);
-        }
 
         public void Start()
         {
@@ -399,6 +406,29 @@ namespace ProjectWaterMelon.Network.CustomSocket
         protected virtual void OnReceiveCompleted()
         {
             ReceiveAsync();
+        }
+
+        protected virtual void Dispose(bool disposed)
+        {
+            if (!mIsDisposed)
+            {
+                if (disposed)
+                {
+                    mSendingQueue = null;
+                    localEP = null;
+                    mMsgRecevier = null;
+                    
+                    foreach(var targetObj in mSendingQueuePool)
+                    {
+                        targetObj.Clear();
+                    }
+                    mSendingQueuePool = null;
+                    
+                    clientsocket.Dispose();
+                }
+
+                mIsDisposed = true;
+            }
         }
     }
 }

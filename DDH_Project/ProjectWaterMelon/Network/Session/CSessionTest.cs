@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
 
-using ProjectWaterMelon.Network.SystemLib;
-using ProjectWaterMelon.Network.Config;
+using ProjectWaterMelon.Log;
 using ProjectWaterMelon.Network.CustomSocket;
 using ProjectWaterMelon.Network.Server;
 
 namespace ProjectWaterMelon.Network.Session
 {
-    public class CSessionTest : CSessionRoot
+    public sealed class CSessionTest : CSessionRoot
     {
         /// <summary>
         /// 세션에서 통신에 사용할 소켓 정보
@@ -26,11 +25,6 @@ namespace ProjectWaterMelon.Network.Session
         public SessionState mSessionState { get; private set; } = SessionState.NotInitialized;
 
         /// <summary>
-        /// 세션과 연결된 서버 정보 (서버는 여러종류가 있으므로 인터페이스로 보유)
-        /// </summary>
-        public IAppServer mIAppServer { get; private set; }
-
-        /// <summary>
         /// 세션 아이디 반환
         /// </summary>
         public String GetSessionID => sessionID;
@@ -38,12 +32,12 @@ namespace ProjectWaterMelon.Network.Session
         /// <summary>
         /// 세션을 관리하는 서버의 상태 반환
         /// </summary>
-        public ServerState GetServerState => mIAppServer.state;
+        public ServerState GetServerState => server.state;
 
         /// <summary>
         /// 세션을 관리하는 서버의 타입 반환
         /// </summary>
-        public ServerType GetServerType => mIAppServer.type;
+        public ServerType GetServerType => server.type;
         
         /// <summary>
         /// 세션 생성자, 클라이언트와 소켓 연결 후 세션 생성
@@ -63,29 +57,32 @@ namespace ProjectWaterMelon.Network.Session
         /// <param name="config"></param>
         /// <param name="socket"></param>
         /// <param name="queueMaxSize"></param>
-        public CSessionTest(IAppServer server, Socket socket, int queueMaxSize, SocketAsyncEventArgs recv, SocketAsyncEventArgs send, GSocketState.eSockEvtType poolAsync)
+        public CSessionTest(IAppServer server, Socket socket, int queueMaxSize, SocketAsyncEventArgs recv, SocketAsyncEventArgs send, GSocketState.eSockEvtType poolAsync) : base(server)
         {
-            var config = server.config;
+            try
+            {
+                var config = server.config;
+ 
+                // Session 당 사용할 커스텀 소켓 객체 할당 및 옵션 설정
+                mClientSocket = new CTcpAsyncSocket(socket, config.sendingQueueSize, queueMaxSize, recv, send, this);
+                mClientSocket.SetSocketOption(config.noDelay,
+                                             config.recvBufferSize,
+                                             config.sendBufferSize,
+                                             config.socketLingerFlag,
+                                             config.socketLingerDelayTime);
 
-            mIAppServer = server;
+                hostEndPoint = (IPEndPoint)socket.LocalEndPoint;
 
-            // Session 당 사용할 커스텀 소켓 객체 할당 및 옵션 설정
-            mClientSocket = new CTcpAsyncSocket(socket, config.sendingQueueSize, queueMaxSize, recv, send, this);
-            mClientSocket.SetSocketOption(config.noDelay,
-                                         config.recvBufferSize,
-                                         config.sendBufferSize,
-                                         config.socketLingerFlag,
-                                         config.socketLingerDelayTime);
+                remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
 
-            hostEndPoint = (IPEndPoint)socket.LocalEndPoint;
+                this.OnClose += OnSessionClose;
 
-            remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
-
-            sessionID = Guid.NewGuid().ToString();
-
-            this.OnClose += OnSessionClose;
-
-            mSessionState = SessionState.Initialized;
+                mSessionState = SessionState.Initialized;
+            }
+            catch (Exception ex)
+            {
+                logger.Error(nameof(CSessionTest), "Constructor", ex, "Constructor create fail");
+            }
         }
 
         /// <summary>
@@ -113,7 +110,7 @@ namespace ProjectWaterMelon.Network.Session
         {
             mSessionState = SessionState.Stop;
 
-            mClientSocket.Close(reason);
+            mClientSocket.dis(reason);
         }
 
         /// <summary>

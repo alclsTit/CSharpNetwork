@@ -45,5 +45,16 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// <param name="segments"></param>
         /// <returns></returns>
         bool TrySend(ArraySegment<byte> segment);
+
+
+        /// <summary>
+        /// change socket state (socketstate = 32bit(4byte))
+        /// [0]         [1 ~ 15]          [16 ~ 31] 
+        /// no use     state(past)      state(current)
+        /// </summary>
+        /// <returns></returns>
+        bool ChangeState();
+
+
     }
 }
