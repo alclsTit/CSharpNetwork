@@ -53,8 +53,13 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// no use     state(past)      state(current)
         /// </summary>
         /// <returns></returns>
-        bool ChangeState();
+        bool ChangeState(int state);
 
+        int GetCurrentState { get; }
+
+        int GetOldState { get; }
+
+        bool CheckState(int state);
 
     }
 }

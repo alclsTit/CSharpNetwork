@@ -46,7 +46,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// <summary>
         /// state of socket
         /// </summary>
-        private int mSocketState = GSocketCondition.Initialized;
+        private int mSocketState = GSocketState.NotInitialized;
 
         /// <summary>
         /// release resource check flag
@@ -62,7 +62,17 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// Get SendingQueue
         /// </summary>
         public CSendingQueue SendingQueue => mSendingQueue;
-        
+
+        /// <summary>
+        /// Get Socket current state
+        /// </summary>
+        public int GetCurrentState => mSocketState & GSocketStateMask.NEW_MASK;
+
+        /// <summary>
+        /// Get Socket old state
+        /// </summary>
+        public int GetOldState => mSocketState & GSocketStateMask.OLD_MASK;
+
         /// <summary>
         /// AbstractAsyncSocket Constructor
         /// </summary>
@@ -70,7 +80,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         /// <param name="queueMaxSize"></param> pool size
         public AbstractAsyncSocket(int queuePerSize, int queueMaxSize)
         {
-            mSocketState = GSocketCondition.Initialized;
+            mSocketState = GSocketState.Initialized;
 
             mSendingQueuePool = new CPoolingManager<CSendingQueue>(new CSendingQueueCreator(queuePerSize), queueMaxSize);
         }
@@ -110,7 +120,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
             // 현재 소켓 IO가 Sending 중이면 Send data 를 모두 보낸 후 처리
             var curstate = mSocketState;
-            if (curstate == GSocketCondition.Sending)
+            if (curstate == GSocketState.Sending)
             {
                 // Todo: socket close 작업 처리 중인데, sending 데이터가 남아 있을 경우 후처리는..? 
                 return;
@@ -128,10 +138,10 @@ namespace ProjectWaterMelon.Network.CustomSocket
         public void CheckValidateClose(eCloseReason reason, bool isSend, bool forceClose)
         {
             var curstate = mSocketState;
-            if (curstate == GSocketCondition.Disconnected)
+            if (curstate == GSocketState.Disconnected)
                 return;
 
-            if (curstate == GSocketCondition.InClosing)
+            if (curstate == GSocketState.InClosing)
             {
                 var socket = clientsocket;
                 if (socket == null)
@@ -156,7 +166,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
                     return;
                 }
 
-                if (curstate != GSocketCondition.Receiving)
+                if (curstate != GSocketState.Receiving)
                     Close(reason);
             }
             else if (forceClose)
@@ -196,7 +206,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
         {
             // 1. 소켓 상태 변경 
             // 2. 후처리 작업
-            ChangeSocketCondition(GSocketCondition.Sending);
+            ChangeSocketCondition(GSocketState.Sending);
             CheckValidateClose(reason, true, forceClose);
         }
 
@@ -221,7 +231,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
             var newstate = state;
 
             // 소켓이 닫힐 때에는 상태를 변경하지 않는다
-            if (oldstate == GSocketCondition.InClosing)
+            if (oldstate == GSocketState.InClosing)
                 return false;
 
             // 새로운 소켓상태가 이전과 같은 상태일 경우 변경하지 않는다
@@ -251,11 +261,11 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 return false;
 
             // 2. 소켓연결이 이미 끊어진 상태인지 체크
-            if (curstate == GSocketCondition.Disconnected)
+            if (curstate == GSocketState.Disconnected)
                 return false;
 
             // 3. 소켓을 닫는 작업중인지 체크
-            if (curstate == GSocketCondition.InClosing)
+            if (curstate == GSocketState.InClosing)
                 return false;
 
             return true;
@@ -273,7 +283,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
             if (inital)
             {
                 // 1.socket 상태 send로 변경
-                if (!TryChangeSocketCondition(GSocketCondition.Sending))
+                if (!TryChangeSocketCondition(GSocketState.Sending))
                     return;
 
                 var tmpbfqueue = mSendingQueue;
@@ -305,7 +315,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
                     mSendingQueuePool.Push(newqueue);
 
                 var curstate = mSocketState;
-                if (curstate == GSocketCondition.InClosing || curstate == GSocketCondition.Disconnected)
+                if (curstate == GSocketState.InClosing || curstate == GSocketState.Disconnected)
                 {
                     OnSendEnd();
                 }
@@ -357,7 +367,7 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
         public bool TrySend(ArraySegment<byte> segment)
         {
-            if (mSocketState == GSocketCondition.Disconnected)
+            if (mSocketState == GSocketState.Disconnected)
                 return false;
 
             var queue = mSendingQueue;
@@ -430,5 +440,26 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 mIsDisposed = true;
             }
         }
+
+        public bool ChangeState(int state)
+        {
+            var oldNewState = mSocketState;
+            var oldState = (oldNewState & GSocketStateMask.NEW_MASK) << 16;
+            
+            var result = oldState | (state & GSocketStateMask.NEW_MASK);
+
+            if (oldNewState == Interlocked.CompareExchange(ref mSocketState, result, oldNewState))
+                return true;
+            else
+                return false;
+        }
+
+        public bool CheckState(int state)
+        {
+            var oldNewState = mSocketState;
+
+            return oldNewState == Interlocked.CompareExchange(ref mSocketState, state, oldNewState);
+        }
+
     }
 }
