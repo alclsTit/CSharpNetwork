@@ -12,9 +12,9 @@ namespace ProjectWaterMelon.Network.SystemLib
     public interface ISocketServerBase
     {
         /// <summary>
-        /// 서버객체(gameserver, worldserver...)
+        /// 통신관련 서버 세팅
         /// </summary>
-        IAppServer server { get; }
+        ISocketServer server { get; }
 
         /// <summary>
         /// 서버객체 상태 (false = 비활성화 / true = 활성화)

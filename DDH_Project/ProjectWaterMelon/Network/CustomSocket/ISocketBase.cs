@@ -59,7 +59,9 @@ namespace ProjectWaterMelon.Network.CustomSocket
 
         int GetOldState { get; }
 
-        bool CheckState(int state);
+        bool CheckOldAndCurrentState(int oldState, int newState);
+
+        bool CheckCurrentState(int state);
 
     }
 }

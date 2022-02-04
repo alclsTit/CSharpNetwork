@@ -13,7 +13,6 @@ namespace ProjectWaterMelon.GameLib
     public static class IniConfig
     {
         private const int MAXLEN = 255;
-        private static StringBuilder mStringBuiler;  
 
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         private static extern long WritePrivateProfileString(string section, string key, string value, string filePath);
@@ -21,36 +20,67 @@ namespace ProjectWaterMelon.GameLib
         [DllImport("kernel32", CharSet = CharSet.Unicode)]
         private static extern long GetPrivateProfileString(string section, string key, string def_value, StringBuilder retval, int size, string filePath);
 
-        static IniConfig()
-        {
-            // 정적생성자 내용이 필요한 경우 이곳에 기입
-            mStringBuiler = new StringBuilder(MAXLEN);
-        }
+        private static object mLockObj = new object();
 
         /// <summary>
-        /// Write xxx.ini file 
+        /// Write xxx.ini file (non-threadsafe)
         /// </summary>
         /// <param name="section"></param>
         /// <param name="value"></param>
-        /// <param name="filePath"></param>
-        public static void IniFileWrite(string section, string key, string value, string filePath)
+        /// <param name="filepath"></param>
+        public static void IniFileWrite(string section, string key, string value, string filepath)
         {
-            WritePrivateProfileString(section, key, value, filePath);
+            WritePrivateProfileString(section, key, value, filepath);
         }
 
         /// <summary>
-        /// Read xxx.ini file
+        /// Read xxx.ini file (non-threadsafe)
         /// </summary>
         /// <param name="section"></param>
         /// <param name="key"></param>
         /// <param name="value"></param>
-        /// <param name="filePath"></param>
-        /// <param name="def_value"></param>
-        /// <param name="size"></param>
-        public static string IniFileRead(string section, string key, string value, string filePath)
+        /// <param name="filepath"></param>
+        /// <returns></returns>
+        public static string IniFileRead(string section, string key, string value, string filepath)
         {
-            GetPrivateProfileString(section, key, value, mStringBuiler, MAXLEN, filePath);
-            return mStringBuiler.ToString().Trim();
+            var readInfo = new StringBuilder(MAXLEN);
+
+            GetPrivateProfileString(section, key, value, readInfo, MAXLEN, filepath);
+            return readInfo.ToString().Trim();
+        }
+
+        /// <summary>
+        /// Write xxx.ini file (threadsafe)
+        /// </summary>
+        /// <param name="section"></param>
+        /// <param name="value"></param>
+        /// <param name="filepath"></param>
+        public static void IniFileWriteThreadSafe(string section, string key, string value, string filepath)
+        {
+            lock(mLockObj)
+            {
+                WritePrivateProfileString(section, key, value, filepath);
+            }
+        }
+
+        /// <summary>
+        /// Read xxx.ini file (threadsafe)
+        /// </summary>
+        /// <param name="section"></param>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <param name="filepath"></param>
+        /// <returns></returns>
+        public static string IniFileReadThreadSafe(string section, string key, string value, string filepath)
+        {
+            var readInfo = new StringBuilder(MAXLEN);
+
+            lock(mLockObj)
+            {
+                GetPrivateProfileString(section, key, value, readInfo, MAXLEN, filepath);
+            }
+
+            return readInfo.ToString().Trim();
         }
 
     }

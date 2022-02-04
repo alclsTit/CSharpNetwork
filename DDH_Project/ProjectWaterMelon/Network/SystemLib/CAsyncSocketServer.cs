@@ -53,7 +53,7 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// <summary>
         /// 서버에서 사용할 config(설정) 데이터로드
         /// </summary>
-        public void LoadConfig()
+        /*public void LoadConfig()
         {
             var fileName = "ConnectInfo";
             var exePath = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -113,6 +113,7 @@ namespace ProjectWaterMelon.Network.SystemLib
             mServerConfig.socketLingerDelayTime = Convert.ToInt32(IniConfig.IniFileRead(secServerInfo, "Socket_Close_DelayTime", "10", filePath));
         
         }
+        */
 
         public async Task Start()
         {

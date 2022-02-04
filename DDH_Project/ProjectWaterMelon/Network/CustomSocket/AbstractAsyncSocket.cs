@@ -122,10 +122,11 @@ namespace ProjectWaterMelon.Network.CustomSocket
             var curstate = mSocketState;
             if (curstate == GSocketState.Sending)
             {
-                // Todo: socket close 작업 처리 중인데, sending 데이터가 남아 있을 경우 후처리는..? 
+                // Todo: socket close 작업 처리 중인데, sending 데이터가 남아 있을 경우 후처리는..?  
                 return;
             }
 
+            ChangeState(GSocketState.InClosing);
             OnCloseHandler(reason);
         }
 
@@ -454,11 +455,18 @@ namespace ProjectWaterMelon.Network.CustomSocket
                 return false;
         }
 
-        public bool CheckState(int state)
+        public bool CheckOldAndCurrentState(int oldState, int newState)
         {
-            var oldNewState = mSocketState;
+            //var oldNewState = mSocketState;
+            var checkState = (oldState & GSocketStateMask.OLD_MASK) | (newState & GSocketStateMask.NEW_MASK);
 
-            return oldNewState == Interlocked.CompareExchange(ref mSocketState, state, oldNewState);
+            return mSocketState == checkState;
+            //return oldNewState == Interlocked.CompareExchange(ref mSocketState, oldNewState, checkState);
+        }
+
+        public bool CheckCurrentState(int state)
+        {
+            return state == (mSocketState & GSocketStateMask.NEW_MASK);
         }
 
     }

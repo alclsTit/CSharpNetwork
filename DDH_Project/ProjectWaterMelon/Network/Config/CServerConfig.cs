@@ -55,25 +55,43 @@ namespace ProjectWaterMelon.Network.Config
         public const int DefaultListenbacklog = 100;
 
         /// <summary>
-        /// Default Min Thread Count
+        /// Default worker threadpool mincount
         /// </summary>
-        public readonly int DefaultMinThreadCount = 1;
+        public readonly int DefaultMinWorkThreadCount = Environment.ProcessorCount;
 
         /// <summary>
-        /// Default Max Thread Count
+        /// Default worker threadpool maxcount
         /// </summary>
-        public readonly int DefaultMaxThreadCount = 8;
+        public readonly int DefaultMaxWorkThreadCount = 2000;
 
-        // 15. Socket Option (Linger) flag
+        /// <summary>
+        /// Default IO threadpool mincount
+        /// </summary>
+        public readonly int DefaultMinIOThreadCount = Environment.ProcessorCount;
+
+        /// <summary>
+        /// Default IO threadpool maxcount
+        /// </summary>
+        public readonly int DefaultMaxIOThreadCount = 1000;
+
+        /// <summary>
+        /// Socket Option (Linger) flag
+        /// </summary>
         public readonly bool DefaultSocketLingerFlag = false;
 
-        // 16. Socket Option (Linger = true) DelayTime
+        /// <summary>
+        /// Socket Option (Linger = true) DelayTime
+        /// </summary>
         public readonly int DefaultSocketLingerDelayTime = 10;
 
-        // 17. Server Name
+        /// <summary>
+        /// Server Name
+        /// </summary>
         public readonly string DefaultServerName = "DefaultServerName";
 
-        // 18. encoding
+        /// <summary>
+        /// encoding
+        /// </summary>
         public readonly string DefaultEncoding = Encoding.Default.ToString();
 
         //-------------------------------------------------------------------------
@@ -115,21 +133,27 @@ namespace ProjectWaterMelon.Network.Config
         public int listenBacklog { get; set; }
 
         // 13. Min Thread Count 
-        public int minThreadCount { get; set; }
+        public int minWorkThreadCount { get; set; }
 
         // 14. Max Thread Count
-        public int maxThreadCount { get; set; }
+        public int maxWorkThreadCount { get; set; }
 
-        // 15. Socket Option (Linger) flag
+        // 14. Max Thread Count
+        public int minIOThreadCount { get; set; }
+
+        // 14. Max Thread Count
+        public int maxIOThreadCount { get; set; }
+
+        // 17. Socket Option (Linger) flag
         public bool socketLingerFlag { get; set; }
 
-        // 16. Socket Option (Linger = true) DelayTime
+        // 18. Socket Option (Linger = true) DelayTime
         public int socketLingerDelayTime { get; set; }
 
-        // 17. Server Name
+        // 19. Server Name
         public string serverName { get; set; }
 
-        // 18. Encoding
+        // 20. Encoding
         public string encoding { get; set; }
 
         public CServerConfig()
@@ -142,8 +166,10 @@ namespace ProjectWaterMelon.Network.Config
             recvBufferSize = DefaultRecvBufferSize;
             sendingQueueSize = DefaultSendingQueueSize;
             listenBacklog = DefaultListenbacklog;
-            minThreadCount = DefaultMinThreadCount;
-            maxThreadCount = DefaultMaxThreadCount;
+            minWorkThreadCount = DefaultMinWorkThreadCount;
+            maxWorkThreadCount = DefaultMaxWorkThreadCount;
+            minIOThreadCount = DefaultMinIOThreadCount;
+            maxIOThreadCount = DefaultMaxIOThreadCount;
             socketLingerFlag = DefaultSocketLingerFlag;
             socketLingerDelayTime = DefaultSocketLingerDelayTime;
             serverName = DefaultServerName;

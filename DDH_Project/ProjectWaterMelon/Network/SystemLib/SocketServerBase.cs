@@ -11,7 +11,7 @@ namespace ProjectWaterMelon.Network.SystemLib
 {
     public abstract class SocketServerBase : ISocketServerBase
     {
-        public IAppServer server { get; private set; }
+        public ISocketServer server { get; private set; }
 
         public bool isRunning { get; protected set; }
         public abstract void Initialize();
@@ -22,7 +22,7 @@ namespace ProjectWaterMelon.Network.SystemLib
 
         public EndPoint hostEndPoint { get; protected set; }
 
-        public SocketServerBase(IAppServer server, bool isRunning)
+        public SocketServerBase(ISocketServer server, bool isRunning)
         {
             this.server = server;
             this.isRunning = isRunning;

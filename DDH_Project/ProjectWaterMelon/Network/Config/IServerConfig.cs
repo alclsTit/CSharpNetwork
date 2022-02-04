@@ -48,22 +48,28 @@ namespace ProjectWaterMelon.Network.Config
         // 12. ListenBacklog
         int listenBacklog { get; }
 
-        // 13. Min Thread Count 
-        int minThreadCount { get; }
+        // 13. Min ThreadPool(work) Count 
+        int minWorkThreadCount { get; }
 
-        // 14. Max Thread Count
-        int maxThreadCount { get; }
+        // 14. Max ThreadPool(work) Count 
+        int maxWorkThreadCount { get; }
 
-        // 15. Socket Option (Linger) flag
+        // 15. Min ThreadPool(IO) Count 
+        int minIOThreadCount { get; }
+
+        // 16. Max ThreadPool(IO) Count 
+        int maxIOThreadCount { get; }
+
+        // 17. Socket Option (Linger) flag
         bool socketLingerFlag { get; }
 
-        // 16. Socket Option (Linger = true) DelayTime
+        // 18. Socket Option (Linger = true) DelayTime
         int socketLingerDelayTime { get; }
 
-        // 17. Server name 
+        // 19. Server name 
         string serverName { get; }
 
-        // 18. Encoding
+        // 20. Encoding
         string encoding { get; }
     }
 }

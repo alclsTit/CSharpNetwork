@@ -79,7 +79,7 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// </summary>
         private IAppServer mAppServer;
 
-        public CAcceptor(Socket socket, IAppServer server, IServerConfig serverConfig) : base(server, false)
+        public CAcceptor(Socket socket, ISocketServer server, IServerConfig serverConfig) : base(server, false)
         {
             mClientSocket = socket;
             hostEndPoint = socket.LocalEndPoint;

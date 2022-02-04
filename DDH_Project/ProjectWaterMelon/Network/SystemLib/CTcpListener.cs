@@ -50,9 +50,9 @@ namespace ProjectWaterMelon.Network.SystemLib
         /// <summary>
         /// Listener와 연결된 Server 정보, CAcceptor 객체에 전달을 위해서 해당 값 정의
         /// </summary>
-        private IAppServer mAppServer;
+        private ISocketServer mAppServer;
 
-        public CTcpListener(IListenConfig config, IAppServer server, IServerConfig serverConfig) : base(server, false)
+        public CTcpListener(IListenConfig config, ISocketServer server, IServerConfig serverConfig) : base(server, false)
         {
             mListenConfig = config;
             mServerConfig = serverConfig;
@@ -162,7 +162,7 @@ namespace ProjectWaterMelon.Network.SystemLib
                 EndPoint = CHostFinder.GetServerIPEndPointByLocal(config.port, true);
                 if (EndPoint == null)
                 {
-                    GCLogger.Error(nameof(CTcpListener), $"Start", $"Endpoin is null!!!");
+                    GCLogger.Error(nameof(CTcpListener), $"Start", $"Endpoint is null!!!");
                     return false;
                 }
                 mIPEndPoint = EndPoint;
